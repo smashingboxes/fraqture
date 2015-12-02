@@ -7,10 +7,10 @@
             [quil.helpers.calc :refer [mul-add]]))
 
 (def noise-jitter 200)
-(def update-interval 1000)
+(def update-interval 2000)
 
 (defn decay-noise [noise-array]
-  (map #(* 0.8 %) noise-array))
+  (map #(* 0.9 %) noise-array))
 
 (defn generate-noise []
   (let [base-noise (steps (rand 10) 0.05)]
@@ -36,24 +36,22 @@
   (q/background 255)
   (q/stroke-weight 5)
   (q/smooth)
-  (let [radius    200
-        cent-x    250
+  (let [cent-x    250
         cent-y    250
         rad-noise (:noise-array state)
         rads      (map q/radians (range-incl 0 1440 5))
-        radii     (steps 10 0.5)
+        radii     (steps 10 1)
         radii     (map (fn [rad noise] (+ rad noise)) radii rad-noise)
         xs        (map (fn [rad radius] (mul-add (q/cos rad) radius cent-x)) rads radii)
         ys        (map (fn [rad radius] (mul-add (q/sin rad) radius cent-y)) rads radii)
         line-args (line-join-points xs ys)]
     (q/stroke 0 30)
     (q/no-fill)
-    (q/ellipse cent-x cent-y (* radius 2) (* radius 2))
     (q/stroke 20 50 70)
     (dorun (map #(apply q/line %) line-args))))
 
 (q/defsketch storefront
-  :title "Spiral Demo"
+  :title "Twitchy Spiral"
   :size [500 500]
   :setup setup
   :update update-state
