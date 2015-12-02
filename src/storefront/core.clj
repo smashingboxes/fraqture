@@ -6,22 +6,43 @@
             [quil.helpers.seqs :refer [range-incl steps]]
             [quil.helpers.calc :refer [mul-add]]))
 
-(defn noisify [sample]
-  (* 100 (q/noise sample)))
+(def noise-jitter 200)
+(def update-interval 1000)
+
+(defn decay-noise [noise-array]
+  (map #(* 0.8 %) noise-array))
+
+(defn generate-noise []
+  (let [base-noise (steps (rand 10) 0.05)]
+    (map #(- (* noise-jitter (q/noise %)) (/ noise-jitter 2)) base-noise)))
+
+(defn update-noise [last-time noise-array]
+  (let [current-time (q/millis)]
+    (if (< (+ last-time update-interval) current-time)
+      [current-time (generate-noise)]
+      [last-time (decay-noise noise-array)])))
 
 (defn setup []
   (q/frame-rate 30)
+  { :last-noise  (q/millis)
+    :noise-array (generate-noise) })
+
+(defn update-state [state]
+  (let [[last-noise noise-array] (update-noise (:last-noise state) (:noise-array state))]
+  { :last-noise  last-noise
+    :noise-array noise-array }))
+
+(defn draw-state [state]
   (q/background 255)
   (q/stroke-weight 5)
   (q/smooth)
-  (let [radius    100
+  (let [radius    200
         cent-x    250
         cent-y    250
-        rad-noise (steps (rand 10) 0.05)
-        rad-noise (map noisify rad-noise)
+        rad-noise (:noise-array state)
         rads      (map q/radians (range-incl 0 1440 5))
         radii     (steps 10 0.5)
-        radii     (map (fn [rad noise] (+ rad noise -100)) radii rad-noise)
+        radii     (map (fn [rad noise] (+ rad noise)) radii rad-noise)
         xs        (map (fn [rad radius] (mul-add (q/cos rad) radius cent-x)) rads radii)
         ys        (map (fn [rad radius] (mul-add (q/sin rad) radius cent-y)) rads radii)
         line-args (line-join-points xs ys)]
@@ -29,14 +50,7 @@
     (q/no-fill)
     (q/ellipse cent-x cent-y (* radius 2) (* radius 2))
     (q/stroke 20 50 70)
-    (dorun (map #(apply q/line %) line-args)))
-
-  { })
-
-(defn update-state [state]
-  { })
-
-(defn draw-state [state])
+    (dorun (map #(apply q/line %) line-args))))
 
 (q/defsketch storefront
   :title "Spiral Demo"
