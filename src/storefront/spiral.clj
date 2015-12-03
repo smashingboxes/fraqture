@@ -42,7 +42,6 @@
 (defn draw
   [state]
   (q/stroke-weight 5)
-  (q/smooth)
   (let [cent-x    (/ (q/width) 2)
         cent-y    (/ (q/height) 2)
         rad-noise (:noise-array state)
