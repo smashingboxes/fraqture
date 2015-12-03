@@ -1,13 +1,14 @@
 (ns storefront.core
   (:gen-class)
-  (:require [quil.core :as q]
+  (:require [storefront.scanlines :refer [draw-scanlines]]
+            [quil.core :as q]
             [quil.middleware :as m]
             [quil.helpers.drawing :refer [line-join-points]]
             [quil.helpers.seqs :refer [range-incl steps]]
             [quil.helpers.calc :refer [mul-add]]))
 
 (def noise-jitter 300)
-(def update-interval 2000)
+(def update-interval (+ (rand 1000) 100))
 
 (defn decay-noise [noise-array]
   (map #(* 0.9 %) noise-array))
@@ -45,10 +46,9 @@
         xs        (map (fn [rad radius] (mul-add (q/cos rad) radius cent-x)) rads radii)
         ys        (map (fn [rad radius] (mul-add (q/sin rad) radius cent-y)) rads radii)
         line-args (line-join-points xs ys)]
-    (q/stroke 0 30)
-    (q/no-fill)
     (q/stroke 20 50 70)
-    (dorun (map #(apply q/line %) line-args))))
+    (dorun (map #(apply q/line %) line-args)))
+  (draw-scanlines 2 0.2))
 
 (q/defsketch storefront
   :title "Twitchy Spiral"
