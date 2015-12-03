@@ -14,30 +14,19 @@
     (map #(- (* jitter (q/noise %)) (/ jitter 2)) base-noise)))
 
 (defn update-noise
-  [state]
-  (let [current-time    (q/millis)
-        last-time       (:last-noise state)
-        noise-array     (:noise-array state)
-        jitter          (:jitter state)
-        update-interval (:update-interval state)]
-    (if (< (+ last-time update-interval) current-time)
-      [current-time (generate-noise jitter)]
-      [last-time (decay-noise noise-array)])))
+  [state fired]
+  (if fired
+      (generate-noise (:jitter state))
+      (decay-noise    (:noise-array state))))
 
 (defn initialize
-  [jitter update-interval]
-  { :last-noise      (q/millis)
-    :noise-array     (generate-noise jitter)
-    :jitter          jitter
-    :update-interval update-interval })
+  [jitter]
+  { :noise-array (generate-noise jitter)
+    :jitter      jitter })
 
 (defn update
-  [state]
-  (let [[last-noise noise-array] (update-noise state)]
-  { :last-noise      last-noise
-    :noise-array     noise-array
-    :jitter          (:jitter state)
-    :update-interval (:update-interval state) }))
+  [state fired]
+  (assoc state :noise-array (update-noise state fired)))
 
 (defn draw
   [state]
