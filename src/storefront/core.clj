@@ -6,7 +6,7 @@
             [quil.helpers.seqs :refer [range-incl steps]]
             [quil.helpers.calc :refer [mul-add]]))
 
-(def noise-jitter 200)
+(def noise-jitter 300)
 (def update-interval 2000)
 
 (defn decay-noise [noise-array]
@@ -36,8 +36,8 @@
   (q/background 255)
   (q/stroke-weight 5)
   (q/smooth)
-  (let [cent-x    250
-        cent-y    250
+  (let [cent-x    (/ (q/width) 2)
+        cent-y    (/ (q/height) 2)
         rad-noise (:noise-array state)
         rads      (map q/radians (range-incl 0 1440 5))
         radii     (steps 10 1)
@@ -52,11 +52,11 @@
 
 (q/defsketch storefront
   :title "Twitchy Spiral"
-  :size [500 500]
+  :size :fullscreen
   :setup setup
   :update update-state
   :draw draw-state
-  :features [:keep-on-top]
+  :features [:keep-on-top :present]
   :middleware [m/fun-mode])
 
 (defn -main [& args])
