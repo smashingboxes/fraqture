@@ -12,12 +12,13 @@
 
 (defn initialize
   ([thickness opacity]
-    (initialize thickness opacity [0 0 0]))
-  ([thickness opacity color]
-    { :thickness thickness
-      :target-opacity opacity
-      :current-opacity 1.0
-      :color color }))
+    (initialize thickness opacity 0 0 0))
+  ([thickness opacity red green blue]
+    { :thickness       thickness
+      :target-opacity  opacity
+      :current-opacity 0.8
+      :current-color   [red green blue]
+      :target-color    [red green blue] }))
 
 (defn update-opacity
   [state pulse]
@@ -25,19 +26,33 @@
         target-opacity  (:target-opacity state)
         opacity-diff    (- target-opacity current-opacity)]
   (if pulse
-    1.0
-    (+ (* opacity-diff 0.5) current-opacity))))
+    0.8
+    (+ (* opacity-diff 0.1) current-opacity))))
+
+(defn update-color
+  [state pulse]
+  (let [current-color (:current-color state)
+        target-color  (:target-color state)
+        color-diff    (map - target-color current-color)
+        diff-weighted (map #(* 0.1 %) color-diff)]
+    (if pulse
+      [(rand 255) (rand 255) (rand 255)]
+      (map + current-color diff-weighted))))
 
 (defn update
   [state pulse]
-  (assoc state :current-opacity (update-opacity state pulse)))
+  (assoc state
+    :current-opacity (update-opacity state pulse)
+    :current-color   (update-color state pulse)))
 
 (defn draw
   [state]
   (let [thickness       (:thickness state)
         opacity         (:opacity state)
-        color           (:color state)
+        red             (nth (:current-color state) 0)
+        green           (nth (:current-color state) 1)
+        blue            (nth (:current-color state) 2)
         current-opacity (:current-opacity state)]
     (q/no-stroke)
-    (q/fill 0 (* current-opacity 255))
+    (q/fill red green blue (* current-opacity 255))
     (rects thickness)))
