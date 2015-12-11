@@ -9,11 +9,11 @@
 (defn load-drawing
   [drawing-info]
   (q/defsketch storefront
-    :title "Twitchy Spiral"
+    :title  (:title drawing-info)
     :size   :fullscreen
-    :setup  (:setup drawing-info)
-    :update (:update-state drawing-info)
-    :draw   (:draw-state drawing-info)
+    :setup  (:setup-fn drawing-info)
+    :update (:update-fn drawing-info)
+    :draw   (:draw-fn drawing-info)
     :features [:keep-on-top :present]
     :middleware [m/fun-mode]))
 

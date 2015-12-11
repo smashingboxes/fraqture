@@ -1,10 +1,11 @@
 (ns storefront.spiral-glitch
-  (:gen-class)
-  (:require [storefront.scanlines :as scanlines]
+  (:require [storefront.drawing]
+            [storefront.scanlines :as scanlines]
             [storefront.spiral :as spiral]
             [storefront.pulsar :as pulsar]
             [storefront.arduino :as arduino]
-            [quil.core :as q]))
+            [quil.core :as q])
+  (:import  [storefront.drawing Drawing]))
 
 (def noise-jitter 300)
 (def update-interval 1000)
@@ -37,8 +38,4 @@
   (spiral/draw (:spiral-2 state))
   (scanlines/draw (:scan state)))
 
-(def drawing {
-  :title "Twitchy Spiral"
-  :setup setup
-  :update-state update-state
-  :draw-state draw-state })
+(def drawing (Drawing. "Twitchy Spiral" setup update-state draw-state))
