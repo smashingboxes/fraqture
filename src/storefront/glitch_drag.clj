@@ -4,12 +4,12 @@
   (:import  [storefront.drawing Drawing]))
 
 (def jitter-amount 10)
-(def x-blocks 20)
-(def y-blocks 10)
+(def x-blocks 30)
+(def y-blocks 30)
 (def total-blocks (* x-blocks y-blocks))
 
 (defn index-block [i]
-  [(mod i x-blocks) (quot i x-blocks)])
+  [(quot i y-blocks) (mod i y-blocks)])
 
 (defn clamp-rgb [rgb]
   (max (min rgb 255) 0))
@@ -23,23 +23,36 @@
 (defn random-color []
   [(rand-int 255) (rand-int 255) (rand-int 255)])
 
-(defn rect-at-index [idx color]
-  (let [[x-index y-index] (index-block idx)
-        width             (/ (q/width) x-blocks)
+(defn cycle-index [idx]
+  (mod (inc idx) y-blocks))
+
+(defn rect-at-index [x-index y-index color]
+  (let [width             (/ (q/width) x-blocks)
         height            (/ (q/height) y-blocks)
         x                 (* width x-index)
         y                 (* height y-index)]
+    (q/no-stroke)
     (apply q/fill color)
     (q/rect x y width height)))
 
+(defrecord Column [current-index color])
+
 (defn setup []
   (q/frame-rate 10)
-  { :colors (repeatedly total-blocks random-color) })
+  (repeatedly
+     x-blocks
+     (fn [] (->Column (rand-int y-blocks) (random-color)))))
+
+(defn update-column [column]
+  (Column. (cycle-index (:current-index column)) (color-walk (:color column))))
 
 (defn update-state [state]
-  { :colors (map color-walk (:colors state)) })
+  (map update-column state))
 
 (defn draw-state [state]
-  (dorun (map-indexed rect-at-index (:colors state))))
+  (dorun
+    (map-indexed
+      (fn [idx column] (rect-at-index idx (:current-index column) (:color column)))
+      state)))
 
 (def drawing (Drawing. "Drag Glitch" setup update-state draw-state))
