@@ -2,9 +2,9 @@
   (:gen-class)
   (:require [quil.core :as q]
             [quil.middleware :as m]
-            [storefront.spiral-glitch :as spiral]))
+            [storefront.glitch-drag :as drag]))
 
-(def drawing spiral/drawing)
+(def drawing drag/drawing)
 
 (defn load-drawing
   [drawing-info]
