@@ -32,27 +32,33 @@
         x                 (* width x-index)
         y                 (* height y-index)]
     (q/no-stroke)
-    (apply q/fill color)
+    (apply q/fill (conj color 40))
     (q/rect x y width height)))
 
 (defrecord Column [current-index color])
 
 (defn setup []
   (q/frame-rate 10)
-  (repeatedly
-     x-blocks
-     (fn [] (->Column (rand-int y-blocks) (random-color)))))
+  (q/image (q/load-image "ross.jpg") 0 0 (q/width) (q/height))
+  (let [column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
+        column-ys (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
+        column-xs (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
+        samples   (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
+        columns   (map #(->Column % (random-color)) column-y-blocks)]
+    { :bg-img   nil
+      :columns  columns }))
 
 (defn update-column [column]
   (Column. (cycle-index (:current-index column)) (color-walk (:color column))))
 
 (defn update-state [state]
-  (map update-column state))
+  (update-in state [:columns] #(map update-column %)))
 
 (defn draw-state [state]
+
   (dorun
     (map-indexed
       (fn [idx column] (rect-at-index idx (:current-index column) (:color column)))
-      state)))
+      (:columns state))))
 
 (def drawing (Drawing. "Drag Glitch" setup update-state draw-state))
