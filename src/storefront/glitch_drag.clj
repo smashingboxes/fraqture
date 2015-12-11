@@ -23,22 +23,22 @@
 (defn random-color []
   [(rand-int 255) (rand-int 255) (rand-int 255)])
 
-(defn cycle-index [idx]
-  (mod (inc idx) y-blocks))
+(defn cycle-index [column]
+  (mod (inc (:current-index column)) (:y-count column)))
 
 (defn color-with-opac [color]
   (conj (into [] color) 80))
 
-(defn rect-at-index [x-index y-index color]
+(defn rect-at-index [x-index y-index color y-count]
   (let [width             (/ (q/width) x-blocks)
-        height            (/ (q/height) y-blocks)
+        height            (/ (q/height) y-count)
         x                 (* width x-index)
         y                 (* height y-index)]
     (q/no-stroke)
     (apply q/fill (color-with-opac color))
     (q/rect x y width height)))
 
-(defrecord Column [current-index color])
+(defrecord Column [current-index color y-count])
 
 (defn color-to-rgb [color]
   [(q/red color) (q/green color) (q/blue color)])
@@ -51,12 +51,12 @@
         column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
         raw-samples (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
         samples     (map #(color-to-rgb %) raw-samples)
-        columns     (map (fn [y c] (->Column y c)) column-y-blocks samples)]
+        columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
     { :bg-img   nil
       :columns  columns }))
 
 (defn update-column [column]
-  (Column. (cycle-index (:current-index column)) (color-walk (:color column))))
+  (Column. (cycle-index column) (color-walk (:color column)) (:y-count column)))
 
 (defn update-state [state]
   (update-in state [:columns] #(map update-column %)))
@@ -64,7 +64,7 @@
 (defn draw-state [state]
   (dorun
     (map-indexed
-      (fn [idx column] (rect-at-index idx (:current-index column) (:color column)))
+      (fn [idx column] (rect-at-index idx (:current-index column) (:color column) (:y-count column)))
       (:columns state))))
 
 (def drawing (Drawing. "Drag Glitch" setup update-state draw-state))
