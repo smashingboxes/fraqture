@@ -26,25 +26,32 @@
 (defn cycle-index [idx]
   (mod (inc idx) y-blocks))
 
+(defn color-with-opac [color]
+  (conj (into [] color) 80))
+
 (defn rect-at-index [x-index y-index color]
   (let [width             (/ (q/width) x-blocks)
         height            (/ (q/height) y-blocks)
         x                 (* width x-index)
         y                 (* height y-index)]
     (q/no-stroke)
-    (apply q/fill (conj color 40))
+    (apply q/fill (color-with-opac color))
     (q/rect x y width height)))
 
 (defrecord Column [current-index color])
+
+(defn color-to-rgb [color]
+  [(q/red color) (q/green color) (q/blue color)])
 
 (defn setup []
   (q/frame-rate 10)
   (q/image (q/load-image "ross.jpg") 0 0 (q/width) (q/height))
   (let [column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
-        column-ys (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
-        column-xs (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
-        samples   (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
-        columns   (map #(->Column % (random-color)) column-y-blocks)]
+        column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
+        column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
+        raw-samples (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
+        samples     (map #(color-to-rgb %) raw-samples)
+        columns     (map (fn [y c] (->Column y c)) column-y-blocks samples)]
     { :bg-img   nil
       :columns  columns }))
 
@@ -55,7 +62,6 @@
   (update-in state [:columns] #(map update-column %)))
 
 (defn draw-state [state]
-
   (dorun
     (map-indexed
       (fn [idx column] (rect-at-index idx (:current-index column) (:color column)))
