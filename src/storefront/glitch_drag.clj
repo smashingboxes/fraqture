@@ -66,7 +66,6 @@
   (Column. (cycle-index column) (color-walk (:color column)) (:y-count column)))
 
 (defn update-state [state]
-  (println (:iterations state))
   (if (= (:iterations state) 100)
     (setup)
     (-> state
