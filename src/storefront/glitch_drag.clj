@@ -59,13 +59,19 @@
         samples     (map #(color-to-rgb %) raw-samples)
         columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
     { :bg-img   nil
+      :iterations 0
       :columns  columns }))
 
 (defn update-column [column]
   (Column. (cycle-index column) (color-walk (:color column)) (:y-count column)))
 
 (defn update-state [state]
-  (update-in state [:columns] #(map update-column %)))
+  (println (:iterations state))
+  (if (= (:iterations state) 100)
+    (setup)
+    (-> state
+        (update-in [:iterations] inc)
+        (update-in [:columns] #(map update-column %)))))
 
 (defn draw-state [state]
   (dorun
