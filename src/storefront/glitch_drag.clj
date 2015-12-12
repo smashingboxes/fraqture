@@ -9,7 +9,9 @@
 (def total-blocks (* x-blocks y-blocks))
 
 (defn getfile []
-  "ross.jpg")
+  (def directory (clojure.java.io/file "./images"))
+  (def files (file-seq directory))
+  (rand-nth (filter #(.isFile %) files)))
 
 (defn index-block [i]
   [(quot i y-blocks) (mod i y-blocks)])
