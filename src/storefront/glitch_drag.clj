@@ -8,6 +8,9 @@
 (def y-blocks 30)
 (def total-blocks (* x-blocks y-blocks))
 
+(defn getfile []
+  "ross.jpg")
+
 (defn index-block [i]
   [(quot i y-blocks) (mod i y-blocks)])
 
@@ -45,7 +48,7 @@
 
 (defn setup []
   (q/frame-rate 10)
-  (q/image (q/load-image "ross.jpg") 0 0 (q/width) (q/height))
+  (q/image (q/load-image (getfile)) 0 0 (q/width) (q/height))
   (let [column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
         column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
         column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
@@ -67,4 +70,5 @@
       (fn [idx column] (rect-at-index idx (:current-index column) (:color column) (:y-count column)))
       (:columns state))))
 
+(def image "ross.jpg")
 (def drawing (Drawing. "Drag Glitch" setup update-state draw-state))
