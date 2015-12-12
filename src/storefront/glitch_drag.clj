@@ -4,8 +4,8 @@
   (:import  [storefront.drawing Drawing]))
 
 (def jitter-amount 10)
-(def x-blocks 30)
-(def y-blocks 30)
+(def x-blocks 100)
+(def y-blocks 100)
 (def total-blocks (* x-blocks y-blocks))
 
 (defn getfile []
