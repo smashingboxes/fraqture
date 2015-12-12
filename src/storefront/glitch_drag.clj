@@ -72,5 +72,4 @@
       (fn [idx column] (rect-at-index idx (:current-index column) (:color column) (:y-count column)))
       (:columns state))))
 
-(def image "ross.jpg")
 (def drawing (Drawing. "Drag Glitch" setup update-state draw-state))
