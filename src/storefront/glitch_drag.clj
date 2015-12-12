@@ -3,9 +3,10 @@
             [quil.core :as q])
   (:import  [storefront.drawing Drawing]))
 
+(def rand-block-val (+ (rand-int (- 150 50)) 50))
 (def jitter-amount 10)
-(def x-blocks 100)
-(def y-blocks 100)
+(def x-blocks rand-block-val)
+(def y-blocks rand-block-val)
 (def total-blocks (* x-blocks y-blocks))
 
 (defn getfile []
