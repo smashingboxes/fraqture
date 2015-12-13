@@ -7,7 +7,8 @@
 (def jitter-amount 10)
 (def x-blocks rand-block-val)
 (def y-blocks rand-block-val)
-(def total-blocks (* x-blocks y-blocks))
+(defn seconds [x] (* 1000 x))
+(def update-interval (seconds 20))
 
 (defn getfile []
   (def directory (clojure.java.io/file "./images"))
@@ -58,19 +59,16 @@
         raw-samples (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
         samples     (map #(color-to-rgb %) raw-samples)
         columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
-    { :bg-img   nil
-      :iterations 0
+    { :last-update (q/millis)
       :columns  columns }))
 
 (defn update-column [column]
   (Column. (cycle-index column) (color-walk (:color column)) (:y-count column)))
 
 (defn update-state [state]
-  (if (= (:iterations state) 100)
+  (if (< (+ (:last-update state) update-interval) (q/millis))
     (setup)
-    (-> state
-        (update-in [:iterations] inc)
-        (update-in [:columns] #(map update-column %)))))
+    (update-in state [:columns] #(map update-column %))))
 
 (defn draw-state [state]
   (dorun
