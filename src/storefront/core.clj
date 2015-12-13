@@ -15,13 +15,5 @@
     :features [:keep-on-top :present]
     :middleware [m/fun-mode]))
 
-;; (defn get-rossy[]
-;;   (future
-;;     (println "[Future] started computation")
-;;     (Thread/sleep 20000)
-;;     (get-rossy)))
-;;
-;; (get-rossy)
-
 (load-drawing drag/drawing)
 (defn -main [& args])
