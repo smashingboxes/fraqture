@@ -5,7 +5,13 @@ interactive parts of a drawing, and renders the art.
 
 ## Usage
 
-`lein run`
+### Bob Ross Drag Glitch
+
+`lein run ross`
+
+### Crazy Acid Spiral Glitch
+
+`lein run spiro`
 
 ## Requirements
 
