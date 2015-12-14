@@ -3,10 +3,17 @@
             [quil.core :as q])
   (:import  [storefront.drawing Drawing]))
 
+(def rand-block-val (+ (rand-int (- 150 50)) 50))
 (def jitter-amount 10)
-(def x-blocks 30)
-(def y-blocks 30)
-(def total-blocks (* x-blocks y-blocks))
+(def x-blocks rand-block-val)
+(def y-blocks rand-block-val)
+(defn seconds [x] (* 1000 x))
+(def update-interval (seconds 20))
+
+(defn getfile []
+  (def directory (clojure.java.io/file "./images"))
+  (def files (file-seq directory))
+  (rand-nth (filter #(.isFile %) files)))
 
 (defn index-block [i]
   [(quot i y-blocks) (mod i y-blocks)])
@@ -45,21 +52,23 @@
 
 (defn setup []
   (q/frame-rate 10)
-  (q/image (q/load-image "ross.jpg") 0 0 (q/width) (q/height))
+  (q/image (q/load-image (getfile)) 0 0 (q/width) (q/height))
   (let [column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
         column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
         column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
         raw-samples (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
         samples     (map #(color-to-rgb %) raw-samples)
         columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
-    { :bg-img   nil
+    { :last-update (q/millis)
       :columns  columns }))
 
 (defn update-column [column]
   (Column. (cycle-index column) (color-walk (:color column)) (:y-count column)))
 
 (defn update-state [state]
-  (update-in state [:columns] #(map update-column %)))
+  (if (< (+ (:last-update state) update-interval) (q/millis))
+    (setup)
+    (update-in state [:columns] #(map update-column %))))
 
 (defn draw-state [state]
   (dorun
