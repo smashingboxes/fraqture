@@ -2,7 +2,7 @@
   (:gen-class)
   (:require [quil.core :as q]
             [quil.middleware :as m]
-            [storefront.glitch-drag :as drag]))
+            [storefront.shifting-grid :as drag]))
 
 (def drawing drag/drawing)
 
