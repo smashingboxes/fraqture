@@ -1,13 +1,12 @@
 (ns storefront.glitch-drag
   (:require [storefront.drawing]
+            [storefront.helpers :refer :all]
             [quil.core :as q])
   (:import  [storefront.drawing Drawing]))
 
-(def rand-block-val (+ (rand-int (- 150 50)) 50))
 (def jitter-amount 10)
-(def x-blocks rand-block-val)
-(def y-blocks rand-block-val)
-(defn seconds [x] (* 1000 x))
+(def x-blocks (rand-in-range 50 150))
+(def y-blocks (rand-in-range 50 150))
 (def update-interval (seconds 20))
 
 (defn getfile []
@@ -34,7 +33,7 @@
   (mod (inc (:current-index column)) (:y-count column)))
 
 (defn color-with-opac [color]
-  (conj (into [] color) 80))
+  (conj (into [] color) 120))
 
 (defn rect-at-index [x-index y-index color y-count]
   (let [width             (/ (q/width) x-blocks)
@@ -66,7 +65,7 @@
   (Column. (cycle-index column) (color-walk (:color column)) (:y-count column)))
 
 (defn update-state [state]
-  (if (< (+ (:last-update state) update-interval) (q/millis))
+  (if (> (time-elapsed (:last-update state)) update-interval)
     (setup)
     (update-in state [:columns] #(map update-column %))))
 
