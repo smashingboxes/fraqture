@@ -9,10 +9,12 @@
 (def y-blocks (rand-in-range 50 150))
 (def update-interval (seconds 20))
 
-(defn getfile []
-  (def directory (clojure.java.io/file "./images"))
-  (def files (file-seq directory))
-  (rand-nth (filter #(.isFile %) files)))
+(defn getfile [last-file]
+  (let [directory (clojure.java.io/file "./images")
+        files (file-seq directory)
+        image-files (filter valid-image files)
+        files-but-last (filter #(not= % last-file) image-files)]
+    (rand-nth (filter #(.isFile %) files-but-last))))
 
 (defn index-block [i]
   [(quot i y-blocks) (mod i y-blocks)])
@@ -49,24 +51,29 @@
 (defn color-to-rgb [color]
   [(q/red color) (q/green color) (q/blue color)])
 
-(defn setup []
-  (q/frame-rate 10)
-  (q/image (q/load-image (getfile)) 0 0 (q/width) (q/height))
-  (let [column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
-        column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
-        column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
-        raw-samples (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
-        samples     (map #(color-to-rgb %) raw-samples)
-        columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
-    { :last-update (q/millis)
-      :columns  columns }))
+(defn setup
+  ([]
+    (setup nil)
+    (q/frame-rate 10))
+  ([last-file]
+    (let [image-file  (getfile last-file)
+          column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
+          column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
+          column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
+          raw-samples (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
+          samples     (map #(color-to-rgb %) raw-samples)
+          columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
+      (q/image (q/load-image image-file) 0 0 (q/width) (q/height))
+      { :image-file image-file
+        :last-update (q/millis)
+        :columns  columns })))
 
 (defn update-column [column]
   (Column. (cycle-index column) (color-walk (:color column)) (:y-count column)))
 
 (defn update-state [state]
   (if (> (time-elapsed (:last-update state)) update-interval)
-    (setup)
+    (setup (:image-file state))
     (update-in state [:columns] #(map update-column %))))
 
 (defn draw-state [state]

@@ -11,3 +11,8 @@
 ; Random in range
 (defn rand-in-range [low high]
   (+ (rand-int (- high low)) low))
+
+; Accepted file extensions
+(def image-extensions [".png" ".jpg" ".jpeg"])
+(defn valid-image [file]
+  (some true? (map #(.endsWith (.getName file) %) image-extensions)))
