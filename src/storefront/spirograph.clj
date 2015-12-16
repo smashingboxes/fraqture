@@ -92,4 +92,4 @@
                (rest tail)
                curr)))))
 
-(def drawing (Drawing. "Spirograph" setup update-state draw-state [500 500]))
+(def drawing (Drawing. "Spirograph" setup update-state draw-state [500 500] []))

@@ -13,7 +13,7 @@
     :setup  (:setup-fn drawing-info)
     :update (:update-fn drawing-info)
     :draw   (:draw-fn drawing-info)
-    :features [:keep-on-top :present]
+    :features (:features drawing-info)
     :middleware [m/fun-mode]))
 
 (defn -main [& args]
