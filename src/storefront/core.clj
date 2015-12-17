@@ -2,7 +2,7 @@
   (:gen-class)
   (:require [quil.core :as q]
             [quil.middleware :as m]
-            [storefront.shifting-grid :as drag]))
+            [storefront.shifting-grid :as shifting-grid]))
 
 (defn load-drawing
   [drawing-info]
@@ -15,5 +15,5 @@
     :features [:keep-on-top :present]
     :middleware [m/fun-mode]))
 
-(load-drawing drag/drawing)
+(load-drawing shifting-grid/drawing)
 (defn -main [& args])
