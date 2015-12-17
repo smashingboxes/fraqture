@@ -15,5 +15,6 @@
     :features [:keep-on-top :present]
     :middleware [m/fun-mode]))
 
-(load-drawing shifting-grid/drawing)
-(defn -main [& args])
+(defn -main [& args]
+  (if (= (nth args 0) "shifting-grid")
+    (load-drawing shifting-grid/drawing)))

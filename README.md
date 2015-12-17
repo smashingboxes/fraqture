@@ -5,7 +5,9 @@ interactive parts of a drawing, and renders the art.
 
 ## Usage
 
-`lein run`
+### Sliding grid
+
+`lein run sliding-grid`
 
 ## Requirements
 
