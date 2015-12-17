@@ -25,15 +25,21 @@
   (let [xs     (map #(* % (block-width)) (range x-blocks))
         ys     (map #(* % (block-height))  (range y-blocks))
         blocks (map (fn [x] (map (fn [y] (get-block image x y)) ys)) xs)]
-  { :blocks blocks }))
+        { :blocks blocks }))
+
+(defn rotate-nth [matrix n]
+  (map-indexed (fn [x-index col] (if (= x-index n) (m/rotate col 0 1) col)) matrix))
+
+(defn random-rotation [matrix]
+  (let [column? (rand-nth '(true false))
+        n-max   (if column? x-blocks y-blocks)
+        n       (rand-int n-max)]
+        (if column?
+          (rotate-nth matrix n)
+          (m/transpose (rotate-nth (m/transpose matrix) n)))))
 
 (defn update-state [state]
-  (let [col-num (rand-int x-blocks)
-        blocks  (:blocks state)
-        old-col (nth blocks col-num)
-        new-col (m/rotate old-col 0 1)
-        new-blocks (map-indexed (fn [x-index col] (if (= x-index col-num) new-col col)) blocks)]
-  { :blocks new-blocks }))
+  (update-in state [:blocks] random-rotation))
 
 (defn draw-state [state]
   (dorun
