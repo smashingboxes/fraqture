@@ -23,10 +23,12 @@
   (q/resize image (q/width) (q/height))
   (let [xs     (map #(* % (block-width)) (range x-blocks))
         ys     (map #(* % (block-height))  (range y-blocks))
+        comment (comment "probably going to need to change this to a 2d matrix")
         blocks (for [x xs y ys] (q/get-pixel image x y (block-width) (block-height)))]
   { :blocks blocks }))
 
 (defn update-state [state]
+  (comment "Need to fill this in to rotate a random column or row")
   state)
 
 (defn draw-state [state]
