@@ -53,8 +53,8 @@
 
 (defn setup
   ([]
-    (setup nil)
-    (q/frame-rate 10))
+    (q/frame-rate 10)
+    (setup nil))
   ([last-file]
     (let [image-file  (getfile last-file)
           column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
