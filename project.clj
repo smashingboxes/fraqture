@@ -5,4 +5,5 @@
                  [quil "2.2.6"]
                  [rxtx22 "1.0.6"]
                  [serial-port "1.1.0"]]
+  :jvm-opts ["-Xmx1G"]
   :main storefront.core)
