@@ -4,8 +4,10 @@
             [clojure.core.matrix :as m])
   (:import  [storefront.drawing Drawing]))
 
-(def x-blocks 30)
+(def x-blocks 50)
 (def y-blocks 30)
+(def speed 5)
+
 (def block-width #(/ (q/width) x-blocks))
 (def block-height #(/ (q/height) y-blocks))
 (def total-blocks (* x-blocks y-blocks))
@@ -28,7 +30,8 @@
         { :blocks blocks }))
 
 (defn rotate-nth [matrix n]
-  (map-indexed (fn [x-index col] (if (= x-index n) (m/rotate col 0 1) col)) matrix))
+  (def shift (rand-nth (range (- 0 speed) speed)))
+  (assoc matrix n (m/rotate (nth matrix n) 0 shift)))
 
 (defn random-rotation [matrix]
   (let [column? (rand-nth '(true false))
