@@ -1,6 +1,7 @@
 (ns storefront.shifting-grid
   (:require [storefront.drawing]
-            [quil.core :as q])
+            [quil.core :as q]
+            [clojure.core.matrix :as m])
   (:import  [storefront.drawing Drawing]))
 
 (def x-blocks 30)
@@ -27,8 +28,12 @@
   { :blocks blocks }))
 
 (defn update-state [state]
-  (comment "Need to fill this in to rotate a random column or row")
-  state)
+  (let [col-num (rand-int x-blocks)
+        blocks  (:blocks state)
+        old-col (nth blocks col-num)
+        new-col (m/rotate old-col 0 1)
+        new-blocks (map-indexed (fn [x-index col] (if (= x-index col-num) new-col col)) blocks)]
+  { :blocks new-blocks }))
 
 (defn draw-state [state]
   (dorun
