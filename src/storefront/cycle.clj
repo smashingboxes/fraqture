@@ -2,14 +2,16 @@
   (:require [storefront.drawing]
             [storefront.helpers :refer :all]
             [quil.core :as q]
-            [storefront.glitch-drag :as drag])
+            [storefront.glitch-drag :as drag]
+            [storefront.spirograph :as spirograph]
+            )
   (:import  [storefront.drawing Drawing]))
 
-(def drawing-list '(drag/drawing))
-(def current-drawing-index 0)
+(def drawing-list (seq [drag/drawing spirograph/drawing]))
 (def update-interval (seconds 10))
 
-(defn get-current-drawing [state] (nth drawing-list (:drawing-i state)))
+(defn current-drawing [state]
+  (nth drawing-list (:drawing-i state)))
 
 (defn setup []
   { :last-update (q/millis)
@@ -19,12 +21,14 @@
 (defn update-state [state]
   (if (> (time-elapsed (:last-update state)) update-interval)
     (-> state
-      (assoc :drawing-state ((:setup-fn drag/drawing)))
-      (assoc :last-update (q/millis)))
-    (update-in state [:drawing-state] (:update-fn drag/drawing))
+      (assoc :drawing-i (inc (:drawing-i state)))
+      (assoc :last-update (q/millis))
+      (#(assoc % :drawing-state ((:setup-fn (current-drawing %)))))
+    )
+    (update-in state [:drawing-state] (:update-fn (current-drawing state)))
   ))
 
 (defn draw-state [state]
-  ((:draw-fn drag/drawing) (:drawing-state state)))
+  ((:draw-fn (current-drawing state)) (:drawing-state state)))
 
 (def drawing (Drawing. "Cycle Drawings" setup update-state draw-state :fullscreen []))
