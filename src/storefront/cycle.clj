@@ -7,8 +7,8 @@
             )
   (:import  [storefront.drawing Drawing]))
 
-(def drawing-list (seq [drag/drawing spirograph/drawing]))
-(def update-interval (seconds 10))
+(def drawing-list [drag/drawing spirograph/drawing])
+(def update-interval (seconds 30))
 
 (defn current-drawing [state]
   (nth drawing-list (:drawing-i state)))
