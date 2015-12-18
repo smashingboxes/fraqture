@@ -15,13 +15,14 @@
 (defn setup []
   (q/frame-rate 30)
   (let [max-r (/ (q/width) 2)
-        n (int (q/map-range (q/width) 100 130 10 30))]
+        n (/ (q/width) 2)]
+        ;; n (int (q/map-range (q/width) 100 130 20 30))]
    {:dots (into [] (for [r (map #(* max-r %) (range 0.05 1 (/ n)))]
                         [r 0]))
     :bg-color (nth color-path 0)}))
 
 (defn speed[]
-  (+ 0.0004 (* 0.0003 (q/sin (* (q/millis) 0.00025)))))
+  (+ 0.0002 (* 0.00025 (q/sin (* (q/millis) 0.00025)))))
 
 (defn move [dot]
   (let [[r a] dot]
@@ -74,7 +75,7 @@
            tail (rest dots)
            prev nil]
       (let [[x y] (dot->coord curr)]
-        (q/ellipse x y 20 20))
+        (q/ellipse x y 23 23))
       (when (seq tail)
         (recur (first tail)
                (rest tail)
