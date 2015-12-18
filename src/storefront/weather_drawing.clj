@@ -16,7 +16,9 @@
     (q/lerp-color cold-color hot-color amt-clamped)))
 
 (defn wind-to-rotation [wind-direction]
-  (q/radians wind-direction))
+  (if (= wind-direction nil)
+    0
+    (q/radians wind-direction)))
 
 (defn wind-to-size [wind-speed]
   (+ 100 (* 30 wind-speed)))
