@@ -53,6 +53,7 @@
 
 (defn setup
   ([]
+    (println "Setup")
     (q/frame-rate 10)
     (setup nil))
   ([last-file]
@@ -72,11 +73,13 @@
   (Column. (cycle-index column) (color-walk (:color column)) (:y-count column)))
 
 (defn update-state [state]
+  (println "Update")
   (if (> (time-elapsed (:last-update state)) update-interval)
     (setup (:image-file state))
     (update-in state [:columns] #(map update-column %))))
 
 (defn draw-state [state]
+  (println "Draw")
   (dorun
     (map-indexed
       (fn [idx column] (rect-at-index idx (:current-index column) (:color column) (:y-count column)))
