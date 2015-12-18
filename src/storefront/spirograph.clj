@@ -15,13 +15,14 @@
 (defn setup []
   (q/frame-rate 30)
   (let [max-r (/ (q/width) 2)
-        n (int (q/map-range (q/width) 100 130 20 50))]
-   {:dots (into [] (for [r (map #(* max-r %) (range 0.15 1 (/ n)))]
+        n (/ (q/width) 1.5)]
+        ;; n (int (q/map-range (q/width) 100 130 20 30))]
+   {:dots (into [] (for [r (map #(* max-r %) (range 0.05 1 (/ n)))]
                         [r 0]))
     :bg-color (nth color-path 0)}))
 
 (defn speed[]
-  (+ 0.0004 (* 0.0003 (q/sin (* (q/millis) 0.00025)))))
+  (+ 0.00021 (* 0.0002 (q/sin (* (q/millis) 0.0002)))))
 
 (defn move [dot]
   (let [[r a] dot]
@@ -69,15 +70,16 @@
 
 (defn draw-state [state]
   (q/fill (pulse 20 50 2.0) 230 (pulse 150 200 1.0))
+  (q/no-stroke)
   (let [dots (:dots state)]
     (loop [curr (first dots)
            tail (rest dots)
            prev nil]
       (let [[x y] (dot->coord curr)]
-        (q/ellipse x y 20 20))
+        (q/ellipse x y 23 23))
       (when (seq tail)
         (recur (first tail)
                (rest tail)
                curr)))))
 
-(def drawing (Drawing. "Spirograph" setup update-state draw-state [500 500] []))
+(def drawing (Drawing. "Spirograph" setup update-state draw-state :fullscreen [:keep-on-top :present]))

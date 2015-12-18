@@ -4,6 +4,7 @@
                  [org.clojure/core.async "0.2.374"]
                  [quil "2.2.6"]
                  [rxtx22 "1.0.6"]
-                 [serial-port "1.1.0"]]
+                 [serial-port "1.1.0"]
+                 [net.mikera/core.matrix "0.47.0"]]
   :jvm-opts ["-Xmx1G"]
   :main storefront.core)
