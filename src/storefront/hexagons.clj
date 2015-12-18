@@ -35,20 +35,28 @@
   (q/pop-matrix))
 
 (defn setup []
-  (q/background 252 248 248)
-  (q/no-fill)
-  (q/stroke-weight 4)
-  (q/stroke 100)
-  (let [radius 200
+  (q/frame-rate 6)
+  (let [radius 100
         y-count (+ (quot (q/height) (height-spacing (hexagon-height radius))) 1)
         x-count (+ (quot (q/width) (hexagon-width radius)) 1)]
-    (doseq [r (range y-count)
-            q (range x-count)]
-      (let [[x y] (center-point q r radius)]
-        (draw-hexagon x y (- radius padding))))))
+    { :size radius :r y-count :q x-count :c-r (rand-int y-count) :c-q (rand-int x-count) }))
 
-(defn update-state [state] state)
+(defn update-state [state]
+  (-> state
+    (assoc :c-r (rand-int (:r state)))
+    (assoc :c-q (rand-int (:q state)))))
 
-(defn draw-state [state])
+(defn draw-state [state]
+  (q/background 252 248 248)
+  (q/stroke-weight 4)
+  (q/stroke 100)
+  (doseq [r (range (:r state))
+          q (range (:q state))]
+    (let [[x y] (center-point q r (:size state))]
+      (q/no-fill)
+      (draw-hexagon x y (- (:size state) padding))))
+  (let [[x y] (center-point (:c-q state) (:c-r state) (:size state))]
+    (q/fill 235 23 103)
+    (draw-hexagon x y (- (:size state) padding))))
 
 (def drawing (Drawing. "Hexagons" setup update-state draw-state :fullscreen [:keep-on-top :present]))
