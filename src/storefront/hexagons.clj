@@ -4,6 +4,13 @@
             [quil.core :as q])
   (:import  [storefront.drawing Drawing]))
 
+(def padding 5)
+(def COS_PI_OVER_6 (q/cos (/ q/PI 6)))
+
+(defn distance-between
+  [radius]
+  (* 2 (+ radius padding) COS_PI_OVER_6))
+
 (defn draw-hexagon
   [x y radius]
   (q/push-matrix)
@@ -20,8 +27,15 @@
   (q/background 252 248 248)
   (q/no-fill)
   (q/stroke-weight 4)
-  (q/stroke 50)
-  (draw-hexagon (/ (q/width) 2) (/ (q/height) 2) 100))
+  (q/stroke 100)
+  (let [x-separation (distance-between 100)
+        y-separation (* COS_PI_OVER_6 x-separation)
+        y-count    (+ (quot (q/height) y-separation) 2)
+        x-count    (+ (quot (q/width) x-separation) 2)]
+    (doseq [y (range y-count)
+            x (range x-count)]
+      (let [offset (if (even? y) (/ x-separation 2) 0)]
+        (draw-hexagon (+ offset (* x x-separation)) (* y y-separation) 100)))))
 
 (defn update-state [state])
 
