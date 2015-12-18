@@ -23,14 +23,6 @@
 (defn get-block [image x y]
   (q/get-pixel image x y (block-width) (block-height)))
 
-(defn setup []
-  (def image (q/load-image "images/ross.jpg"))
-  (q/resize image (q/width) (q/height))
-  (let [xs     (map #(* % (block-width)) (range x-blocks))
-        ys     (map #(* % (block-height))  (range y-blocks))
-        blocks (map (fn [x] (map (fn [y] (get-block image x y)) ys)) xs)]
-        { :blocks blocks }))
-
 (defn rand-speed [min-max]
   ((rand-nth [- +]) 0 (+ (rand-int min-max) 1)))
 
@@ -58,6 +50,15 @@
         rotated (if column? matrix (m/transpose matrix))
         shifted (reduce rotate-nth rotated columns)]
     (if column? shifted (m/transpose shifted))))
+
+(defn setup []
+  (q/frame-rate 5)
+  (def image (q/load-image "images/ross.jpg"))
+  (q/resize image (q/width) (q/height))
+  (let [xs     (map #(* % (block-width)) (range x-blocks))
+        ys     (map #(* % (block-height))  (range y-blocks))
+        blocks (map (fn [x] (map (fn [y] (get-block image x y)) ys)) xs)]
+        { :blocks blocks }))
 
 (defn update-state [state]
   (update-in state [:blocks] random-rotation))
