@@ -9,13 +9,19 @@ interactive parts of a drawing, and renders the art.
 
 `lein run drag`
 
+![drag](screencaps/drag.gif)
+
 ### Crazy Acid Spiral Glitch
 
 `lein run spiro`
 
+![spiro](screencaps/spiro.gif)
+
 ### Sliding Grid
 
-`lein run sliding-grid`
+`lein run shifting-grid`
+
+![shifting-grid](screencaps/shifting-grid.gif)
 
 ## Requirements
 
