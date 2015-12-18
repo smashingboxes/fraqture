@@ -45,4 +45,4 @@
     (q/triangle -0.5 1 0.5 1 0 -1)
     (q/pop-matrix)))
 
-(def drawing (Drawing. "The Weather" setup update-state draw-state))
+(def drawing (Drawing. "The Weather" setup update-state draw-state :fullscreen [:present]))

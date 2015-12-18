@@ -3,7 +3,8 @@
   (:require [quil.core :as q]
             [quil.middleware :as m]
             [storefront.spirograph :as spirograph]
-            [storefront.glitch-drag :as drag]))
+            [storefront.glitch-drag :as drag]
+            [storefront.weather-drawing :as weather]))
 
 (defn load-drawing
   [drawing-info]
@@ -17,7 +18,9 @@
     :middleware [m/fun-mode]))
 
 (defn -main [& args]
-  (if (= (nth args 0) "spiro")
-    (load-drawing spirograph/drawing))
-  (if (= (nth args 0) "ross")
-    (load-drawing drag/drawing)))
+  (let [drawing-arg (nth args 0)]
+    (load-drawing (cond
+      (= drawing-arg "spiro")   spirograph/drawing
+      (= drawing-arg "ross")    drag/drawing
+      (= drawing-arg "weather") weather/drawing
+      :else                     drag/drawing))))
