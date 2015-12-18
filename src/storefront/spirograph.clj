@@ -15,12 +15,9 @@
 (defn setup []
   (q/frame-rate 30)
   (let [max-r (/ (q/width) 2)
-        n (int (q/map-range (q/width)
-                            100 200
-                            20 50))]
-   {:dots (into [] (for [r (map #(* max-r %)
-                                (range 0 1 (/ n)))]
-                     [r 0]))
+        n (int (q/map-range (q/width) 100 130 20 50))]
+   {:dots (into [] (for [r (map #(* max-r %) (range 0.15 1 (/ n)))]
+                        [r 0]))
     :bg-color (nth color-path 0)}))
 
 (def speed 0.0003)
@@ -54,15 +51,12 @@
 
 (def direction "inc")
 
+(defn modify-speed[]
+  (def speed (+ 0.0004 (* 0.0003 (q/sin (* (q/millis) 0.00025)))))
+  (println speed))
+
 (defn update-state [state]
-  (if (> speed 0.0008)
-    (def direction "dec"))
-  (if (< speed 0.0001)
-    (def direction "inc"))
-  (if (= direction "dec")
-    (def speed (- speed 0.000001)))
-  (if (= direction "inc")
-    (def speed (+ speed 0.000001)))
+  (modify-speed)
   (-> state
     (update-in [:dots] #(map move %))
     (update-in [:bg-color] #(walk-color %))))
