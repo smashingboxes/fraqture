@@ -2,9 +2,11 @@
   (:gen-class)
   (:require [quil.core :as q]
             [quil.middleware :as m]
+            [storefront.cycle :as cycle]
             [storefront.shifting-grid :as shifting-grid]
             [storefront.spirograph :as spirograph]
-            [storefront.glitch-drag :as drag]))
+            [storefront.glitch-drag :as drag]
+            ))
 
 (defn load-drawing
   [drawing-info]
@@ -18,9 +20,12 @@
     :middleware [m/fun-mode]))
 
 (defn -main [& args]
-  (if (= (nth args 0) "shifting-grid")
-    (load-drawing shifting-grid/drawing))
-  (if (= (nth args 0) "spiro")
+  (def command (nth args 0))
+  (if (= command "spiro")
     (load-drawing spirograph/drawing))
-  (if (= (nth args 0) "drag")
-    (load-drawing drag/drawing)))
+  (if (= command "drag")
+    (load-drawing drag/drawing))
+  (if (= command "shifting-grid")
+    (load-drawing shifting-grid/drawing))
+  (if (= command "cycle")
+    (load-drawing cycle/drawing)))
