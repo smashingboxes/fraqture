@@ -21,7 +21,7 @@
 (defn update-state [state]
   (if (> (time-elapsed (:last-update state)) update-interval)
     (-> state
-      (assoc :drawing-i (inc (:drawing-i state)))
+      (assoc :drawing-i (mod (inc (:drawing-i state)) (count drawing-list)))
       (assoc :last-update (q/millis))
       (#(assoc % :drawing-state ((:setup-fn (current-drawing %)))))
     )
