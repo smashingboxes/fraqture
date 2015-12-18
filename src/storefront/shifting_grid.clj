@@ -7,7 +7,8 @@
 
 (def x-blocks 50)
 (def y-blocks 30)
-(def max-rotation-length 5)
+(def max-chunk-size 10)
+(def max-rotation-length 3)
 
 (def block-width #(/ (q/width) x-blocks))
 (def block-height #(/ (q/height) y-blocks))
@@ -37,13 +38,26 @@
   (let [shift (rand-speed max-rotation-length)]
     (update-in matrix [n] #(m/rotate % 0 shift))))
 
+; Returns n indices, from start, and wrapping after max
+(defn n-indices-wrapped [n start y]
+  (map #(mod % y) (map #(+ start %) (range n))))
+
+(defn matrix-rotate-generator [n column?]
+  (fn [matrix]
+    (if column?
+      (rotate-nth matrix n)
+      (m/transpose (rotate-nth (m/transpose matrix) n)))))
+
+
 (defn random-rotation [matrix]
   (let [column? (rand-nth '(true false))
-        n-max   (if column? x-blocks y-blocks)
-        n       (rand-int n-max)]
-        (if column?
-          (rotate-nth matrix n)
-          (m/transpose (rotate-nth (m/transpose matrix) n)))))
+        max     (if column? (- x-blocks 1) (- y-blocks 1))
+        start   (rand-int max)
+        size    (+ (rand-int max-chunk-size) 1)
+        columns (n-indices-wrapped size start max)
+        rotated (if column? matrix (m/transpose matrix))
+        shifted (reduce rotate-nth rotated columns)]
+    (if column? shifted (m/transpose shifted))))
 
 (defn update-state [state]
   (update-in state [:blocks] random-rotation))
