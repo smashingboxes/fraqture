@@ -15,8 +15,8 @@
 (defn setup []
   (q/frame-rate 30)
   (let [max-r (/ (q/width) 2)
-        n (int (q/map-range (q/width) 100 130 20 50))]
-   {:dots (into [] (for [r (map #(* max-r %) (range 0.15 1 (/ n)))]
+        n (int (q/map-range (q/width) 100 130 10 30))]
+   {:dots (into [] (for [r (map #(* max-r %) (range 0.05 1 (/ n)))]
                         [r 0]))
     :bg-color (nth color-path 0)}))
 
