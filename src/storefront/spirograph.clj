@@ -52,8 +52,7 @@
 (def direction "inc")
 
 (defn modify-speed[]
-  (def speed (+ 0.0004 (* 0.0003 (q/sin (* (q/millis) 0.00025)))))
-  (println speed))
+  (def speed (+ 0.0004 (* 0.0003 (q/sin (* (q/millis) 0.00025))))))
 
 (defn update-state [state]
   (modify-speed)
