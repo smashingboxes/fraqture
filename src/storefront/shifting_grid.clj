@@ -1,12 +1,13 @@
 (ns storefront.shifting-grid
   (:require [storefront.drawing]
+            [storefront.helpers :refer :all]
             [quil.core :as q]
             [clojure.core.matrix :as m])
   (:import  [storefront.drawing Drawing]))
 
 (def x-blocks 50)
 (def y-blocks 30)
-(def speed 5)
+(def max-rotation-length 5)
 
 (def block-width #(/ (q/width) x-blocks))
 (def block-height #(/ (q/height) y-blocks))
@@ -29,9 +30,12 @@
         blocks (map (fn [x] (map (fn [y] (get-block image x y)) ys)) xs)]
         { :blocks blocks }))
 
+(defn rand-speed [min-max]
+  ((rand-nth [- +]) 0 (+ (rand-int min-max) 1)))
+
 (defn rotate-nth [matrix n]
-  (def shift (rand-nth (range (- 0 speed) speed)))
-  (assoc matrix n (m/rotate (nth matrix n) 0 shift)))
+  (let [shift (rand-speed max-rotation-length)]
+    (update-in matrix [n] #(m/rotate % 0 shift))))
 
 (defn random-rotation [matrix]
   (let [column? (rand-nth '(true false))
@@ -53,4 +57,4 @@
         column)))
     (:blocks state))))
 
-(def drawing (Drawing. "Shifting Grid" setup update-state draw-state))
+(def drawing (Drawing. "Shifting Grid" setup update-state draw-state :fullscreen []))

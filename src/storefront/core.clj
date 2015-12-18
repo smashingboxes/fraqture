@@ -19,8 +19,8 @@
 
 (defn -main [& args]
   (if (= (nth args 0) "shifting-grid")
-    (load-drawing shifting-grid/drawing)))
+    (load-drawing shifting-grid/drawing))
   (if (= (nth args 0) "spiro")
     (load-drawing spirograph/drawing))
-  (if (= (nth args 0) "ross")
+  (if (= (nth args 0) "drag")
     (load-drawing drag/drawing)))
