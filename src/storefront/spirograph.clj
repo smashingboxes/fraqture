@@ -70,6 +70,7 @@
 
 (defn draw-state [state]
   (q/fill (pulse 20 50 2.0) 230 (pulse 150 200 1.0))
+  (q/no-stroke)
   (let [dots (:dots state)]
     (loop [curr (first dots)
            tail (rest dots)
