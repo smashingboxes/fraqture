@@ -4,10 +4,11 @@
             [quil.core :as q]
             [storefront.glitch-drag :as drag]
             [storefront.spirograph :as spirograph]
+            [storefront.shifting-grid :as shifting-grid]
             )
   (:import  [storefront.drawing Drawing]))
 
-(def drawing-list [drag/drawing spirograph/drawing])
+(def drawing-list [drag/drawing spirograph/drawing shifting-grid/drawing])
 (def update-interval (seconds 30))
 
 (defn current-drawing [state]
@@ -31,4 +32,4 @@
 (defn draw-state [state]
   ((:draw-fn (current-drawing state)) (:drawing-state state)))
 
-(def drawing (Drawing. "Cycle Drawings" setup update-state draw-state :fullscreen []))
+(def drawing (Drawing. "Cycle Drawings" setup update-state draw-state :fullscreen [:keep-on-top :present]))

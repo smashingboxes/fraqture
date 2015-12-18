@@ -3,9 +3,9 @@
   (:require [quil.core :as q]
             [quil.middleware :as m]
             [storefront.cycle :as cycle]
-            [storefront.shifting-grid :as shifting-grid]
-            [storefront.spirograph :as spirograph]
             [storefront.glitch-drag :as drag]
+            [storefront.spirograph :as spirograph]
+            [storefront.shifting-grid :as shifting-grid]
             ))
 
 (defn load-drawing
