@@ -2,6 +2,7 @@
   (:gen-class)
   (:require [quil.core :as q]
             [quil.middleware :as m]
+            [storefront.cycle :as cycle]
             [storefront.glitch-drag :as drag]))
 
 (defn load-drawing
@@ -15,5 +16,9 @@
     :features [:keep-on-top :present]
     :middleware [m/fun-mode]))
 
-(load-drawing drag/drawing)
-(defn -main [& args])
+(defn -main [& args]
+  (def command (nth args 0))
+  (if (= command "ross")
+    (load-drawing drag/drawing))
+  (if (= command "cycle")
+    (load-drawing cycle/drawing)))
