@@ -20,11 +20,12 @@
                         [r 0]))
     :bg-color (nth color-path 0)}))
 
-(def speed 0.0003)
+(defn speed[]
+  (+ 0.0004 (* 0.0003 (q/sin (* (q/millis) 0.00025)))))
 
 (defn move [dot]
   (let [[r a] dot]
-    [r (+ a (* r speed))]))
+    [r (+ a (* r (speed)))]))
 
 (defn next-color-index []
   (if (= (+ 1 current-color-path-location) (count color-path))
@@ -49,13 +50,7 @@
        :g (walk-color-channel (:g current-bg-color) (:g upcoming-color))
        :b (walk-color-channel (:b current-bg-color) (:b upcoming-color))})))
 
-(def direction "inc")
-
-(defn modify-speed[]
-  (def speed (+ 0.0004 (* 0.0003 (q/sin (* (q/millis) 0.00025))))))
-
 (defn update-state [state]
-  (modify-speed)
   (-> state
     (update-in [:dots] #(map move %))
     (update-in [:bg-color] #(walk-color %))))
