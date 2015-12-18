@@ -7,9 +7,20 @@
 (def padding 5)
 (def COS_PI_OVER_6 (q/cos (/ q/PI 6)))
 
-(defn distance-between
-  [radius]
-  (* 2 (+ radius padding) COS_PI_OVER_6))
+(defn hexagon-width [radius]
+  (* 2 radius COS_PI_OVER_6))
+
+(defn hexagon-height [radius]
+  (* 2 radius))
+
+(defn height-spacing [radius]
+  (/ (* 3 radius) 4))
+
+(defn center-point [q r radius]
+  (let [height (height-spacing (hexagon-height radius))
+        width (hexagon-width radius)
+        x-offset (if (even? r) 0 (/ width 2))]
+    [(+ x-offset (* q (hexagon-width radius))) (* r height)]))
 
 (defn draw-hexagon
   [x y radius]
@@ -28,16 +39,15 @@
   (q/no-fill)
   (q/stroke-weight 4)
   (q/stroke 100)
-  (let [x-separation (distance-between 100)
-        y-separation (* COS_PI_OVER_6 x-separation)
-        y-count    (+ (quot (q/height) y-separation) 2)
-        x-count    (+ (quot (q/width) x-separation) 2)]
-    (doseq [y (range y-count)
-            x (range x-count)]
-      (let [offset (if (even? y) (/ x-separation 2) 0)]
-        (draw-hexagon (+ offset (* x x-separation)) (* y y-separation) 100)))))
+  (let [radius 200
+        y-count (+ (quot (q/height) (height-spacing (hexagon-height radius))) 1)
+        x-count (+ (quot (q/width) (hexagon-width radius)) 1)]
+    (doseq [r (range y-count)
+            q (range x-count)]
+      (let [[x y] (center-point q r radius)]
+        (draw-hexagon x y (- radius padding))))))
 
-(defn update-state [state])
+(defn update-state [state] state)
 
 (defn draw-state [state])
 
