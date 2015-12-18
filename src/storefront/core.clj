@@ -6,6 +6,7 @@
             [storefront.glitch-drag :as drag]
             [storefront.spirograph :as spirograph]
             [storefront.shifting-grid :as shifting-grid]
+            [storefront.hexagons :as hexagons]
             ))
 
 (defn load-drawing
@@ -27,5 +28,7 @@
     (load-drawing drag/drawing))
   (if (= command "shifting-grid")
     (load-drawing shifting-grid/drawing))
+  (if (= command "hex")
+    (load-drawing hexagons/drawing))
   (if (= command "cycle")
     (load-drawing cycle/drawing)))

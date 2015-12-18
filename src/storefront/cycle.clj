@@ -5,11 +5,12 @@
             [storefront.glitch-drag :as drag]
             [storefront.spirograph :as spirograph]
             [storefront.shifting-grid :as shifting-grid]
+            [storefront.hexagons :as hexagons]
             )
   (:import  [storefront.drawing Drawing]))
 
-(def drawing-list [drag/drawing spirograph/drawing shifting-grid/drawing])
-(def update-interval (seconds 30))
+(def drawing-list [drag/drawing spirograph/drawing shifting-grid/drawing hexagons/drawing])
+(def update-interval (seconds 120))
 
 (defn current-drawing [state]
   (nth drawing-list (:drawing-i state)))
