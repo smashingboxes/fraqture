@@ -77,7 +77,7 @@
            tail (rest dots)
            prev nil]
       (let [[x y] (dot->coord curr)]
-        (let [size (rand-in-range 20 30)]
+        (let [size (pulse 20 25 0.001)]
           (q/ellipse x y size size)))
       (when (seq tail)
         (recur (first tail)
