@@ -1,5 +1,6 @@
 (ns storefront.spirograph
   (:require [storefront.drawing]
+            [storefront.helpers :refer :all]
             [quil.core :as q :include-macros true])
   (:import  [storefront.drawing Drawing]))
 
@@ -22,7 +23,7 @@
     :bg-color (nth color-path 0)}))
 
 (defn speed[]
-  (+ 0.00021 (* 0.0002 (q/sin (* (q/millis) 0.0002)))))
+  (+ 0.00016 (* 0.0001 (q/sin (* (q/millis) 0.00017)))))
 
 (defn move [dot]
   (let [[r a] dot]
@@ -76,7 +77,8 @@
            tail (rest dots)
            prev nil]
       (let [[x y] (dot->coord curr)]
-        (q/ellipse x y 23 23))
+        (let [size (rand-in-range 20 30)]
+          (q/ellipse x y size size)))
       (when (seq tail)
         (recur (first tail)
                (rest tail)
