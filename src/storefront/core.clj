@@ -7,11 +7,7 @@
             [storefront.spirograph :as spirograph]
             [storefront.shifting-grid :as shifting-grid]
             [storefront.hexagons :as hexagons]
-<<<<<<< HEAD
             [storefront.hex-spinner :as hex-spinner]
-=======
-            [storefront.mosaic :as mosaic]
->>>>>>> master
             ))
 
 (defn load-drawing
