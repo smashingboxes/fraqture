@@ -7,7 +7,6 @@
             [storefront.spirograph :as spirograph]
             [storefront.shifting-grid :as shifting-grid]
             [storefront.hexagons :as hexagons]
-            [storefront.mosaic :as mosaic]
             ))
 
 (defn load-drawing
