@@ -7,7 +7,7 @@
             [storefront.spirograph :as spirograph]
             [storefront.shifting-grid :as shifting-grid]
             [storefront.hexagons :as hexagons]
-            [storefront.spinner-hex :as spinner-hex]
+            [storefront.hex-spinner :as hex-spinner]
             ))
 
 (defn load-drawing
@@ -31,7 +31,7 @@
     (load-drawing shifting-grid/drawing))
   (if (= command "hex")
     (load-drawing hexagons/drawing))
-  (if (= command "spinner-hex")
-    (load-drawing spinner-hex/drawing))
+  (if (= command "hex-spinner")
+    (load-drawing hex-spinner/drawing))
   (if (= command "cycle")
     (load-drawing cycle/drawing)))

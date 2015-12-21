@@ -1,4 +1,4 @@
-(ns storefront.spinner-hex
+(ns storefront.hex-spinner
   (:require [storefront.drawing]
             [storefront.helpers :refer :all]
             [quil.core :as q]
