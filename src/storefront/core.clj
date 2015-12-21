@@ -2,9 +2,13 @@
   (:gen-class)
   (:require [quil.core :as q]
             [quil.middleware :as m]
-            [storefront.spirograph :as spirograph]
+            [storefront.cycle :as cycle]
             [storefront.glitch-drag :as drag]
-            [storefront.weather-drawing :as weather]))
+            [storefront.spirograph :as spirograph]
+            [storefront.shifting-grid :as shifting-grid]
+            [storefront.hexagons :as hexagons]
+            [storefront.weather-drawing :as weather]
+            ))
 
 (defn load-drawing
   [drawing-info]
@@ -18,9 +22,14 @@
     :middleware [m/fun-mode]))
 
 (defn -main [& args]
-  (let [drawing-arg (nth args 0)]
-    (load-drawing (cond
-      (= drawing-arg "spiro")   spirograph/drawing
-      (= drawing-arg "ross")    drag/drawing
-      (= drawing-arg "weather") weather/drawing
-      :else                     drag/drawing))))
+  (let [name (nth args 0)
+        drawings (hash-map
+          "spiro"         spirograph/drawing
+          "drag"          drag/drawing
+          "shifting-grid" shifting-grid/drawing
+          "hex"           hexagons/drawing
+          "cycle"         cycle/drawing
+          "weather"       weather/drawing
+        )]
+    (load-drawing (get drawings name))
+  ))

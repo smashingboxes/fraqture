@@ -6,6 +6,9 @@
                  [rxtx22 "1.0.6"]
                  [serial-port "1.1.0"]
                  [clj-http "2.0.0"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [net.mikera/core.matrix "0.47.0"]
+                 ]
+
   :jvm-opts ["-Xmx1G"]
   :main storefront.core)

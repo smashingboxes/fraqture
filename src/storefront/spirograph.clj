@@ -1,5 +1,6 @@
 (ns storefront.spirograph
   (:require [storefront.drawing]
+            [storefront.helpers :refer :all]
             [quil.core :as q :include-macros true])
   (:import  [storefront.drawing Drawing]))
 
@@ -15,13 +16,14 @@
 (defn setup []
   (q/frame-rate 30)
   (let [max-r (/ (q/width) 2)
-        n (int (q/map-range (q/width) 100 130 20 50))]
-   {:dots (into [] (for [r (map #(* max-r %) (range 0.15 1 (/ n)))]
+        n (/ (q/width) 1.5)]
+        ;; n (int (q/map-range (q/width) 100 130 20 30))]
+   {:dots (into [] (for [r (map #(* max-r %) (range 0.05 1 (/ n)))]
                         [r 0]))
     :bg-color (nth color-path 0)}))
 
 (defn speed[]
-  (+ 0.0004 (* 0.0003 (q/sin (* (q/millis) 0.00025)))))
+  (+ 0.00016 (* 0.0001 (q/sin (* (q/millis) 0.00017)))))
 
 (defn move [dot]
   (let [[r a] dot]
@@ -69,12 +71,14 @@
 
 (defn draw-state [state]
   (q/fill (pulse 20 50 2.0) 230 (pulse 150 200 1.0))
+  (q/no-stroke)
   (let [dots (:dots state)]
     (loop [curr (first dots)
            tail (rest dots)
            prev nil]
       (let [[x y] (dot->coord curr)]
-        (q/ellipse x y 20 20))
+        (let [size (pulse 20 25 0.001)]
+          (q/ellipse x y size size)))
       (when (seq tail)
         (recur (first tail)
                (rest tail)
