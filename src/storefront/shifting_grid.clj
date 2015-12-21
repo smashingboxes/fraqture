@@ -14,6 +14,8 @@
 (def block-height #(/ (q/height) y-blocks))
 (def total-blocks (* x-blocks y-blocks))
 
+
+
 (defn draw-block [block x-index y-index]
   (let [x                 (* (block-width) x-index)
         y                 (* (block-height) y-index)]
@@ -53,9 +55,10 @@
 
 (defn setup []
   (q/frame-rate 5)
-  (def image (q/load-image "images/ross.jpg"))
-  (q/resize image (q/width) (q/height))
-  (let [xs     (map #(* % (block-width)) (range x-blocks))
+  (let [image-file (random-image-file)
+        image  (q/load-image image-file)
+        _resized (q/resize image (q/width) (q/height))
+        xs     (map #(* % (block-width)) (range x-blocks))
         ys     (map #(* % (block-height))  (range y-blocks))
         blocks (map (fn [x] (map (fn [y] (get-block image x y)) ys)) xs)]
         { :blocks blocks }))
