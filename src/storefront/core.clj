@@ -22,14 +22,15 @@
     :middleware [m/fun-mode]))
 
 (defn -main [& args]
-  (let [name (nth args 0)]
-        drawings {
-          "cycle"         cycle/drawing
+  (let [name (nth args 0)
+        drawings (hash-map
+          "spiro"         spirograph/drawing
           "drag"          drag/drawing
           "spiro"         spirograph/drawing
           "shifting-grid" shifting-grid/drawing
           "hex"           hexagons/drawing
           "hex-spinner"   hex-spinner/drawing
-        }])
-    (load-drawing (name drawings))
-  )
+          "cycle"         cycle/drawing
+        )]
+    (load-drawing (get drawings name))
+  ))
