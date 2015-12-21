@@ -7,6 +7,7 @@
             [storefront.spirograph :as spirograph]
             [storefront.shifting-grid :as shifting-grid]
             [storefront.hexagons :as hexagons]
+            [storefront.mosaic :as mosaic]
             ))
 
 (defn load-drawing
@@ -21,14 +22,13 @@
     :middleware [m/fun-mode]))
 
 (defn -main [& args]
-  (def command (nth args 0))
-  (if (= command "spiro")
-    (load-drawing spirograph/drawing))
-  (if (= command "drag")
-    (load-drawing drag/drawing))
-  (if (= command "shifting-grid")
-    (load-drawing shifting-grid/drawing))
-  (if (= command "hex")
-    (load-drawing hexagons/drawing))
-  (if (= command "cycle")
-    (load-drawing cycle/drawing)))
+  (let [name (nth args 0)]
+        drawings {
+          "spiro"         spirograph/drawing
+          "drag"          drag/drawing
+          "shifting-grid" shifting-grid/drawing
+          "hex"           hexagons/drawing
+          "cycle"         cycle/drawing
+        }])
+    (load-drawing (name drawings))
+  )
