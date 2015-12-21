@@ -9,13 +9,6 @@
 (def y-blocks (rand-in-range 50 150))
 (def update-interval (seconds 20))
 
-(defn getfile [last-file]
-  (let [directory (clojure.java.io/file "./images")
-        files (file-seq directory)
-        image-files (filter valid-image files)
-        files-but-last (filter #(not= % last-file) image-files)]
-    (rand-nth (filter #(.isFile %) files-but-last))))
-
 (defn index-block [i]
   [(quot i y-blocks) (mod i y-blocks)])
 
@@ -56,7 +49,7 @@
     (q/frame-rate 10)
     (setup nil))
   ([last-file]
-    (let [image-file  (getfile last-file)
+    (let [image-file  (random-image-file :except #{last-file})
           column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
           column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
           column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
