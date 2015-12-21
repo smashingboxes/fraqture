@@ -26,3 +26,7 @@
         image-files    (filter valid-image files)
         included-files (apply list (apply disj (set image-files) except))]
     (rand-nth included-files)))
+
+; Average: sum / count
+(defn average [numbers]
+  (/ (reduce + numbers) (count numbers)))
