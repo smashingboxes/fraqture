@@ -25,7 +25,6 @@
   ))
 
 (defn setup []
-  (q/frame-rate 1000)
   (let [image-file (random-image-file)
         image      (q/load-image image-file)
         _resized   (q/resize image (q/width) (q/height))]
@@ -35,9 +34,10 @@
 
 (defn update-state [state]
   (let [hidden     (:hidden-pixels state)
-        new-pixel  (peek hidden)
-        hidden     (pop hidden)
-        showing    (conj (:showing-pixels state) new-pixel)]
+        n          100
+        new-pixels (take n hidden)
+        hidden     (drop n hidden)
+        showing    (concat (:showing-pixels state) new-pixels)]
   { :hidden-pixels hidden
     :showing-pixels showing }))
 
