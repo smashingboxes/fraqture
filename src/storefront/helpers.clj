@@ -30,3 +30,7 @@
 ; Average: sum / count
 (defn average [numbers]
   (/ (reduce + numbers) (count numbers)))
+
+; Exponent
+(defn exp [x n]
+  (reduce * (repeat n x)))

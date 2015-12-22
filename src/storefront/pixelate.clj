@@ -7,7 +7,7 @@
 
 (def pixel-width 10)
 (def pixel-height 10)
-(def pixelation-speed 100)
+(def pixelation-speed 50)
 
 (defrecord Pixel [x y w h color])
 
@@ -41,7 +41,7 @@
         startover? (= (count hidden) 0)
         multiplier (if startover? (* (:pixel-multiplier state) 2) (:pixel-multiplier state))
         hidden     (if startover? (shuffled-pixels multiplier) hidden)
-        n          (/ pixelation-speed multiplier)
+        n          (/ pixelation-speed (exp multiplier 2))
         new-pixels (take n hidden)
         hidden     (drop n hidden)
         showing    (concat (:showing-pixels state) new-pixels)]
@@ -55,4 +55,4 @@
     (q/fill (:color pixel))
     (q/rect (:x pixel) (:y pixel) (:w pixel) (:h pixel))))
 
-(def drawing (Drawing. "Pixelate" setup update-state draw-state :fullscreen []))
+(def drawing (Drawing. "Pixelate" setup update-state draw-state :fullscreen [:keep-on-top :present]))
