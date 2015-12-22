@@ -23,6 +23,12 @@ interactive parts of a drawing, and renders the art.
 
 ![shifting-grid](screencaps/shifting-grid.gif)
 
+### Pixelation
+
+`lein run pixelate`
+
+![pixelate](screencaps/pixelate.gif)
+
 ## Requirements
 
 - Install Java JRE or JDK from [Oracle's website](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
