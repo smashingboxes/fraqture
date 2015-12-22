@@ -6,10 +6,11 @@
             [storefront.spirograph :as spirograph]
             [storefront.shifting-grid :as shifting-grid]
             [storefront.hexagons :as hexagons]
+            [storefront.hex-spinner :as hex-spinner]
             )
   (:import  [storefront.drawing Drawing]))
 
-(def drawing-list [drag/drawing spirograph/drawing shifting-grid/drawing hexagons/drawing])
+(def drawing-list [drag/drawing spirograph/drawing shifting-grid/drawing hexagons/drawing hex-spinner/drawing])
 (def update-interval (seconds 120))
 
 (defn current-drawing [state]
