@@ -29,7 +29,9 @@
 
 ; Average: sum / count
 (defn average [numbers]
-  (/ (reduce + numbers) (count numbers)))
+  (if (= (count numbers) 0)
+    0
+    (/ (reduce + numbers) (count numbers))))
 
 ; Exponent
 (defn exp [x n]
@@ -38,3 +40,6 @@
 ; Simple linear interpolation
 (defn interpolate [x1 y1 x2 y2 x]
   (+ y1 (* (- y2 y1) (/ (- x x1) (- x2 x1)))))
+
+(defn clamp [value min-val max-val]
+  (max (min max-val value) min-val))

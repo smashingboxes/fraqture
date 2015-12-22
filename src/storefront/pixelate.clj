@@ -22,8 +22,15 @@
 (defn pixelate [w h]
   (let [img  (q/get-pixel 0 0 (q/width) (q/height))
         xs   (map #(* % w) (range (/ (q/width) w)))
-        ys   (map #(* % h) (range (/ (q/width) h)))]
-    (for [x xs y ys] (Pixel. x y w h (average-color (q/get-pixel img x y w h))))
+        ys   (map #(* % h) (range (/ (q/height) h)))
+        x2s  (map #(clamp (+ w %) 0 (q/width)) xs)
+        y2s  (map #(clamp (+ h %) 0 (q/height)) ys)
+        widths (map - x2s xs)
+        heights (map - y2s ys)
+        x-pairs (map vector xs widths)
+        y-pairs (map vector ys heights)]
+    (for [[x w] x-pairs [y h] y-pairs]
+      (Pixel. x y w h (average-color (q/get-pixel img x y w h))))
   ))
 
 (defn shuffled-pixels [mult]
