@@ -8,6 +8,7 @@
             [storefront.shifting-grid :as shifting-grid]
             [storefront.hexagons :as hexagons]
             [storefront.pixelate :as pixelate]
+            [storefront.weather-drawing :as weather]
             ))
 
 (defn load-drawing
@@ -30,6 +31,7 @@
           "hex"           hexagons/drawing
           "cycle"         cycle/drawing
           "pixelate"      pixelate/drawing
+          "weather"       weather/drawing
         )]
     (load-drawing (get drawings name))
   ))
