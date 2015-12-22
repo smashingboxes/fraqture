@@ -7,6 +7,7 @@
 
 (def pixel-width 10)
 (def pixel-height 10)
+(def pixelation-speed 100)
 
 (defrecord Pixel [x y w h color])
 
@@ -18,27 +19,34 @@
     (q/color (average reds) (average greens) (average blues))
   ))
 
-(defn pixelate [img w h]
-  (let [xs   (map #(* % w) (range (/ (q/width) w)))
+(defn pixelate [w h]
+  (let [img  (q/get-pixel 0 0 (q/width) (q/height))
+        xs   (map #(* % w) (range (/ (q/width) w)))
         ys   (map #(* % h) (range (/ (q/width) h)))]
     (for [x xs y ys] (Pixel. x y w h (average-color (q/get-pixel img x y w h))))
   ))
 
+(defn shuffled-pixels [mult]
+  (shuffle (pixelate (* pixel-width mult) (* pixel-height mult))))
+
 (defn setup []
-  (let [image-file (random-image-file)
-        image      (q/load-image image-file)
-        _resized   (q/resize image (q/width) (q/height))]
-  (q/image image 0 0 (q/width) (q/height))
-  { :hidden-pixels (shuffle (pixelate image pixel-width pixel-height))
+  (let [pixel-multiplier 1]
+  (q/image (q/load-image (random-image-file)) 0 0 (q/width) (q/height))
+  { :pixel-multiplier pixel-multiplier
+    :hidden-pixels (shuffled-pixels pixel-multiplier)
     :showing-pixels '() }))
 
 (defn update-state [state]
   (let [hidden     (:hidden-pixels state)
-        n          100
+        startover? (= (count hidden) 0)
+        multiplier (if startover? (* (:pixel-multiplier state) 2) (:pixel-multiplier state))
+        hidden     (if startover? (shuffled-pixels multiplier) hidden)
+        n          (/ pixelation-speed multiplier)
         new-pixels (take n hidden)
         hidden     (drop n hidden)
         showing    (concat (:showing-pixels state) new-pixels)]
-  { :hidden-pixels hidden
+  { :pixel-multiplier multiplier
+    :hidden-pixels hidden
     :showing-pixels showing }))
 
 (defn draw-state [state]
