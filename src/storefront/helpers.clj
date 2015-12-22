@@ -26,3 +26,7 @@
         image-files    (filter valid-image files)
         included-files (apply list (apply disj (set image-files) except))]
     (rand-nth included-files)))
+
+; Simple linear interpolation
+(defn interpolate [x1 y1 x2 y2 x]
+  (+ y1 (* (- y2 y1) (/ (- x x1) (- x2 x1)))))
