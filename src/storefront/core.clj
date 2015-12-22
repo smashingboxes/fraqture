@@ -7,7 +7,7 @@
             [storefront.spirograph :as spirograph]
             [storefront.shifting-grid :as shifting-grid]
             [storefront.hexagons :as hexagons]
-            [storefront.mosaic :as mosaic]
+            [storefront.pixelate :as pixelate]
             ))
 
 (defn load-drawing
@@ -29,7 +29,7 @@
           "shifting-grid" shifting-grid/drawing
           "hex"           hexagons/drawing
           "cycle"         cycle/drawing
-          "mosaic"        mosaic/drawing
+          "pixelate"      pixelate/drawing
         )]
     (load-drawing (get drawings name))
   ))
