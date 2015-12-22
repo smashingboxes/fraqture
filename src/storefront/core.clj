@@ -7,6 +7,7 @@
             [storefront.spirograph :as spirograph]
             [storefront.shifting-grid :as shifting-grid]
             [storefront.hexagons :as hexagons]
+            [storefront.hex-spinner :as hex-spinner]
             [storefront.pixelate :as pixelate]
             [storefront.weather-drawing :as weather]
             ))
@@ -27,8 +28,10 @@
         drawings (hash-map
           "spiro"         spirograph/drawing
           "drag"          drag/drawing
+          "spiro"         spirograph/drawing
           "shifting-grid" shifting-grid/drawing
           "hex"           hexagons/drawing
+          "hex-spinner"   hex-spinner/drawing
           "cycle"         cycle/drawing
           "pixelate"      pixelate/drawing
           "weather"       weather/drawing

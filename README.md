@@ -23,6 +23,12 @@ interactive parts of a drawing, and renders the art.
 
 ![shifting-grid](screencaps/shifting-grid.gif)
 
+### Hexagonal Spinner
+
+`lein run hex-spinner`
+
+![shifting-grid](screencaps/shifting-grid.gif)
+
 ### Pixelation
 
 `lein run pixelate`
