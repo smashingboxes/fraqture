@@ -18,8 +18,9 @@
                     hexagons/drawing
                     hex-spinner/drawing
                     pixelate/drawing
-                    ])
-(def update-interval (seconds 120))
+                    ]))
+
+(def update-interval (seconds 10))
 
 (defn current-drawing [state]
   (nth drawing-list (:drawing-i state)))
