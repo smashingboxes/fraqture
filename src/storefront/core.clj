@@ -8,6 +8,7 @@
             [storefront.shifting-grid :as shifting-grid]
             [storefront.hexagons :as hexagons]
             [storefront.hex-spinner :as hex-spinner]
+            [storefront.pixelate :as pixelate]
             [storefront.weather-drawing :as weather]
             ))
 
@@ -32,6 +33,7 @@
           "hex"           hexagons/drawing
           "hex-spinner"   hex-spinner/drawing
           "cycle"         cycle/drawing
+          "pixelate"      pixelate/drawing
           "weather"       weather/drawing
         )]
     (load-drawing (get drawings name))
