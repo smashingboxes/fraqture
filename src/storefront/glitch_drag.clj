@@ -47,9 +47,9 @@
 (defn setup
   ([]
     (q/frame-rate 10)
-    (setup nil))
-  ([last-file]
-    (let [image-file  (random-image-file :except #{last-file})
+    (setup { :last-file nil :times-run -1 }))
+  ([state]
+    (let [image-file  (random-image-file :except #{(:last-file state)})
           column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
           column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
           column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
@@ -57,16 +57,17 @@
           samples     (map #(color-to-rgb %) raw-samples)
           columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
       (q/image (q/load-image image-file) 0 0 (q/width) (q/height))
-      { :image-file image-file
+      { :last-file image-file
         :last-update (q/millis)
-        :columns  columns })))
+        :columns  columns
+        :times-run (inc (:times-run state))})))
 
 (defn update-column [column]
   (Column. (cycle-index column) (color-walk (:color column)) (:y-count column)))
 
 (defn update-state [state]
   (if (> (time-elapsed (:last-update state)) update-interval)
-    (setup (:image-file state))
+    (setup state)
     (update-in state [:columns] #(map update-column %))))
 
 (defn draw-state [state]
@@ -75,6 +76,6 @@
       (fn [idx column] (rect-at-index idx (:current-index column) (:color column) (:y-count column)))
       (:columns state))))
 
-(defn exit? [state] false)
+(defn exit? [state] (>= (:times-run state) 2))
 
 (def drawing (Drawing. "Drag Glitch" setup update-state draw-state exit? :fullscreen [:keep-on-top :present]))
