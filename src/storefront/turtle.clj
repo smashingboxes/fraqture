@@ -1,7 +1,5 @@
 (ns storefront.turtle
-  (:require [storefront.drawing]
-            [quil.core :as q])
-  (:import  [storefront.drawing Drawing]))
+  (:require [quil.core :as q]))
 
 (defn build [x y]
   (atom
@@ -28,12 +26,3 @@
 
 (defn turn [turtle amount]
   (swap! turtle update-in [:angle] #(mod (+ % amount) 360)))
-
-(defn setup []
-  (let [turtle (build (/ (q/width) 2) (/ (q/height) 2))]
-    (doseq [i (range 200)] (do (move turtle (/ i 5)) (turn turtle 5)))))
-
-(defn update-state [state])
-(defn draw-state [state])
-
-(def drawing (Drawing. "Turtle" setup update-state draw-state :fullscreen [:present]))
