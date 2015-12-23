@@ -38,10 +38,13 @@
           (reverse sets))))
 
 (defn setup []
-  { :triangles (hex-triangles 200) })
+  { :triangles (hex-triangles 200)
+    :frames 0 })
 
 (defn update-state [state]
-  (update-in state [:triangles] #(m/rotate % 0 1)))
+  (-> state
+    (update-in [:triangles] #(m/rotate % 0 1))
+    (update-in [:frames] inc)))
 
 (defn draw-state [state]
   (q/frame-rate 10)
@@ -57,6 +60,6 @@
         (:triangles state)
         colors))))
 
-(defn exit? [state] false)
+(defn exit? [state] (> (:frames state) 24))
 
 (def drawing (Drawing. "Spinner Hex" setup update-state draw-state exit? :fullscreen [:keep-on-top :present]))
