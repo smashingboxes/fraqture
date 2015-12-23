@@ -6,7 +6,8 @@
     { :x        x
       :y        y
       :angle    0
-      :pen-down true }))
+      :pen-down true
+      :stack    nil }))
 
 (defn move [turtle distance]
   (let [t     @turtle
@@ -26,3 +27,9 @@
 
 (defn turn [turtle amount]
   (swap! turtle update-in [:angle] #(mod (+ % amount) 360)))
+
+(defn save [turtle]
+  (swap! turtle assoc :stack @turtle))
+
+(defn restore [turtle]
+  (reset! turtle (:stack @turtle)))
