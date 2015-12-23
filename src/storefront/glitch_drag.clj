@@ -75,4 +75,6 @@
       (fn [idx column] (rect-at-index idx (:current-index column) (:color column) (:y-count column)))
       (:columns state))))
 
-(def drawing (Drawing. "Drag Glitch" setup update-state draw-state :fullscreen [:keep-on-top :present]))
+(defn exit? [state] false)
+
+(def drawing (Drawing. "Drag Glitch" setup update-state draw-state exit? :fullscreen [:keep-on-top :present]))

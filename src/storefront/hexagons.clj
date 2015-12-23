@@ -59,4 +59,6 @@
     (q/fill 235 23 103)
     (draw-hexagon x y (- (:size state) padding))))
 
-(def drawing (Drawing. "Hexagons" setup update-state draw-state :fullscreen [:keep-on-top :present]))
+(defn exit? [state] false)
+
+(def drawing (Drawing. "Hexagons" setup update-state draw-state exit? :fullscreen [:keep-on-top :present]))

@@ -14,8 +14,6 @@
 (def block-height #(/ (q/height) y-blocks))
 (def total-blocks (* x-blocks y-blocks))
 
-
-
 (defn draw-block [block x-index y-index]
   (let [x                 (* (block-width) x-index)
         y                 (* (block-height) y-index)]
@@ -75,4 +73,6 @@
         column)))
     (:blocks state))))
 
-(def drawing (Drawing. "Shifting Grid" setup update-state draw-state :fullscreen []))
+(defn exit? [state] false)
+
+(def drawing (Drawing. "Shifting Grid" setup update-state draw-state exit? :fullscreen []))

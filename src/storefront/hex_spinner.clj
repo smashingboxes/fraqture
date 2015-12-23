@@ -57,4 +57,6 @@
         (:triangles state)
         colors))))
 
-(def drawing (Drawing. "Spinner Hex" setup update-state draw-state :fullscreen [:keep-on-top :present]))
+(defn exit? [state] false)
+
+(def drawing (Drawing. "Spinner Hex" setup update-state draw-state exit? :fullscreen [:keep-on-top :present]))

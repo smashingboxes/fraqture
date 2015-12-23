@@ -28,10 +28,13 @@
 (defn setup []
   { :last-update (q/millis)
     :drawing-i 0
-    :drawing-state ((:setup-fn drag/drawing)) })
+    :drawing-state ((:setup-fn (first drawing-list))) })
 
 (defn update-state [state]
-  (if (> (time-elapsed (:last-update state)) update-interval)
+  (if
+    (or
+      (> (time-elapsed (:last-update state)) update-interval)
+      ((:exit-fn (current-drawing state)) (:drawing-state state)))
     (-> state
       (assoc :drawing-i (mod (inc (:drawing-i state)) (count drawing-list)))
       (assoc :last-update (q/millis))
@@ -43,4 +46,6 @@
 (defn draw-state [state]
   ((:draw-fn (current-drawing state)) (:drawing-state state)))
 
-(def drawing (Drawing. "Cycle Drawings" setup update-state draw-state :fullscreen [:keep-on-top :present]))
+(defn exit? [state] false)
+
+(def drawing (Drawing. "Cycle Drawings" setup update-state draw-state exit? :fullscreen [:keep-on-top :present]))

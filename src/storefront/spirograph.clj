@@ -84,4 +84,6 @@
                (rest tail)
                curr)))))
 
-(def drawing (Drawing. "Spirograph" setup update-state draw-state :fullscreen [:keep-on-top :present]))
+(defn exit? [state] false)
+
+(def drawing (Drawing. "Spirograph" setup update-state draw-state exit? :fullscreen [:keep-on-top :present]))
