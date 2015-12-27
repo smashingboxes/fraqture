@@ -20,17 +20,23 @@
     (q/fill color)
     (q/text text-str x y)))
 
+(defn loader
+  ([path] (loader path false))
+  ([path fill?]
+    (let [image (q/load-image path)]
+      (if fill? (q/background (average-color image)))
+      (q/resize image (q/width) (q/height))
+      image)))
+
 (defn setup
   ([] (setup nil))
   ([options-hash]
     (q/frame-rate 30)
     (let [default-options { :image-path "images/logo.png" }
           options (merge default-options options-hash)
-          image (q/load-image (:image-path options))
-          avg-c (average-color image)]
-      (q/background avg-c)
-      (q/resize image (q/width) (q/height))
-      image)))
+          image (loader (:image-path options) true)]
+      { :image image
+        :start (q/millis) })))
 
 (defn update-state [state] state)
 
@@ -40,7 +46,7 @@
         heights      (repeatedly at-a-time #(rand-in-range min-y max-y))
         text-strs    (repeatedly at-a-time #(str (rand-nth uppers)))
         zipped       (map vector xs ys heights text-strs)
-        curried-text (fn [x y height text-str] (make-text state x y height text-str))]
+        curried-text (fn [x y height text-str] (make-text (:image state) x y height text-str))]
     (doseq [zip zipped] (apply curried-text zip))))
 
 (def drawing (Drawing. "Textify" setup update-state draw-state :fullscreen []))
