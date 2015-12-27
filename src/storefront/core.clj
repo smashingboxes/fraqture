@@ -11,7 +11,8 @@
             [storefront.pixelate :as pixelate]
             [storefront.weather-drawing :as weather]
             [storefront.textify :as textify]
-            ))
+            [storefront.sierpinski :as sierpinski]
+            [storefront.plant :as plant]))
 
 (defn load-drawing
   [drawing-info]
@@ -37,6 +38,8 @@
           "pixelate"      pixelate/drawing
           "textify"       textify/drawing
           "weather"       weather/drawing
+          "sierpinski"    sierpinski/drawing
+          "plant"         plant/drawing
         )]
     (load-drawing (get drawings name))
   ))
