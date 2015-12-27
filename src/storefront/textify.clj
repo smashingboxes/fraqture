@@ -15,8 +15,10 @@
   (q/text-width text-str))
 
 (defn make-text [image x y height text-str]
-  (let [width    (text-width height text-str)
-        color    (average-color (q/get-pixel image x y width height))]
+  (let [width          (text-width height text-str)
+        clipped-width  (clamp width 0 (- (q/width) x))
+        clipped-height (clamp height 0 (- (q/height) y))
+        color          (average-color (q/get-pixel image x y clipped-width clipped-height))]
     (q/fill color)
     (q/text text-str x y)))
 
