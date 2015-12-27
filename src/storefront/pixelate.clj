@@ -11,14 +11,6 @@
 
 (defrecord Pixel [x y w h color])
 
-(defn average-color [image]
-  (let [pixels (q/pixels image)
-        reds   (map #(q/red %) pixels)
-        greens (map #(q/green %) pixels)
-        blues  (map #(q/blue %) pixels)]
-    (q/color (average reds) (average greens) (average blues))
-  ))
-
 (defn pixelate [w h]
   (let [img  (q/get-pixel 0 0 (q/width) (q/height))
         xs   (map #(* % w) (range (/ (q/width) w)))

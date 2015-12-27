@@ -10,6 +10,7 @@
             [storefront.hex-spinner :as hex-spinner]
             [storefront.pixelate :as pixelate]
             [storefront.weather-drawing :as weather]
+            [storefront.textify :as textify]
             ))
 
 (defn load-drawing
@@ -34,6 +35,7 @@
           "hex-spinner"   hex-spinner/drawing
           "cycle"         cycle/drawing
           "pixelate"      pixelate/drawing
+          "textify"       textify/drawing
           "weather"       weather/drawing
         )]
     (load-drawing (get drawings name))

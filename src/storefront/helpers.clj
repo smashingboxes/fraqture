@@ -1,5 +1,6 @@
 (ns storefront.helpers
-  (:require [quil.core :as q]))
+  (:require [quil.core :as q]
+            [clojure.core.matrix :as m]))
 
 ; Milliseconds to seconds
 (defn seconds [x] (* 1000 x))
@@ -43,3 +44,26 @@
 
 (defn clamp [value min-val max-val]
   (max (min max-val value) min-val))
+
+(defn gridize
+  ([rows columns] (gridize rows columns (q/width) (q/height)))
+  ([rows columns width height]
+    (let [row-height (/ height rows)
+          col-width  (/ width columns)
+          ys         (map #(* % row-height) (range rows))
+          xs         (map #(* % col-width) (range columns))
+          x-ends     (map #(+ (- col-width 1) %) xs)
+          y-ends     (map #(+ (- row-height 1) %) ys)]
+      { :row-height row-height
+        :col-width  col-width
+        :xs         xs
+        :ys         ys
+        :x-ends     x-ends
+        :y-ends     y-ends })))
+
+(defn average-color [image]
+  (let [pixels (q/pixels image)
+        reds   (map #(q/red %) pixels)
+        greens (map #(q/green %) pixels)
+        blues  (map #(q/blue %) pixels)]
+    (q/color (average reds) (average greens) (average blues))))
