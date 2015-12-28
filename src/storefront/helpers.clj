@@ -63,7 +63,7 @@
 
 (defn average-color [image]
   (let [pixels (q/pixels image)
-        reds   (map q/red  pixels)
+        reds   (map q/red pixels)
         greens (map q/green pixels)
         blues  (map q/blue pixels)]
     (q/color (average reds) (average greens) (average blues))))

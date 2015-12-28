@@ -51,4 +51,4 @@
         curried-text (fn [x y height text-str] (make-text (:image state) x y height text-str))]
     (doseq [zip zipped] (apply curried-text zip))))
 
-(def drawing (Drawing. "Textify" setup update-state draw-state :fullscreen []))
+(def drawing (Drawing. "Textify" setup update-state draw-state :fullscreen [:keep-on-top :present]))
