@@ -50,8 +50,8 @@
   ([rows columns width height]
     (let [row-height (/ height rows)
           col-width  (/ width columns)
-          ys         (map #(* % row-height) (range rows))
-          xs         (map #(* % col-width) (range columns))
+          ys         (map (partial * row-height) (range rows))
+          xs         (map (partial * col-width) (range columns))
           x-ends     (map #(+ (- col-width 1) %) xs)
           y-ends     (map #(+ (- row-height 1) %) ys)]
       { :row-height row-height
@@ -63,7 +63,7 @@
 
 (defn average-color [image]
   (let [pixels (q/pixels image)
-        reds   (map #(q/red %) pixels)
-        greens (map #(q/green %) pixels)
-        blues  (map #(q/blue %) pixels)]
+        reds   (map q/red  pixels)
+        greens (map q/green pixels)
+        blues  (map q/blue pixels)]
     (q/color (average reds) (average greens) (average blues))))
