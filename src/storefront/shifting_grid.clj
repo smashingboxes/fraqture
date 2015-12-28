@@ -14,11 +14,9 @@
 (def block-height #(/ (q/height) y-blocks))
 (def total-blocks (* x-blocks y-blocks))
 
-
-
 (defn draw-block [block x-index y-index]
-  (let [x                 (* (block-width) x-index)
-        y                 (* (block-height) y-index)]
+  (let [x (* (block-width) x-index)
+        y (* (block-height) y-index)]
     (q/rect x y (block-width) (block-height))
     (q/image block x y (block-width) (block-height))))
 

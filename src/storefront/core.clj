@@ -10,9 +10,9 @@
             [storefront.hex-spinner :as hex-spinner]
             [storefront.pixelate :as pixelate]
             [storefront.weather-drawing :as weather]
+            [storefront.textify :as textify]
             [storefront.sierpinski :as sierpinski]
-            [storefront.plant :as plant]
-            ))
+            [storefront.plant :as plant]))
 
 (defn load-drawing
   [drawing-info]
@@ -36,6 +36,7 @@
           "hex-spinner"   hex-spinner/drawing
           "cycle"         cycle/drawing
           "pixelate"      pixelate/drawing
+          "textify"       textify/drawing
           "weather"       weather/drawing
           "sierpinski"    sierpinski/drawing
           "plant"         plant/drawing
