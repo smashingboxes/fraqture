@@ -36,7 +36,6 @@
 (def drawing-hash (hash-map
     "spiro"         spirograph/drawing
     "drag"          drag/drawing
-    "spiro"         spirograph/drawing
     "shifting-grid" shifting-grid/drawing
     "hex"           hexagons/drawing
     "hex-spinner"   hex-spinner/drawing
