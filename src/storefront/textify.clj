@@ -30,15 +30,13 @@
       (q/resize image (q/width) (q/height))
       image)))
 
-(defn setup
-  ([] (setup nil))
-  ([options-hash]
+(defn setup [options-hash]
     (q/frame-rate 30)
     (let [default-options { :image-path "images/logo.png" }
           options (merge default-options options-hash)
           image (loader (:image-path options) true)]
       { :image image
-        :start (q/millis) })))
+        :start (q/millis) }))
 
 (defn update-state [state] state)
 
