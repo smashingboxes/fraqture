@@ -12,7 +12,9 @@
             [storefront.hex-spinner :as hex-spinner]
             [storefront.pixelate :as pixelate]
             [storefront.weather-drawing :as weather]
-            ))
+            [storefront.textify :as textify]
+            [storefront.sierpinski :as sierpinski]
+            [storefront.plant :as plant]))
 
 (defn load-drawing [drawing args]
   (let [args-hash (parse-opts args (:cli-options-fn drawing))
@@ -41,6 +43,9 @@
     "cycle"         cycle/drawing
     "pixelate"      pixelate/drawing
     "weather"       weather/drawing
+    "sierpinski"    sierpinski/drawing
+    "plant"         plant/drawing
+    "textify"       textify/drawing
   ))
 
 (def basic-usage
