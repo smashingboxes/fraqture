@@ -14,9 +14,10 @@
 (defn rand-speed [min-max]
   ((rand-nth [- +]) 0 (+ (rand-int min-max) 1)))
 
-(defn rotate-nth [matrix n max-rotation]
-  (let [shift (rand-speed max-rotation)]
-    (update-in matrix [n] #(m/rotate % 0 shift))))
+(defn rotate-nth-generator [max-rotation]
+  (fn [matrix n]
+    (let [shift (rand-speed max-rotation)]
+      (update-in matrix [n] #(m/rotate % 0 shift)))))
 
 ; Returns n indices, from start, and wrapping after max
 (defn n-indices-wrapped [n start y]
@@ -31,7 +32,8 @@
         size    chunk-size
         columns (n-indices-wrapped size start max)
         rotated (if column? matrix (m/transpose matrix))
-        shifted (reduce rotate-nth rotated columns max-rotation)]
+        rotate-nth (rotate-nth-generator max-rotation)
+        shifted (reduce rotate-nth rotated columns)]
     (if column? shifted (m/transpose shifted))))
 
 (def cli-options
