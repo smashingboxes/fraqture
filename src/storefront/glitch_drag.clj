@@ -44,29 +44,29 @@
 (defn color-to-rgb [color]
   [(q/red color) (q/green color) (q/blue color)])
 
-(defn setup
-  ([]
-    (q/frame-rate 10)
-    (setup nil))
-  ([last-file]
-    (let [image-file  (random-image-file :except #{last-file})
-          column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
-          column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
-          column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
-          raw-samples (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
-          samples     (map #(color-to-rgb %) raw-samples)
-          columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
-      (q/image (q/load-image image-file) 0 0 (q/width) (q/height))
-      { :image-file image-file
-        :last-update (q/millis)
-        :columns  columns })))
+(defn setup-new-image [last-file]
+  (let [image-file  (random-image-file :except #{last-file})
+        column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
+        column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
+        column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
+        raw-samples (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
+        samples     (map #(color-to-rgb %) raw-samples)
+        columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
+    (q/image (q/load-image image-file) 0 0 (q/width) (q/height))
+    { :image-file image-file
+      :last-update (q/millis)
+      :columns  columns }))
+
+(defn setup [options]
+  (q/frame-rate 10)
+  (setup-new-image nil))
 
 (defn update-column [column]
   (Column. (cycle-index column) (color-walk (:color column)) (:y-count column)))
 
 (defn update-state [state]
   (if (> (time-elapsed (:last-update state)) update-interval)
-    (setup (:image-file state))
+    (setup-new-image (:image-file state))
     (update-in state [:columns] #(map update-column %))))
 
 (defn draw-state [state]
