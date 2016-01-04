@@ -38,4 +38,6 @@
   (spiral/draw (:spiral-2 state))
   (scanlines/draw (:scan state)))
 
-(def drawing (Drawing. "Twitchy Spiral" setup update-state draw-state))
+(def drawing
+  (Drawing. "Spiral Glitch" setup update-state draw-state nil
+    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))

@@ -84,4 +84,6 @@
                (rest tail)
                curr)))))
 
-(def drawing (Drawing. "Spirograph" setup update-state draw-state :fullscreen [:keep-on-top :present]))
+(def drawing
+ (Drawing. "Spirograph" setup update-state draw-state nil
+   { :quil { :size :fullscreen :features [:keep-on-top :present] }}))

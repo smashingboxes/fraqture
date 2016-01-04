@@ -54,4 +54,6 @@
     (q/fill (:color pixel))
     (q/rect (:x pixel) (:y pixel) (:w pixel) (:h pixel))))
 
-(def drawing (Drawing. "Pixelate" setup update-state draw-state :fullscreen [:keep-on-top :present]))
+(def drawing
+  (Drawing. "Pixelate" setup update-state draw-state nil
+    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))

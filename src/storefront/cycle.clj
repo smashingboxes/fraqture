@@ -45,4 +45,6 @@
 (defn draw-state [state]
   ((:draw-fn (current-drawing state)) (:drawing-state state)))
 
-(def drawing (Drawing. "Cycle Drawings" setup update-state draw-state :fullscreen [:keep-on-top :present]))
+(def drawing
+  (Drawing. "Cycle Drawings" setup update-state draw-state nil
+    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))

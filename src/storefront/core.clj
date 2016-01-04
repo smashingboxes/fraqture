@@ -17,20 +17,20 @@
             [storefront.plant :as plant]))
 
 (defn load-drawing [drawing args]
-  (let [args-hash (parse-opts args (:cli-options-fn drawing))
-        errors    (:errors args-hash)
-        ]
+  (let [quil-options   (:quil (:options drawing))
+        args-hash (parse-opts args (:cli drawing))
+        errors    (:errors args-hash)]
     (if errors
       (dorun
         (println (string/join "\n" errors))
         (System/exit 1))
       (q/defsketch storefront
         :title  (:title drawing)
-        :size   (:size drawing)
-        :setup  (:setup-fn drawing)
-        :update (:update-fn drawing)
-        :draw   (:draw-fn drawing)
-        :features (:features drawing)
+        :setup  (fn [] ((:setup drawing) (:options args-hash)))
+        :update (:update drawing)
+        :draw   (:draw drawing)
+        :size   (:size quil-options)
+        :features (:features quil-options)
         :middleware [m/fun-mode]))))
 
 (def drawing-hash (hash-map
