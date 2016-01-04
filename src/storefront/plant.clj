@@ -6,7 +6,7 @@
   (:import  [storefront.drawing Drawing]
             [storefront.lsystem Lindenmayer]))
 
-(defn setup []
+(defn setup [options]
   (let [turtle (turtle/build 100 (- (q/height) 100))
         plant  (Lindenmayer.
                  [ :x ]

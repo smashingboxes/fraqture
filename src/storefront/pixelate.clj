@@ -28,7 +28,7 @@
 (defn shuffled-pixels [mult]
   (shuffle (pixelate (* pixel-width mult) (* pixel-height mult))))
 
-(defn setup []
+(defn setup [options]
   (let [pixel-multiplier 1]
   (q/image (q/load-image (random-image-file)) 0 0 (q/width) (q/height))
   { :pixel-multiplier pixel-multiplier

@@ -23,7 +23,7 @@
 (defn wind-to-size [wind-speed]
   (+ 100 (* 30 wind-speed)))
 
-(defn setup []
+(defn setup [options]
   (q/frame-rate 1)
   (weather "Durham" "NC"))
 

@@ -13,7 +13,7 @@
    {:r 255 :g 255 :b 51}
    {:r 204 :g 153 :b 255}])
 
-(defn setup []
+(defn setup [options]
   (q/frame-rate 30)
   (let [max-r (/ (q/width) 2)
         n (/ (q/width) 1.5)]

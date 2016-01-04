@@ -10,8 +10,7 @@
 (def noise-jitter 300)
 (def update-interval 1000)
 
-(defn setup
-  []
+(defn setup [options]
   (q/frame-rate 30)
   { :arduino  (arduino/initialize "/dev/tty.usbmodem453061")
     :scan     (scanlines/initialize 2 0.2)

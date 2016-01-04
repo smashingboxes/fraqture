@@ -34,7 +34,7 @@
   (q/end-shape :close)
   (q/pop-matrix))
 
-(defn setup []
+(defn setup [options]
   (q/frame-rate 6)
   (let [radius 100
         y-count (+ (quot (q/height) (height-spacing (hexagon-height radius))) 1)
