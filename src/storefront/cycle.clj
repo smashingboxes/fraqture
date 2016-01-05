@@ -22,29 +22,35 @@
     pixelate/drawing
     textify/drawing]))
 
-(def update-interval (seconds 120))
-
 (defn current-drawing [state]
   (nth drawing-list (:drawing-i state)))
 
 (defn bootstrap-state [state]
-  (assoc state :drawing-state ((:setup-fn (current-drawing state)))))
+  (assoc state :drawing-state ((:setup (current-drawing state)) (:options state))))
 
-(defn setup []
-  (let [initial-state { :last-update (q/millis) :drawing-i 0 }]
+(def cli-options
+  [
+    [nil "--update-interval INT" "Number of seconds between animations"
+      :default 120
+      :parse-fn #(Integer/parseInt %)]
+  ])
+
+(defn setup [options]
+  (let [initial-state { :last-update (q/millis) :drawing-i 0 :options options }]
     (bootstrap-state initial-state)))
 
 (defn update-state [state]
-  (if (> (time-elapsed (:last-update state)) update-interval)
-    (-> state
-      (assoc :drawing-i (mod (inc (:drawing-i state)) (count drawing-list)))
-      (assoc :last-update (q/millis))
-      (bootstrap-state))
-    (update-in state [:drawing-state] (:update-fn (current-drawing state)))))
+  (let [update-interval (seconds (:update-interval (:options state)))]
+    (if (> (time-elapsed (:last-update state)) update-interval)
+      (-> state
+        (assoc :drawing-i (mod (inc (:drawing-i state)) (count drawing-list)))
+        (assoc :last-update (q/millis))
+        (bootstrap-state))
+      (update-in state [:drawing-state] (:update (current-drawing state))))))
 
 (defn draw-state [state]
-  ((:draw-fn (current-drawing state)) (:drawing-state state)))
+  ((:draw (current-drawing state)) (:drawing-state state)))
 
 (def drawing
-  (Drawing. "Cycle Drawings" setup update-state draw-state nil
+  (Drawing. "Cycle Drawings" setup update-state draw-state cli-options
     { :quil { :size :fullscreen :features [:keep-on-top :present] }}))
