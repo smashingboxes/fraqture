@@ -2,6 +2,7 @@
   (:require [storefront.drawing]
             [storefront.helpers :refer :all]
             [quil.core :as q]
+            [clojure.tools.cli :refer [parse-opts]]
             [storefront.glitch-drag :as drag]
             [storefront.spirograph :as spirograph]
             [storefront.shifting-grid :as shifting-grid]
@@ -25,8 +26,13 @@
 (defn current-drawing [state]
   (nth drawing-list (:drawing-i state)))
 
+(defn default-options [drawing]
+  (:options (parse-opts "" (:cli drawing))))
+
 (defn bootstrap-state [state]
-  (assoc state :drawing-state ((:setup (current-drawing state)) (:options state))))
+  (let [current-drawing (current-drawing state)
+        options         (default-options current-drawing)]
+  (assoc state :drawing-state ((:setup current-drawing) options))))
 
 (def cli-options
   [
