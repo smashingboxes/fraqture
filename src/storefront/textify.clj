@@ -6,9 +6,6 @@
   (:import  [storefront.drawing Drawing]))
 
 (def uppers (map char (range 66 92)))
-(def min-y 12)
-(def max-y 36)
-(def at-a-time 12)
 
 (defn text-width [height text-str]
   (q/text-size height)
@@ -30,18 +27,36 @@
       (q/resize image (q/width) (q/height))
       image)))
 
-(defn setup [options-hash]
+(def cli-options
+  [
+    ["-i" "--image-path PATH" "Path to an image"
+      :default "images/logo.png"]
+    ["-l" "--letters-per-frame INT" "Number of letters to add each frame"
+      :default 12
+      :parse-fn #(Integer/parseInt %)]
+    [nil "--min-letter-size INT" "Minumum letter height, in pixels"
+      :default 12
+      :parse-fn #(Integer/parseInt %)]
+    [nil "--max-letter-size INT" "Maximum letter height, in pixels"
+      :default 36
+      :parse-fn #(Integer/parseInt %)]
+  ])
+
+(defn setup [options]
     (q/frame-rate 30)
-    (let [default-options { :image-path "images/logo.png" }
-          options (merge default-options options-hash)
-          image (loader (:image-path options) true)]
+    (let [image (loader (:image-path options) true)]
       { :image image
-        :start (q/millis) }))
+        :start (q/millis)
+        :options options }))
 
 (defn update-state [state] state)
 
 (defn draw-state [state]
-  (let [ys           (repeatedly at-a-time #(rand-in-range 0 (- (q/height) min-y)))
+  (let [options      (:options state)
+        at-a-time    (:letters-per-frame options)
+        min-y        (:min-letter-size options)
+        max-y        (:max-letter-size options)
+        ys           (repeatedly at-a-time #(rand-in-range 0 (- (q/height) min-y)))
         xs           (repeatedly at-a-time #(rand-in-range 0 (q/width)))
         heights      (repeatedly at-a-time #(rand-in-range min-y max-y))
         text-strs    (repeatedly at-a-time #(str (rand-nth uppers)))
@@ -50,5 +65,5 @@
     (doseq [zip zipped] (apply curried-text zip))))
 
 (def drawing
-  (Drawing. "Textify" setup update-state draw-state nil
+  (Drawing. "Textify" setup update-state draw-state cli-options
     { :quil { :size :fullscreen :features [:keep-on-top :present] }}))
