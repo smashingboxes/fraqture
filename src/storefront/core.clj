@@ -16,22 +16,17 @@
             [storefront.sierpinski :as sierpinski]
             [storefront.plant :as plant]))
 
-(defn load-drawing [drawing args]
-  (let [quil-options   (:quil (:options drawing))
-        args-hash (parse-opts args (:cli drawing))
-        errors    (:errors args-hash)]
-    (if errors
-      (dorun
-        (println (string/join "\n" errors))
-        (System/exit 1))
-      (q/defsketch storefront
-        :title  (:title drawing)
-        :setup  (fn [] ((:setup drawing) (:options args-hash)))
-        :update (:update drawing)
-        :draw   (:draw drawing)
-        :size   (:size quil-options)
-        :features (:features quil-options)
-        :middleware [m/fun-mode]))))
+(defn exit [status msg]
+  (println msg)
+  (System/exit status))
+
+
+(defn usage [drawing-name summary]
+  (->> [(str "Usage: lein run " drawing-name " [args]")
+        ""
+        "args:"
+        summary]
+        (string/join \newline)))
 
 (def drawing-hash (hash-map
     "spiro"         spirograph/drawing
@@ -47,11 +42,30 @@
     "textify"       textify/drawing
   ))
 
+(defn load-drawing [drawing-name args]
+  (let [drawing        (get drawing-hash drawing-name)
+        quil-options   (:quil (:options drawing))
+        cli-options    (merge (:cli drawing) ["-h" "--help"])
+        {:keys [options arguments errors summary]} (parse-opts args cli-options)
+        help?          (:help options)]
+    (cond
+      help? (exit 1 (usage drawing-name summary))
+      errors (exit 1 (string/join \newline errors))
+      :else (q/defsketch storefront
+              :title  (:title drawing)
+              :setup  (fn [] ((:setup drawing) options))
+              :update (:update drawing)
+              :draw   (:draw drawing)
+              :size   (:size quil-options)
+              :features (:features quil-options)
+              :middleware [m/fun-mode]))))
+
+
 (def basic-usage
-  (str "lein run <drawing> [args]\n drawings: " (keys drawing-hash)))
+  (str "Usage: lein run <drawing> [args]\n drawings: " (keys drawing-hash)))
 
 (defn -main [& args]
   (let [[drawing-name & drawing-args] args]
     (if (not (contains? (set (keys drawing-hash)) drawing-name))
       (println basic-usage)
-      (load-drawing (get drawing-hash drawing-name) drawing-args))))
+      (load-drawing drawing-name drawing-args))))
