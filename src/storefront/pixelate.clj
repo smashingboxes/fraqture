@@ -28,7 +28,7 @@
 (defn shuffled-pixels [mult]
   (shuffle (pixelate (* pixel-width mult) (* pixel-height mult))))
 
-(defn setup []
+(defn setup [options]
   (let [pixel-multiplier 1]
   (q/image (q/load-image (random-image-file)) 0 0 (q/width) (q/height))
   { :pixel-multiplier pixel-multiplier
@@ -54,4 +54,5 @@
     (q/fill (:color pixel))
     (q/rect (:x pixel) (:y pixel) (:w pixel) (:h pixel))))
 
-(def drawing (Drawing. "Pixelate" setup update-state draw-state :fullscreen [:keep-on-top :present]))
+(def drawing
+  (Drawing. "Pixelate" setup update-state draw-state nil nil))

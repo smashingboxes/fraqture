@@ -6,7 +6,7 @@
   (:import  [storefront.drawing Drawing]
             [storefront.lsystem Lindenmayer]))
 
-(defn setup []
+(defn setup [options]
   (let [turtle (turtle/build 100 (- (q/height) 100))
         plant  (Lindenmayer.
                  [ :x ]
@@ -25,4 +25,6 @@
 (defn update-state [state])
 (defn draw-state [state])
 
-(def drawing (Drawing. "Plant" setup update-state draw-state :fullscreen [:present]))
+(def drawing
+  (Drawing. "Plant" setup update-state draw-state nil
+    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))
