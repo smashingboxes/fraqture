@@ -9,7 +9,7 @@ interactive parts of a drawing, and renders the art.
 
 `lein run drag`
 
-![drag](screencaps/drag.gif)
+![drag](http://i.imgur.com/S6xkjRi.gif)
 
 ### Crazy Acid Spiral Glitch
 
@@ -21,19 +21,19 @@ interactive parts of a drawing, and renders the art.
 
 `lein run shifting-grid`
 
-![shifting-grid](screencaps/shifting-grid.gif)
+![shifting-grid](http://i.imgur.com/SbHLrKK.gif)
 
 ### Hexagonal Spinner
 
 `lein run hex-spinner`
 
-![shifting-grid](screencaps/shifting-grid.gif)
+![shifting-grid](http://i.imgur.com/Og9sotK.gif)
 
 ### Pixelation
 
 `lein run pixelate`
 
-![pixelate](screencaps/pixelate.gif)
+![pixelate](http://i.imgur.com/VnmskAA.gif)
 
 ## Requirements
 
