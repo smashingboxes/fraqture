@@ -11,14 +11,6 @@
 
 (defrecord Pixel [x y w h color])
 
-(defn average-color [image]
-  (let [pixels (q/pixels image)
-        reds   (map #(q/red %) pixels)
-        greens (map #(q/green %) pixels)
-        blues  (map #(q/blue %) pixels)]
-    (q/color (average reds) (average greens) (average blues))
-  ))
-
 (defn pixelate [w h]
   (let [img  (q/get-pixel 0 0 (q/width) (q/height))
         xs   (map #(* % w) (range (/ (q/width) w)))
@@ -36,7 +28,7 @@
 (defn shuffled-pixels [mult]
   (shuffle (pixelate (* pixel-width mult) (* pixel-height mult))))
 
-(defn setup []
+(defn setup [options]
   (let [pixel-multiplier 1]
   (q/image (q/load-image (random-image-file)) 0 0 (q/width) (q/height))
   { :pixel-multiplier pixel-multiplier
@@ -71,4 +63,5 @@
         total-pixels (* x y)]
   (< total-pixels 50)))
 
-(def drawing (Drawing. "Pixelate" setup update-state draw-state exit? :fullscreen [:keep-on-top :present]))
+(def drawing
+  (Drawing. "Pixelate" setup update-state draw-state nil exit? nil))

@@ -37,9 +37,16 @@
             ))
           (reverse sets))))
 
-(defn setup []
-  { :triangles (hex-triangles 200)
-    :frames 0 })
+(def cli-options
+  [
+    ["-r" "--radius INT" "Radius of hexagon, in px"
+      :default 200
+      :parse-fn #(Integer/parseInt %)
+      :validate [#(< 1 % 1000) "Must be a number between 1 and 1000"]]
+  ])
+
+(defn setup [options]
+  { :triangles (hex-triangles (:radius options)) :frames 0 })
 
 (defn update-state [state]
   (-> state
@@ -62,4 +69,5 @@
 
 (defn exit? [state] (> (:frames state) 24))
 
-(def drawing (Drawing. "Spinner Hex" setup update-state draw-state exit? :fullscreen [:keep-on-top :present]))
+(def drawing
+  (Drawing. "Hex Spinner" setup update-state draw-state cli-options exit? nil))

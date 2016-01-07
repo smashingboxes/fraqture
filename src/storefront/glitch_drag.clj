@@ -4,21 +4,13 @@
             [quil.core :as q])
   (:import  [storefront.drawing Drawing]))
 
-(def jitter-amount 10)
-(def x-blocks (rand-in-range 50 150))
-(def y-blocks (rand-in-range 50 150))
-(def update-interval (seconds 20))
-
-(defn index-block [i]
-  [(quot i y-blocks) (mod i y-blocks)])
-
 (defn clamp-rgb [rgb]
   (max (min rgb 255) 0))
 
 (defn jitter [max-jitter]
   (fn [d] (+ d (- (rand-int (inc max-jitter)) (/ max-jitter 2)))))
 
-(defn color-walk [color]
+(defn color-walk [color jitter-amount]
   (map clamp-rgb (map (jitter jitter-amount) color)))
 
 (defn random-color []
@@ -30,8 +22,8 @@
 (defn color-with-opac [color]
   (conj (into [] color) 120))
 
-(defn rect-at-index [x-index y-index color y-count]
-  (let [width             (/ (q/width) x-blocks)
+(defn rect-at-index [x-index y-index x-count y-count color]
+  (let [width             (/ (q/width) x-count)
         height            (/ (q/height) y-count)
         x                 (* width x-index)
         y                 (* height y-index)]
@@ -44,38 +36,70 @@
 (defn color-to-rgb [color]
   [(q/red color) (q/green color) (q/blue color)])
 
-(defn setup
-  ([]
-    (q/frame-rate 10)
-    (setup { :last-file nil :times-run -1 }))
-  ([state]
-    (let [image-file  (random-image-file :except #{(:last-file state)})
-          column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
-          column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
-          column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
-          raw-samples (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
-          samples     (map #(color-to-rgb %) raw-samples)
-          columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
-      (q/image (q/load-image image-file) 0 0 (q/width) (q/height))
-      { :last-file image-file
-        :last-update (q/millis)
-        :columns  columns
-        :times-run (inc (:times-run state))})))
+(defn setup-new-image [last-file x-blocks y-blocks]
+  (let [image-file  (random-image-file :except #{last-file})
+        column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
+        column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
+        column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
+        raw-samples (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
+        samples     (map #(color-to-rgb %) raw-samples)
+        columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
+    (q/image (q/load-image image-file) 0 0 (q/width) (q/height))
+    { :image-file image-file
+      :last-update (q/millis)
+      :columns  columns }))
 
-(defn update-column [column]
-  (Column. (cycle-index column) (color-walk (:color column)) (:y-count column)))
+(def cli-options
+  [
+    ["-x" "--x-blocks INT" "Number of blocks in the horizontal"
+      :default 50
+      :parse-fn #(Integer/parseInt %)
+      :validate [#(< 2 % 200) "Must be a number between 2 and 200"]]
+    ["-y" "--y-blocks INT" "Number of blocks in the vertical direction"
+      :default 30
+      :parse-fn #(Integer/parseInt %)
+      :validate [#(< 2 % 200) "Must be a number between 0 and 200"]]
+    ["-u" "--update-interval INT" "Number of seconds between switching images"
+      :default 20
+      :parse-fn #(Integer/parseInt %)]
+    ["-j" "--jitter-amount INT" "How much to vary the color as it slides down"
+      :default 10
+      :parse-fn #(Integer/parseInt %)]
+  ])
+
+(defn setup [options]
+  (let [state (setup-new-image nil (:x-blocks options) (:y-blocks options))
+        state (assoc state :options options)
+        state (assoc state :times-run 0)]
+    (q/frame-rate 10)
+    state))
+
+(defn update-column-generator [jitter-amount]
+  (fn [column]
+    (Column. (cycle-index column) (color-walk (:color column) jitter-amount) (:y-count column))))
 
 (defn update-state [state]
-  (if (> (time-elapsed (:last-update state)) update-interval)
-    (setup state)
-    (update-in state [:columns] #(map update-column %))))
+  (let [options         (:options state)
+        update-interval (:update-interval options)
+        times-run       (inc (:times-run state))
+        jitter-amount   (:jitter-amount options)
+        x-blocks        (:x-blocks options)
+        y-blocks        (:y-blocks options)]
+    (if (> (time-elapsed (:last-update state)) (seconds update-interval))
+      (assoc (setup-new-image (:image-file state) x-blocks y-blocks) :options options :times-run times-run)
+      (update-in state [:columns] #(map (update-column-generator jitter-amount) %)))))
 
 (defn draw-state [state]
   (dorun
     (map-indexed
-      (fn [idx column] (rect-at-index idx (:current-index column) (:color column) (:y-count column)))
+      (fn [idx column]
+        (rect-at-index
+          idx (:current-index column)
+          (:x-blocks (:options state)) (:y-count column)
+          (:color column)))
       (:columns state))))
 
 (defn exit? [state] (>= (:times-run state) 2))
 
-(def drawing (Drawing. "Drag Glitch" setup update-state draw-state exit? :fullscreen [:keep-on-top :present]))
+(def drawing
+  (Drawing. "Drag Glitch" setup update-state draw-state cli-options exit? nil))

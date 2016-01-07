@@ -23,7 +23,7 @@
 (defn wind-to-size [wind-speed]
   (+ 100 (* 30 wind-speed)))
 
-(defn setup []
+(defn setup [options]
   (q/frame-rate 1)
   (weather "Durham" "NC"))
 
@@ -47,4 +47,5 @@
 
 (defn exit? [state] false)
 
-(def drawing (Drawing. "The Weather" setup update-state draw-state exit? :fullscreen [:present]))
+(def drawing
+  (Drawing. "The Weather" setup update-state draw-state nil exit? nil))
