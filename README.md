@@ -9,7 +9,7 @@ interactive parts of a drawing, and renders the art.
 
 `lein run drag`
 
-![drag](http://i.imgur.com/S6xkjRi.gifv)
+![drag](http://i.imgur.com/S6xkjRi.gif)
 
 ### Crazy Acid Spiral Glitch
 
