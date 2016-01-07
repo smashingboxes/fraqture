@@ -42,23 +42,28 @@
     "textify"       textify/drawing
   ))
 
-(defn load-drawing [drawing-name args]
+(defn load-drawing [drawing options]
+  (let [quil-options   (:quil (:options drawing))]
+    (q/defsketch storefront
+      :title  (:title drawing)
+      :setup  (fn [] ((:setup drawing) options))
+      :update (:update drawing)
+      :draw   (:draw drawing)
+      :size   (:size quil-options)
+      :features (:features quil-options)
+      :middleware [m/fun-mode])))
+
+(defn parse-cli [drawing-name args]
   (let [drawing        (get drawing-hash drawing-name)
-        quil-options   (:quil (:options drawing))
         cli-options    (merge (:cli drawing) ["-h" "--help"])
         {:keys [options arguments errors summary]} (parse-opts args cli-options)
         help?          (:help options)]
     (cond
       help? (exit 1 (usage drawing-name summary))
       errors (exit 1 (string/join \newline errors))
-      :else (q/defsketch storefront
-              :title  (:title drawing)
-              :setup  (fn [] ((:setup drawing) options))
-              :update (:update drawing)
-              :draw   (:draw drawing)
-              :size   (:size quil-options)
-              :features (:features quil-options)
-              :middleware [m/fun-mode]))))
+      :else (load-drawing drawing options))))
+
+
 
 
 (def basic-usage
@@ -68,4 +73,4 @@
   (let [[drawing-name & drawing-args] args]
     (if (not (contains? (set (keys drawing-hash)) drawing-name))
       (println basic-usage)
-      (load-drawing drawing-name drawing-args))))
+      (parse-cli drawing-name drawing-args))))
