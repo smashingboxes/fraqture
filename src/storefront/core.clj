@@ -22,11 +22,11 @@
 
 
 (defn usage [drawing-name summary]
-  (->> [(str "Usage: lein run " drawing-name " [args]")
-        ""
-        "args:"
-        summary]
-        (string/join \newline)))
+  (string/join \newline
+    [(str "Usage: lein run " drawing-name " [args]")
+      ""
+      "args:"
+      summary]))
 
 (def drawing-hash (hash-map
     "spiro"         spirograph/drawing
