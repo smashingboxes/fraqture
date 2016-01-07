@@ -15,7 +15,7 @@ interactive parts of a drawing, and renders the art.
 
 `lein run spiro`
 
-![spiro](screencaps/spiro.gif)
+![spiro](http://i.imgur.com/wmZ6mXa.gif)
 
 ### Sliding Grid
 
@@ -34,6 +34,12 @@ interactive parts of a drawing, and renders the art.
 `lein run pixelate`
 
 ![pixelate](http://i.imgur.com/VnmskAA.gif)
+
+### Textify
+
+`lein run textify`
+
+![textify](http://i.imgur.com/99fEYH9.gif)
 
 ## Requirements
 
