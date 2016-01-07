@@ -84,7 +84,5 @@
                (rest tail)
                curr)))))
 
-(defn exit? [state] false)
-
 (def drawing
- (Drawing. "Spirograph" setup update-state draw-state nil exit? nil))
+ (Drawing. "Spirograph" setup update-state draw-state nil nil nil))

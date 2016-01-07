@@ -64,7 +64,5 @@
         curried-text (fn [x y height text-str] (make-text (:image state) x y height text-str))]
     (doseq [zip zipped] (apply curried-text zip))))
 
-(defn exit? [state] false)
-
 (def drawing
-  (Drawing. "Textify" setup update-state draw-state cli-options exit? nil))
+  (Drawing. "Textify" setup update-state draw-state cli-options nil nil))

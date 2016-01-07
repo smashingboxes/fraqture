@@ -21,7 +21,5 @@
 (defn update-state [state])
 (defn draw-state [state])
 
-(defn exit? [state] false)
-
 (def drawing
-  (Drawing. "Sierpinski" setup update-state draw-state nil exit? nil))
+  (Drawing. "Sierpinski" setup update-state draw-state nil nil nil))

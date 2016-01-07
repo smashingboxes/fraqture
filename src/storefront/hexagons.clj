@@ -59,7 +59,5 @@
     (q/fill 235 23 103)
     (draw-hexagon x y (- (:size state) padding))))
 
-(defn exit? [state] false)
-
 (def drawing
-  (Drawing. "Hexagons" setup update-state draw-state nil exit? nil))
+  (Drawing. "Hexagons" setup update-state draw-state nil nil nil))

@@ -37,7 +37,7 @@
 (def cli-options
   [
     [nil "--update-interval INT" "Number of seconds between animations"
-      :default 30
+      :default 120
       :parse-fn #(Integer/parseInt %)]
   ])
 
@@ -46,11 +46,12 @@
     (bootstrap-state initial-state)))
 
 (defn update-state [state]
-  (let [update-interval (seconds (:update-interval (:options state)))]
-    (if
-      (or
-        (> (time-elapsed (:last-update state)) update-interval)
-        ((:exit? (current-drawing state)) (:drawing-state state)))
+  (let [update-interval (seconds (:update-interval (:options state)))
+        exit-fn         (:exit? (current-drawing state))
+        next?           (if exit-fn
+                          (exit-fn (:drawing-state state))
+                          (> (time-elapsed (:last-update state)) update-interval))]
+    (if next?
       (-> state
         (assoc :drawing-i (mod (inc (:drawing-i state)) (count drawing-list)))
         (assoc :last-update (q/millis))

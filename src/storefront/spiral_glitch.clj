@@ -37,7 +37,5 @@
   (spiral/draw (:spiral-2 state))
   (scanlines/draw (:scan state)))
 
-(defn exit? [state] false)
-
 (def drawing
-  (Drawing. "Spiral Glitch" setup update-state draw-state nil exit? nil))
+  (Drawing. "Spiral Glitch" setup update-state draw-state nil nil nil))

@@ -45,7 +45,5 @@
     (q/triangle -0.5 1 0.5 1 0 -1)
     (q/pop-matrix)))
 
-(defn exit? [state] false)
-
 (def drawing
-  (Drawing. "The Weather" setup update-state draw-state nil exit? nil))
+  (Drawing. "The Weather" setup update-state draw-state nil nil nil))
