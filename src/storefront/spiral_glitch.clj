@@ -38,5 +38,4 @@
   (scanlines/draw (:scan state)))
 
 (def drawing
-  (Drawing. "Spiral Glitch" setup update-state draw-state nil
-    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))
+  (Drawing. "Spiral Glitch" setup update-state draw-state nil nil))

@@ -22,5 +22,4 @@
 (defn draw-state [state])
 
 (def drawing
-  (Drawing. "Sierpinski" setup update-state draw-state nil
-    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))
+  (Drawing. "Sierpinski" setup update-state draw-state nil nil))

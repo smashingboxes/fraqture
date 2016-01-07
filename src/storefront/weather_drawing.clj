@@ -46,5 +46,4 @@
     (q/pop-matrix)))
 
 (def drawing
-  (Drawing. "The Weather" setup update-state draw-state nil
-    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))
+  (Drawing. "The Weather" setup update-state draw-state nil nil))

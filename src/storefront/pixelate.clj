@@ -55,5 +55,4 @@
     (q/rect (:x pixel) (:y pixel) (:w pixel) (:h pixel))))
 
 (def drawing
-  (Drawing. "Pixelate" setup update-state draw-state nil
-    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))
+  (Drawing. "Pixelate" setup update-state draw-state nil nil))

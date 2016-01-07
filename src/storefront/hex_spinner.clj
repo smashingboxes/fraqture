@@ -66,5 +66,4 @@
         colors))))
 
 (def drawing
-  (Drawing. "Hex Spinner" setup update-state draw-state cli-options
-    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))
+  (Drawing. "Hex Spinner" setup update-state draw-state cli-options nil))

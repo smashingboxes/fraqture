@@ -98,5 +98,4 @@
       (:columns state))))
 
 (def drawing
-  (Drawing. "Drag Glitch" setup update-state draw-state cli-options
-    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))
+  (Drawing. "Drag Glitch" setup update-state draw-state cli-options nil))

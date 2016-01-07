@@ -60,5 +60,4 @@
     (draw-hexagon x y (- (:size state) padding))))
 
 (def drawing
-  (Drawing. "Hexagons" setup update-state draw-state nil
-    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))
+  (Drawing. "Hexagons" setup update-state draw-state nil nil))

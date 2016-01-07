@@ -89,5 +89,4 @@
     (:blocks state))))
 
 (def drawing
-  (Drawing. "Shifting Grid" setup update-state draw-state cli-options
-    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))
+  (Drawing. "Shifting Grid" setup update-state draw-state cli-options nil))

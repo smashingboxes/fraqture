@@ -49,8 +49,8 @@
       :setup  (fn [] ((:setup drawing) options))
       :update (:update drawing)
       :draw   (:draw drawing)
-      :size   (:size quil-options)
-      :features (:features quil-options)
+      :size   (or (:size quil-options) :fullscreen)
+      :features (or (:features quil-options) [:keep-on-top :present])
       :middleware [m/fun-mode])))
 
 (defn parse-cli [drawing-name args]
