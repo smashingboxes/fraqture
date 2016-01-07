@@ -8,6 +8,7 @@
                  [clj-http "2.0.0"]
                  [org.clojure/data.json "0.2.6"]
                  [net.mikera/core.matrix "0.47.0"]
+                 [org.clojure/tools.cli "0.3.3"]
                  ]
 
   :jvm-opts ["-Xmx1G"]

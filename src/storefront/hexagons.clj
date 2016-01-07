@@ -34,7 +34,7 @@
   (q/end-shape :close)
   (q/pop-matrix))
 
-(defn setup []
+(defn setup [options]
   (q/frame-rate 6)
   (let [radius 100
         y-count (+ (quot (q/height) (height-spacing (hexagon-height radius))) 1)
@@ -59,4 +59,5 @@
     (q/fill 235 23 103)
     (draw-hexagon x y (- (:size state) padding))))
 
-(def drawing (Drawing. "Hexagons" setup update-state draw-state :fullscreen [:keep-on-top :present]))
+(def drawing
+  (Drawing. "Hexagons" setup update-state draw-state nil nil))
