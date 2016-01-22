@@ -8,6 +8,7 @@ uint8_t current = 0;
 
 void led_transfer(uint8_t x) {
   SPI.transfer(x);
+  Serial.begin(9600);
 }
 
 void setup() {
@@ -34,9 +35,28 @@ void move_function(uint16_t index, color_t *color)
   lerp_color(&pink, &black, lerp_amount, color);
 }
 
+void clear_leds(uint16_t index, color_t *color)
+{
+  memset(color, 0, sizeof(color_t));
+}
+
 void loop() {
-  current = (current + 1) % 120;
-  led_map(&strip, move_function);
+  static bool moving = false;
+  if(!moving) {
+    led_map(&strip, clear_leds);
+    while(Serial.available()) {
+      Serial.read();
+      moving = true;
+    }
+  } else {
+    current = (current + 1) % 120;
+    if (current == 0) {
+      moving = false;
+    } else {
+    led_map(&strip, move_function);
+    }
+  }
+  
   led_refresh(&strip);
   delay(25);
 }
