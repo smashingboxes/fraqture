@@ -57,4 +57,4 @@
               (concat (rest (:effects state)) [(first (:effects state))]))})
 
 (def drawing
-  (Drawing. "Color Swap" setup update-state draw-state nil { :quil { :size [700 450] :features [] }}))
+  (Drawing. "Color Swap" setup update-state draw-state nil nil))
