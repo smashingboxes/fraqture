@@ -14,7 +14,8 @@
             [storefront.weather-drawing :as weather]
             [storefront.textify :as textify]
             [storefront.sierpinski :as sierpinski]
-            [storefront.plant :as plant]))
+            [storefront.plant :as plant]
+            [storefront.throw :as thro]))
 
 (defn exit [status msg]
   (println msg)
@@ -40,6 +41,7 @@
     "sierpinski"    sierpinski/drawing
     "plant"         plant/drawing
     "textify"       textify/drawing
+    "throw"         thro/drawing
   ))
 
 (defn load-drawing [drawing options]
@@ -62,9 +64,6 @@
       help? (exit 1 (usage drawing-name summary))
       errors (exit 1 (string/join \newline errors))
       :else (load-drawing drawing options))))
-
-
-
 
 (def basic-usage
   (str "Usage: lein run <drawing> [args]\n drawings: " (keys drawing-hash)))
