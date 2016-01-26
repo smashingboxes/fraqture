@@ -34,10 +34,10 @@
   (let [pixels (:pixels-to-sample state)]
     (let [dpixels (:pixels-to-modify state)]
       (doseq [pixel (map vector pixels dpixels)]
-        (let [x (nth (nth pixel 0) 0)
-              y (nth (nth pixel 0) 1)
-              dx (nth (nth pixel 1) 0)
-              dy (nth (nth pixel 1) 1)]
+        (let [x (get-in pixel [0 0])
+              y (get-in pixel [0 1])
+              dx (get-in pixel [1 0])
+              dy (get-in pixel [1 1])]
           (blend-pixels x y dx dy (first (:effects state))))))))
 
 (defn update-state [state]
