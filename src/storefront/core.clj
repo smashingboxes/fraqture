@@ -4,6 +4,7 @@
             [quil.middleware :as m]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
+            [storefront.color-swap :as color-swap]
             [storefront.cycle :as cycle]
             [storefront.glitch-drag :as drag]
             [storefront.spirograph :as spirograph]
@@ -30,6 +31,7 @@
       summary]))
 
 (def drawing-hash (hash-map
+    "swap"          color-swap/drawing
     "spiro"         spirograph/drawing
     "drag"          drag/drawing
     "shifting-grid" shifting-grid/drawing
