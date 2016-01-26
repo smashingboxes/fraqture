@@ -29,7 +29,7 @@
    :effects [:blend]})
 
 (defn draw-state [state]
-  (if (end-of-pixel-array? state)
+  (if (:load-new-image state)
     (load-new-image))
   (let [pixels (:pixels-to-sample state)]
     (let [dpixels (:pixels-to-modify state)]

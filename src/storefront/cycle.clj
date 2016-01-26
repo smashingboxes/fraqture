@@ -4,6 +4,7 @@
             [quil.core :as q]
             [clojure.tools.cli :refer [parse-opts]]
             [storefront.glitch-drag :as drag]
+            [storefront.color-swap :as swap]
             [storefront.spirograph :as spirograph]
             [storefront.shifting-grid :as shifting-grid]
             [storefront.hexagons :as hexagons]
@@ -16,6 +17,7 @@
 (def drawing-list
   (shuffle
    [drag/drawing
+    swap/drawing
     spirograph/drawing
     shifting-grid/drawing
     hexagons/drawing
