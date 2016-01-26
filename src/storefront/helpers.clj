@@ -18,6 +18,16 @@
 (defn valid-image [file]
   (some true? (map #(.endsWith (.getName file) %) image-extensions)))
 
+; sine wave pulse between a hight and low at x rate
+; returns an Integer
+(defn pulse [low high rate]
+  (let [diff (- high low)
+        half (/ diff 2)
+        mid (+ low half)
+        s (/ (q/millis) 1000.0)
+        x (q/sin (* s (/ 1.0 rate)))]
+    (+ mid (* x half))))
+
 ; Get a random file, except the given file
 (defn random-image-file
   [& {:keys [except]
