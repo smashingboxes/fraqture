@@ -4,21 +4,16 @@
             [quil.core :as q])
   (:import  [storefront.drawing Drawing]))
 
-(def pixel-size 20)
+(def pixel-size 30)
 (def pixel-count 5)
 
 (defn blend-pixels [x y dx dy effect]
   (q/blend x y pixel-size pixel-size dx dy pixel-size pixel-size effect))
 
 (defn pixel-array []
-  (let [x-arry (range 0 (q/width) pixel-size)]
-    (shuffle
-      (partition 2
-        (flatten
-          (map
-            (fn [arg1]
-              (map #(list arg1 %) (range 0 (q/height) pixel-size)))
-            x-arry))))))
+  (shuffle (for [x (range 0 (q/width) pixel-size)
+        y (range 0 (q/height) pixel-size)]
+    [x y])))
 
 (defn end-of-pixel-array? [state]
   (= 0 (count (:pixel-array state))))
