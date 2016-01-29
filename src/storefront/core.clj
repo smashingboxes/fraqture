@@ -22,7 +22,6 @@
   (println msg)
   (System/exit status))
 
-
 (defn usage [drawing-name summary]
   (string/join \newline
     [(str "Usage: lein run " drawing-name " [args]")
@@ -46,13 +45,19 @@
     "throw"         thro/drawing
   ))
 
+(defonce drawing-atom (atom nil))
+
+(defn reload-drawing! [drawing]
+  (reset! drawing-atom drawing))
+
 (defn load-drawing [drawing options]
   (let [quil-options   (:quil (:options drawing))]
+    (reload-drawing! drawing)
     (q/defsketch storefront
       :title  (:title drawing)
-      :setup  (fn [] ((:setup drawing) options))
-      :update (:update drawing)
-      :draw   (:draw drawing)
+      :setup  #((:setup @drawing-atom) options)
+      :update #((:update @drawing-atom) %)
+      :draw   #((:draw @drawing-atom) %)
       :size   (or (:size quil-options) :fullscreen)
       :features (or (:features quil-options) [:keep-on-top :present])
       :middleware [m/fun-mode])))
