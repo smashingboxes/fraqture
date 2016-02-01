@@ -46,10 +46,12 @@
   ])
 
 (defn setup [options]
-  { :triangles (hex-triangles (:radius options)) })
+  { :triangles (hex-triangles (:radius options)) :frames 0 })
 
 (defn update-state [state]
-  (update-in state [:triangles] #(m/rotate % 0 1)))
+  (-> state
+    (update-in [:triangles] #(m/rotate % 0 1))
+    (update-in [:frames] inc)))
 
 (defn draw-state [state]
   (q/frame-rate 10)
@@ -65,5 +67,7 @@
         (:triangles state)
         colors))))
 
+(defn exit? [state] (> (:frames state) 24))
+
 (def drawing
-  (Drawing. "Hex Spinner" setup update-state draw-state cli-options nil))
+  (Drawing. "Hex Spinner" setup update-state draw-state cli-options exit? nil))

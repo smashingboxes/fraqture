@@ -48,8 +48,12 @@
     (bootstrap-state initial-state)))
 
 (defn update-state [state]
-  (let [update-interval (seconds (:update-interval (:options state)))]
-    (if (> (time-elapsed (:last-update state)) update-interval)
+  (let [update-interval (seconds (:update-interval (:options state)))
+        exit-fn         (:exit? (current-drawing state))
+        next?           (if exit-fn
+                          (exit-fn (:drawing-state state))
+                          (> (time-elapsed (:last-update state)) update-interval))]
+    (if next?
       (-> state
         (assoc :drawing-i (mod (inc (:drawing-i state)) (count drawing-list)))
         (assoc :last-update (q/millis))
@@ -60,4 +64,4 @@
   ((:draw (current-drawing state)) (:drawing-state state)))
 
 (def drawing
-  (Drawing. "Cycle Drawings" setup update-state draw-state cli-options nil))
+  (Drawing. "Cycle Drawings" setup update-state draw-state cli-options nil nil))

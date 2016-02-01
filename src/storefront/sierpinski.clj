@@ -22,4 +22,4 @@
 (defn draw-state [state])
 
 (def drawing
-  (Drawing. "Sierpinski" setup update-state draw-state nil nil))
+  (Drawing. "Sierpinski" setup update-state draw-state nil nil nil))

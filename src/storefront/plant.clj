@@ -26,5 +26,4 @@
 (defn draw-state [state])
 
 (def drawing
-  (Drawing. "Plant" setup update-state draw-state nil
-    { :quil { :size :fullscreen :features [:keep-on-top :present] }}))
+  (Drawing. "Plant" setup update-state draw-state nil nil nil))
