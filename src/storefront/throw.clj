@@ -33,4 +33,4 @@
   (q/fill 255)
   (q/ellipse (:loc state) (/ (q/height) 2) csize csize))
 
-(def drawing (Drawing. "throw" setup update-state draw-state cli-options nil))
+(def drawing (Drawing. "throw" setup update-state draw-state cli-options nil nil))
