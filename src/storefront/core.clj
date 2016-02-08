@@ -16,7 +16,8 @@
             [storefront.textify :as textify]
             [storefront.sierpinski :as sierpinski]
             [storefront.plant :as plant]
-            [storefront.throw :as thro]))
+            [storefront.throw :as thro]
+            [storefront.tweetreader :as tweetreader]))
 
 (defn exit [status msg]
   (println msg)
@@ -43,6 +44,7 @@
     "plant"         plant/drawing
     "textify"       textify/drawing
     "throw"         thro/drawing
+    "tweetreader"   tweetreader/drawing
   ))
 
 (defonce drawing-atom (atom nil))
