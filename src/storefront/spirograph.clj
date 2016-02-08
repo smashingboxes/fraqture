@@ -77,4 +77,4 @@
                curr)))))
 
 (def drawing
- (Drawing. "Spirograph" setup update-state draw-state nil nil))
+ (Drawing. "Spirograph" setup update-state draw-state nil nil nil))

@@ -1,3 +1,3 @@
 (ns storefront.drawing)
 
-(defrecord Drawing [title setup update draw cli options])
+(defrecord Drawing [title setup update draw cli exit? options])

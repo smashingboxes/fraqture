@@ -38,4 +38,4 @@
   (scanlines/draw (:scan state)))
 
 (def drawing
-  (Drawing. "Spiral Glitch" setup update-state draw-state nil nil))
+  (Drawing. "Spiral Glitch" setup update-state draw-state nil nil nil))

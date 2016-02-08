@@ -46,4 +46,4 @@
     (q/pop-matrix)))
 
 (def drawing
-  (Drawing. "The Weather" setup update-state draw-state nil nil))
+  (Drawing. "The Weather" setup update-state draw-state nil nil nil))

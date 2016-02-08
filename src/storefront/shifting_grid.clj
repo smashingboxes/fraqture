@@ -134,4 +134,4 @@
     (:blocks state))))
 
 (def drawing
-  (Drawing. "Shifting Grid" setup update-state draw-state cli-options nil))
+  (Drawing. "Shifting Grid" setup update-state draw-state cli-options nil nil))

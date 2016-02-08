@@ -54,5 +54,14 @@
     (q/fill (:color pixel))
     (q/rect (:x pixel) (:y pixel) (:w pixel) (:h pixel))))
 
+(defn exit? [state]
+  (let [mult (:pixel-multiplier state)
+        px-w (* pixel-width mult)
+        px-h (* pixel-height mult)
+        x (/ (q/width) px-w)
+        y (/ (q/height) px-h)
+        total-pixels (* x y)]
+  (< total-pixels 50)))
+
 (def drawing
-  (Drawing. "Pixelate" setup update-state draw-state nil nil))
+  (Drawing. "Pixelate" setup update-state draw-state nil exit? nil))
