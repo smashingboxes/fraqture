@@ -82,12 +82,14 @@
         blocks (if column? blocks (m/transpose blocks))]
     blocks))
 
-
-(defn undo-first [blocks ops]
+(defn pop-block [blocks ops]
   (let [opset (peek ops)
         ops (pop ops)
         blocks (reduce undo-op blocks opset)]
-  [blocks ops]))
+    [blocks ops]))
+
+(defn undo-first [blocks ops]
+  (if (empty? ops) [blocks ops] (pop-block blocks ops)))
 
 (defn setup [options]
   (q/frame-rate 5)
