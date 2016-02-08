@@ -52,4 +52,4 @@
               (concat (rest (:effects state)) [(first (:effects state))]))})
 
 (def drawing
-  (Drawing. "Color Swap" setup update-state draw-state nil nil))
+  (Drawing. "Color Swap" setup update-state draw-state nil nil nil))
