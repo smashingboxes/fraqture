@@ -133,5 +133,9 @@
         column)))
     (:blocks state))))
 
+(defn exit? [state]
+  (let [ops (:ops state)]
+  (= (count ops) 0)))
+
 (def drawing
-  (Drawing. "Shifting Grid" setup update-state draw-state cli-options nil nil))
+  (Drawing. "Shifting Grid" setup update-state draw-state cli-options exit? nil))
