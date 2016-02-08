@@ -56,7 +56,7 @@
         start   (rand-int max)
         size    chunk-size
         columns (n-indices-wrapped size start max)
-        rotated (if column? matrix (m/transpose matrix))
+        rotated (if column? (vec matrix) (m/transpose matrix))
         rotate-nth (rotate-nth-generator max-rotation)
         [shifted ops] (reduce rotate-nth [rotated []] columns)
         ops (map #(concat [column?] %) ops)]
@@ -71,7 +71,7 @@
             [blocks new-ops] (random-rotation blocks max-rotation chunk-size)
             ops (conj ops new-ops)]
       [blocks ops]))
-    [blocks []] (range 50)))
+    [blocks []] (range 100)))
 
 
 (defn undo-op [blocks op]
@@ -86,7 +86,6 @@
 (defn undo-first [blocks ops]
   (let [opset (peek ops)
         ops (pop ops)
-        ; _meh (println opset)
         blocks (reduce undo-op blocks opset)]
   [blocks ops]))
 
@@ -97,13 +96,15 @@
         _resized (q/resize image (q/width) (q/height))
         x-blocks (:x-blocks options)
         y-blocks (:y-blocks options)
+        max-rotation (:max-rotation options)
+        chunk-size (:chunk-size options)
         block-w (/ (q/width) x-blocks)
         block-h (/ (q/height) y-blocks)
         xs     (map #(* % block-w) (range x-blocks))
         ys     (map #(* % block-h) (range y-blocks))
-        blocks (doall (map (fn [x] (map (fn [y] (q/get-pixel image x y block-w block-h)) ys)) xs))
+        blocks (map (fn [x] (map (fn [y] (q/get-pixel image x y block-w block-h)) ys)) xs)
         [blocks ops] (if (:backwards options)
-                         (pre-mix blocks (:max-rotation options) (:chunk-size options))
+                         (pre-mix blocks max-rotation chunk-size)
                          [blocks nil])]
         { :blocks blocks
           :options options
