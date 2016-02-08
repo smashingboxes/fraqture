@@ -69,7 +69,8 @@
 
 (defn setup [options]
   (let [state (setup-new-image nil (:x-blocks options) (:y-blocks options))
-        state (assoc state :options options)]
+        state (assoc state :options options)
+        state (assoc state :times-run 0)]
     (q/frame-rate 10)
     state))
 
@@ -80,11 +81,12 @@
 (defn update-state [state]
   (let [options         (:options state)
         update-interval (:update-interval options)
+        times-run       (inc (:times-run state))
         jitter-amount   (:jitter-amount options)
         x-blocks        (:x-blocks options)
         y-blocks        (:y-blocks options)]
     (if (> (time-elapsed (:last-update state)) (seconds update-interval))
-      (assoc (setup-new-image (:image-file state) x-blocks y-blocks) :options options)
+      (assoc (setup-new-image (:image-file state) x-blocks y-blocks) :options options :times-run times-run)
       (update-in state [:columns] #(map (update-column-generator jitter-amount) %)))))
 
 (defn draw-state [state]
@@ -97,5 +99,7 @@
           (:color column)))
       (:columns state))))
 
+(defn exit? [state] (>= (:times-run state) 2))
+
 (def drawing
-  (Drawing. "Drag Glitch" setup update-state draw-state cli-options nil))
+  (Drawing. "Drag Glitch" setup update-state draw-state cli-options exit? nil))

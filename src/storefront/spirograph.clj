@@ -61,23 +61,15 @@
   [(+ (/ (q/width) 2) (* r (q/cos a)))
    (+ (/ (q/height) 2) (* r (q/sin a)))])
 
-(defn pulse [low high rate]
-  (let [diff (- high low)
-        half (/ diff 2)
-        mid (+ low half)
-        s (/ (q/millis) 1000.0)
-        x (q/sin (* s (/ 1.0 rate)))]
-    (+ mid (* x half))))
-
 (defn draw-state [state]
-  (q/fill (pulse 20 50 2.0) 230 (pulse 150 200 1.0))
+  (q/fill 20 230 150)
   (q/no-stroke)
   (let [dots (:dots state)]
     (loop [curr (first dots)
            tail (rest dots)
            prev nil]
       (let [[x y] (dot->coord curr)]
-        (let [size (pulse 20 25 0.001)]
+        (let [size 25]
           (q/ellipse x y size size)))
       (when (seq tail)
         (recur (first tail)
@@ -85,4 +77,4 @@
                curr)))))
 
 (def drawing
- (Drawing. "Spirograph" setup update-state draw-state nil nil))
+ (Drawing. "Spirograph" setup update-state draw-state nil nil nil))
