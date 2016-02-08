@@ -23,7 +23,7 @@
       :default 3
       :parse-fn #(Integer/parseInt %)
       :validate [#(< 1 % 10) "Must be a number between 1 and 10"]]
-    [nil "--backwards", "Pre-mix and run it backwards"]
+    [nil "--mix", "Endlessly mix the drawing"]
   ])
 
 (defn draw-block [block x-index y-index w h]
@@ -103,9 +103,9 @@
         xs     (map #(* % block-w) (range x-blocks))
         ys     (map #(* % block-h) (range y-blocks))
         blocks (map (fn [x] (map (fn [y] (q/get-pixel image x y block-w block-h)) ys)) xs)
-        [blocks ops] (if (:backwards options)
-                         (pre-mix blocks max-rotation chunk-size)
-                         [blocks nil])]
+        [blocks ops] (if (:mix options)
+                         [blocks nil]
+                         (pre-mix blocks max-rotation chunk-size))]
         { :blocks blocks
           :options options
           :block-w block-w
@@ -117,9 +117,9 @@
         max-rotation (:max-rotation options)
         chunk-size (:chunk-size options)
         ops (:ops state)
-        [blocks ops] (if (:backwards options)
-                         (undo-first (:blocks state) ops)
-                         (random-rotation (:blocks state) max-rotation chunk-size))]
+        [blocks ops] (if (:mix options)
+                         (random-rotation (:blocks state) max-rotation chunk-size)
+                         (undo-first (:blocks state) ops))]
     (-> state
       (assoc :blocks blocks)
       (assoc :ops ops))))
