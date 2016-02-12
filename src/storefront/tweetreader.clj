@@ -27,32 +27,31 @@
 (def words_concat_tuple
   (reduce reducer [""] words))
 
-(def words_concat (first words_concat_tuple))
-
 (defn setup [options]
-  (let [font (q/create-font "Monoid-Regular.ttf" 20)]
+  (let [font (q/create-font "Monoid-Regular.ttf" 20)
+        width (q/text-width " ")]
     (q/text-font font)
     { :write-index 0
       :monoid font
-      :char-width (q/text-width " ") }))
+      :char-width width
+      :x-offset (/ (- (q/width) (* chars-per-line width)) 2) }))
 
 (defn update-state [state] state)
 
 (defn style-line [line]
   (if (= line 0) (q/fill 235 23 103) (q/fill 255)))
 
-(defn draw-state [state]
-  (let [x-offset (/ (- (q/width) (* chars-per-line (:char-width state))) 2)
-        lines (concat [tweeter] words_concat_tuple)]
-    (q/background 30)
-    (q/text-size 20)
-    (q/stroke 235 23 103)
-    (q/stroke-weight 2)
-    (q/line x-offset 326 (+ x-offset (* (count tweeter) (:char-width state))) 326)
+(defn write-letter [character char-width x-offset line-no index]
+  (style-line line-no)
+  (q/text-char character (+ x-offset (* index char-width)) (+ 320 (* y-offset line-no))))
 
+(defn draw-state [state]
+  (let [lines (concat [tweeter] words_concat_tuple)]
+    (q/background 30)
     (doall (map-indexed
       (fn [idx line]
-        (doall [(style-line idx) (q/text line x-offset (+ 320 (* y-offset idx)))]))
-      lines))))
+        (doall (map-indexed #(write-letter %2 (:char-width state) (:x-offset state) idx %1) line)))
+        lines))
+    (q/delay-frame 100)))
 
 (def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil))
