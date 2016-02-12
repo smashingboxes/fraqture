@@ -15,8 +15,15 @@ client.user do |object|
     object.media.each do |media|
       url = media.media_url
       puts "Downloading #{url.to_s}..."
-      open("images/#{url.basename}", 'wb') do |file|
-        file << open(url.to_s).read
+      open("images/#{url.basename}", 'wb') do |f|
+        f << open(url.to_s).read
+      end
+    end
+
+    if ! object.text.empty?
+      puts "Saving tweet: #{object.text}..."
+      open('tweets.txt', 'a') do |f|
+        f.puts object.text
       end
     end
   end
