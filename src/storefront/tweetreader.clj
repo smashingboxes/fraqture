@@ -61,11 +61,6 @@
   (let [strlen (count (apply str strarray))]
     (repeatedly strlen final-letter-state)))
 
-; Creates a mask filled with falses
-(defn compute-initial-mask [strarray]
-  (let [strlen (count (apply str strarray))]
-    (repeat strlen false)))
-
 ; Write a letter from its state
 (defn write-letter [[color x y] character]
   (apply q/fill color)
@@ -82,22 +77,38 @@
         current-states (take strlen (map resolve-state initials finals mask))]
     (doall (map (fn [state char] (write-letter state char)) current-states fullstr))))
 
+; Given a length, return a list of shuffled indexes
+(defn shuffled-indexes [list-size]
+  (shuffle (range list-size)))
+
+; Set the given element in an array to true
+(defn mask-reducer [acc cur] (assoc acc cur true))
+
+; Given a static list of the order of characters and an index, return the current mask
+(defn current-mask [shuffled index]
+  (let [arrlen (count shuffled)
+        flipped (take index shuffled)]
+    (reduce mask-reducer (vec (repeat arrlen false)) flipped)))
+
 (defn setup [options]
   (let [tweet-lines (concat [tweeter] (reduce create-string-array [""] words))]
     (q/text-font (q/create-font "Monoid-Regular.ttf" 20))
     { :write-index 1
+      :message tweet-lines
       :initial-states (compute-initial-states tweet-lines (q/text-width " "))
       :final-states (compute-final-states tweet-lines)
-      :mask (compute-initial-mask tweet-lines) }))
+      :mask-order (shuffled-indexes (count (apply str tweet-lines))) }))
 
 (defn update-state [state]
   (-> state
       (update-in [:write-index] inc)))
 
 (defn draw-state [state]
-  (let [current-str (clip-to-length tweet-lines (:write-index state))]
+  (let [current-str (clip-to-length (:message state) (:write-index state))
+        left-over (max (- (:write-index state) (count (apply str (:message state)))) 0)
+        mask (current-mask (:mask-order state) left-over)]
     (q/background 30)
-    (write-characters current-str (:initial-states state) (:final-states state) (:mask state))
-    (q/delay-frame 100)))
+    (write-characters current-str (:initial-states state) (:final-states state) mask)
+    (q/delay-frame 10)))
 
 (def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil))
