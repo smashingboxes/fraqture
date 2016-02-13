@@ -42,7 +42,7 @@
   (let [color (if (= line-no 0) [235 23 103] [255 255 255])
         y-start (- (/ (q/height) 2) 100)
         x-offset (/ (- (q/width) (* chars-per-line char-width)) 2)]
-    [color (+ x-offset (* index char-width)) (+ y-start (* y-offset line-no))]))
+    [color (= line-no 0) (+ x-offset (* index char-width)) (+ y-start (* y-offset line-no))]))
 
 ; Curry a state generator with the width
 (defn line-to-state [width]
@@ -55,7 +55,7 @@
 
 ; Returns random colors and placements
 (defn final-letter-state []
-  [(vec (repeatedly 3 #(rand 255))) (rand (q/width)) (rand (q/height))])
+  [(vec (repeatedly 3 #(rand 255))) false (rand (q/width)) (rand (q/height))])
 
 ; Creates an array of random positions and colors
 (defn compute-final-states [strarray]
@@ -63,8 +63,13 @@
     (repeatedly strlen final-letter-state)))
 
 ; Write a letter from its state
-(defn write-letter [[color x y] character]
+(defn write-letter [[color underline? x y] character]
   (apply q/fill color)
+  (if underline?
+    (doall
+      [(apply q/stroke color)
+      (q/line x (+ y 7) (+ x 6) (+ y 10))
+      (q/line (+ x 6) (+ y 10) (+ x 13) (+ y 7))]))
   (q/text-char character x y))
 
 ; Mapping function that takes in the two states and a mask and returns the proper state
@@ -94,6 +99,7 @@
 (defn setup [options]
   (let [tweet-lines (concat [tweeter] (reduce create-string-array [""] words))]
     (q/text-font (q/create-font "Monoid-Regular.ttf" 20))
+    (q/stroke-weight 3)
     { :write-index 1
       :message tweet-lines
       :initial-states (compute-initial-states tweet-lines (q/text-width " "))
@@ -110,6 +116,6 @@
         mask (current-mask (:mask-order state) left-over)]
     (q/background 30)
     (write-characters current-str (:initial-states state) (:final-states state) mask)
-    (q/delay-frame 10)))
+    (q/delay-frame 40)))
 
 (def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil))
