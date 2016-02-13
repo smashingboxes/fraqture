@@ -40,8 +40,9 @@
 ; Create the initial state for a given letter. Returns [[r g b] x y]
 (defn initial-letter-state [char-width line-no index]
   (let [color (if (= line-no 0) [235 23 103] [255 255 255])
+        y-start (- (/ (q/height) 2) 100)
         x-offset (/ (- (q/width) (* chars-per-line char-width)) 2)]
-    [color (+ x-offset (* index char-width)) (+ 320 (* y-offset line-no))]))
+    [color (+ x-offset (* index char-width)) (+ y-start (* y-offset line-no))]))
 
 ; Curry a state generator with the width
 (defn line-to-state [width]
@@ -105,7 +106,7 @@
 
 (defn draw-state [state]
   (let [current-str (clip-to-length (:message state) (:write-index state))
-        left-over (max (- (:write-index state) (count (apply str (:message state)))) 0)
+        left-over (max (- (:write-index state) (count (apply str (:message state))) 30) 0)
         mask (current-mask (:mask-order state) left-over)]
     (q/background 30)
     (write-characters current-str (:initial-states state) (:final-states state) mask)
