@@ -54,7 +54,7 @@
 
 ; Returns random colors and placements
 (defn final-letter-state []
-  [[0 0 0] 0 0])
+  [(vec (repeatedly 3 #(rand 255))) (rand (q/width)) (rand (q/height))])
 
 ; Creates an array of random positions and colors
 (defn compute-final-states [strarray]
