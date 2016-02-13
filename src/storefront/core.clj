@@ -61,7 +61,7 @@
       :update #((:update @drawing-atom) %)
       :draw   #((:draw @drawing-atom) %)
       :size   (or (:size quil-options) :fullscreen)
-      :features (or (:features quil-options) [:keep-on-top :present])
+      :features (or (:features quil-options) [:present])
       :middleware [m/fun-mode])))
 
 (defn parse-cli [drawing-name args]

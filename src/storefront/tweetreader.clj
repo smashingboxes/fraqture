@@ -14,7 +14,8 @@
 (defn format-string
   [current appended])
 
-(defn reducer [str_array word]
+; This will split a string into an array of < 80 character strings
+(defn create-string-array [str_array word]
   (let [len (count word)
         current (last str_array)
         line_length (count current)
@@ -24,19 +25,36 @@
       (= 0 (count current)) (conj other_strings word)
       :else (conj other_strings (str current " " word)))))
 
-(def words_concat_tuple
-  (reduce reducer [""] words))
+(def tweet-lines
+  (concat [tweeter] (reduce create-string-array [""] words)))
+
+(defn reduce-string-array [[array-out chars-left] string]
+  (let [strlen (count string)]
+    (cond
+      (= chars-left 0) [array-out 0]
+      (> strlen chars-left) [(conj array-out (apply str (take chars-left string))) 0]
+      :else [(conj array-out string) (- chars-left strlen)])))
+
+; Take an array of strings and return an array of strings with n
+; characters.
+(defn clip-to-length [str-array length]
+  (let [[new-array _chars] (reduce reduce-string-array [[] length] str-array)]
+    new-array))
 
 (defn setup [options]
-  (let [font (q/create-font "Monoid-Regular.ttf" 20)
+  (let [font  (q/create-font "Monoid-Regular.ttf" 20)
+        _     (q/text-font font)
         width (q/text-width " ")]
-    (q/text-font font)
     { :write-index 0
       :monoid font
       :char-width width
-      :x-offset (/ (- (q/width) (* chars-per-line width)) 2) }))
+      :x-offset (/ (- (q/width) (* chars-per-line width)) 2)
+      :current-str [] }))
 
-(defn update-state [state] state)
+(defn update-state [state]
+  (-> state
+      (update-in [:write-index] inc)
+      (assoc :current-str (clip-to-length tweet-lines (:write-index state)))))
 
 (defn style-line [line]
   (if (= line 0) (q/fill 235 23 103) (q/fill 255)))
@@ -46,12 +64,15 @@
   (q/text-char character (+ x-offset (* index char-width)) (+ 320 (* y-offset line-no))))
 
 (defn draw-state [state]
-  (let [lines (concat [tweeter] words_concat_tuple)]
-    (q/background 30)
-    (doall (map-indexed
+  (q/background 30)
+  (doall
+    (map-indexed
       (fn [idx line]
-        (doall (map-indexed #(write-letter %2 (:char-width state) (:x-offset state) idx %1) line)))
-        lines))
-    (q/delay-frame 100)))
+        (doall
+          (map-indexed
+            #(write-letter %2 (:char-width state) (:x-offset state) idx %1)
+            line)))
+      (:current-str state)))
+  (q/delay-frame 100))
 
 (def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil))
