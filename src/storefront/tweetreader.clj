@@ -2,7 +2,8 @@
   (:require [storefront.drawing]
             [storefront.helpers :refer :all]
             [quil.core :as q]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [storefront.textify :as textify])
   (:import  [storefront.drawing Drawing]))
 
 (def tweeter "@smashingboxes")
@@ -10,6 +11,7 @@
 (def words (str/split tweet #" "))
 (def y-offset 34)
 (def chars-per-line 80)
+(def padding-time 30)
 
 ; This will split a string into an array of < 80 character strings
 (defn create-string-array [str_array word]
@@ -97,25 +99,37 @@
     (reduce mask-reducer (vec (repeat arrlen false)) flipped)))
 
 (defn setup [options]
-  (let [tweet-lines (concat [tweeter] (reduce create-string-array [""] words))]
+  (let [tweet-lines (concat [tweeter] (reduce create-string-array [""] words))
+        image (textify/loader "images/logo.png" false)]
+    (q/frame-rate 30)
     (q/text-font (q/create-font "Monoid-Regular.ttf" 20))
     (q/stroke-weight 3)
     { :write-index 1
       :message tweet-lines
       :initial-states (compute-initial-states tweet-lines (q/text-width " "))
       :final-states (compute-final-states tweet-lines)
-      :mask-order (shuffled-indexes (count (apply str tweet-lines))) }))
+      :mask-order (shuffled-indexes (count (apply str tweet-lines)))
+      :image image
+      :options { :letters-per-frame 12 :min-letter-size 12 :max-letter-size 36 } }))
 
 (defn update-state [state]
   (-> state
       (update-in [:write-index] inc)))
 
 (defn draw-state [state]
-  (let [current-str (clip-to-length (:message state) (:write-index state))
-        left-over (max (- (:write-index state) (count (apply str (:message state))) 30) 0)
-        mask (current-mask (:mask-order state) left-over)]
-    (q/background 30)
-    (write-characters current-str (:initial-states state) (:final-states state) mask)
-    (q/delay-frame 40)))
+  (let [str-len (count (apply str (:message state)))
+        left-over (max (- (:write-index state) str-len padding-time) 0)
+        mask (current-mask (:mask-order state) left-over)
+        done? (> left-over (+ str-len padding-time))]
+    (if done?
+      (textify/draw-state state)
+      (doall
+        [(q/background 30)
+         (write-characters
+           (clip-to-length (:message state) (:write-index state))
+           (:initial-states state)
+           (:final-states state)
+           mask)
+         (q/delay-frame 10)]))))
 
 (def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil))
