@@ -11,9 +11,6 @@
 (def y-offset 34)
 (def chars-per-line 80)
 
-(defn format-string
-  [current appended])
-
 ; This will split a string into an array of < 80 character strings
 (defn create-string-array [str_array word]
   (let [len (count word)
@@ -25,9 +22,8 @@
       (= 0 (count current)) (conj other_strings word)
       :else (conj other_strings (str current " " word)))))
 
-(def tweet-lines
-  (concat [tweeter] (reduce create-string-array [""] words)))
 
+; The reduction function that will return N characters from an array of strings
 (defn reduce-string-array [[array-out chars-left] string]
   (let [strlen (count string)]
     (cond
@@ -41,38 +37,67 @@
   (let [[new-array _chars] (reduce reduce-string-array [[] length] str-array)]
     new-array))
 
+; Create the initial state for a given letter. Returns [[r g b] x y]
+(defn initial-letter-state [char-width line-no index]
+  (let [color (if (= line-no 0) [235 23 103] [255 255 255])
+        x-offset (/ (- (q/width) (* chars-per-line char-width)) 2)]
+    [color (+ x-offset (* index char-width)) (+ 320 (* y-offset line-no))]))
+
+; Curry a state generator with the width
+(defn line-to-state [width]
+  (fn [line-no text]
+    (map-indexed (fn [char-no char] (initial-letter-state width line-no char-no)) text)))
+
+; Creates an array of proper letter positions and colors
+(defn compute-initial-states [strarray width]
+  (apply concat (map-indexed (line-to-state width) strarray)))
+
+; Returns random colors and placements
+(defn final-letter-state []
+  [[0 0 0] 0 0])
+
+; Creates an array of random positions and colors
+(defn compute-final-states [strarray]
+  (let [strlen (count (apply str strarray))]
+    (repeatedly strlen final-letter-state)))
+
+; Creates a mask filled with falses
+(defn compute-initial-mask [strarray]
+  (let [strlen (count (apply str strarray))]
+    (repeat strlen false)))
+
+; Write a letter from its state
+(defn write-letter [[color x y] character]
+  (apply q/fill color)
+  (q/text-char character x y))
+
+; Mapping function that takes in the two states and a mask and returns the proper state
+(defn resolve-state [initial-state final-state is-final?]
+  (if is-final? final-state initial-state))
+
+; Take in the state arrays and mask and write it out
+(defn write-characters [strarray initials finals mask]
+  (let [fullstr (apply str strarray)
+        strlen (count fullstr)
+        current-states (take strlen (map resolve-state initials finals mask))]
+    (doall (map (fn [state char] (write-letter state char)) current-states fullstr))))
+
 (defn setup [options]
-  (let [font  (q/create-font "Monoid-Regular.ttf" 20)
-        _     (q/text-font font)
-        width (q/text-width " ")]
-    { :write-index 0
-      :monoid font
-      :char-width width
-      :x-offset (/ (- (q/width) (* chars-per-line width)) 2)
-      :current-str [] }))
+  (let [tweet-lines (concat [tweeter] (reduce create-string-array [""] words))]
+    (q/text-font (q/create-font "Monoid-Regular.ttf" 20))
+    { :write-index 1
+      :initial-states (compute-initial-states tweet-lines (q/text-width " "))
+      :final-states (compute-final-states tweet-lines)
+      :mask (compute-initial-mask tweet-lines) }))
 
 (defn update-state [state]
   (-> state
-      (update-in [:write-index] inc)
-      (assoc :current-str (clip-to-length tweet-lines (:write-index state)))))
-
-(defn style-line [line]
-  (if (= line 0) (q/fill 235 23 103) (q/fill 255)))
-
-(defn write-letter [character char-width x-offset line-no index]
-  (style-line line-no)
-  (q/text-char character (+ x-offset (* index char-width)) (+ 320 (* y-offset line-no))))
+      (update-in [:write-index] inc)))
 
 (defn draw-state [state]
-  (q/background 30)
-  (doall
-    (map-indexed
-      (fn [idx line]
-        (doall
-          (map-indexed
-            #(write-letter %2 (:char-width state) (:x-offset state) idx %1)
-            line)))
-      (:current-str state)))
-  (q/delay-frame 100))
+  (let [current-str (clip-to-length tweet-lines (:write-index state))]
+    (q/background 30)
+    (write-characters current-str (:initial-states state) (:final-states state) (:mask state))
+    (q/delay-frame 100)))
 
 (def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil))
