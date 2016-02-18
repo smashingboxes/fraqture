@@ -1,6 +1,5 @@
 (ns storefront.throw
-  (:require [clojure.core.async :as async :refer :all]
-            [quil.core :as q]
+  (:require [quil.core :as q]
             [storefront.drawing]
             [serial-port :as ser])
   (:import  [storefront.drawing Drawing]))
