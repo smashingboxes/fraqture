@@ -7,11 +7,11 @@
 #define COL_COUNT 30
 
 typedef struct {
-  color_t color;
   uint8_t row_start;
   uint8_t col_start;
   uint8_t row_end;
   uint8_t col_end;
+  color_t color;
 } window_t;
 
 #ifdef __cplusplus
