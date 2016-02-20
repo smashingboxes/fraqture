@@ -3,9 +3,9 @@
 
 #include "color.h"
 
-// Default the LED_COUNT to 2m of 60 led/m
+// Set the LED count to 540, 18m @ 30/m
 #ifndef LED_COUNT
-#define LED_COUNT 120
+#define LED_COUNT 540
 #endif
 
 // Function definition for mapping over the LEDs
