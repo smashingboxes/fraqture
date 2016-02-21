@@ -132,4 +132,4 @@
            mask)
          (q/delay-frame 10)]))))
 
-(def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil))
+(def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil nil))
