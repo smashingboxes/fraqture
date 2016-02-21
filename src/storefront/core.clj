@@ -2,6 +2,7 @@
   (:gen-class)
   (:require [quil.core :as q]
             [quil.middleware :as m]
+            [serial.core :as ser]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
             [storefront.color-swap :as color-swap]
