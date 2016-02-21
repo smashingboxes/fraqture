@@ -1,7 +1,7 @@
 (ns storefront.throw
   (:require [quil.core :as q]
             [storefront.drawing]
-            [serial-port :as ser])
+            [serial.core :as ser])
   (:import  [storefront.drawing Drawing]))
 
 (def cli-options [["-p" "--port PATH" "Serial port, /dev/cu.*"]])
