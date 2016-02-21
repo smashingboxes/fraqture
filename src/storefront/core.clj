@@ -2,7 +2,7 @@
   (:gen-class)
   (:require [quil.core :as q]
             [quil.middleware :as m]
-            [serial.core :as ser]
+            [storefront.led-array :as led]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
             [storefront.color-swap :as color-swap]
@@ -50,6 +50,12 @@
 
 (defonce drawing-atom (atom nil))
 
+(def defaults [
+  ["-s" "--serial SERIAL" "Serial port for LEDs"
+   :parse-fn #(str %)
+   :validate [#(led/validate-serial-port %) "Serial port not connected"]]
+  ["-h" "--help"]])
+
 (defn reload-drawing! [drawing]
   (reset! drawing-atom drawing))
 
@@ -67,9 +73,11 @@
 
 (defn parse-cli [drawing-name args]
   (let [drawing        (get drawing-hash drawing-name)
-        cli-options    (merge (:cli drawing) ["-h" "--help"])
+        cli-options    (into [] (concat (or (:cli drawing) []) defaults))
         {:keys [options arguments errors summary]} (parse-opts args cli-options)
+        options        (update-in options [:serial] #(led/connect %))
         help?          (:help options)]
+    (led/clear (:serial options))
     (cond
       help? (exit 1 (usage drawing-name summary))
       errors (exit 1 (string/join \newline errors))
