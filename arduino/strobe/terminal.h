@@ -4,7 +4,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define CMD_LENGTH   5
+// Sending RESET_LENGTH of RESET_CHARACTER will reset the protocol
+#define RESET_LENGTH 6
+#define RESET_CHARACTER '*'
 
 typedef void (*terminal_handler)(void *);
 
