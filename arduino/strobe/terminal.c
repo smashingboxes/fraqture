@@ -20,9 +20,9 @@ void terminal_attach(terminal_t *term, terminal_cmd_t *cmd)
 void terminal_feed(terminal_t *term, char incoming)
 {
   // Handle the reset mechanism
-  if(incoming == '*') {
+  if(incoming == RESET_CHARACTER) {
     term->reset_index++;
-    if(term->reset_index == CMD_LENGTH) {
+    if(term->reset_index == RESET_LENGTH) {
       term->current_handler = NULL;
       term->character_index = 0;
       return;
