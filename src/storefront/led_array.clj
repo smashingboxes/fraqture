@@ -11,13 +11,8 @@
     (ser/write port (vec (map byte iter)))
     nil))
 
-(defn reset-coms [port]
-  (write port (repeat 6 \*)))
-
 (defn connect [port]
-  (let [open-port (if port (ser/open port))]
-    (reset-coms open-port)
-    open-port))
+  (if port (ser/open port)))
 
 (defn paint-window [port row-start col-start row-end col-end [r g b]]
   (write port [\W row-start col-start row-end col-end r g b]))

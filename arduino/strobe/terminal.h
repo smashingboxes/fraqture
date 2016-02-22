@@ -4,9 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-// Sending RESET_LENGTH of RESET_CHARACTER will reset the protocol
-#define RESET_LENGTH 6
-#define RESET_CHARACTER '*'
+// Number of milliseconds between character receives that will trigger a comms reset
+#define RESET_TIMEOUT 2000
 
 typedef void (*terminal_handler)(void *);
 
@@ -21,7 +20,7 @@ typedef struct {
   terminal_cmd_t *current_handler;
   terminal_cmd_t *handler_chain;
   uint8_t character_index;
-  uint8_t reset_index;
+  uint32_t last_receive;
   char buffer[CMD_LENGTH];
 } terminal_t;
 
@@ -31,7 +30,7 @@ extern "C"{
 
 void terminal_init(terminal_t *term);
 bool terminal_attach(terminal_t *term, terminal_cmd_t *cmd);
-void terminal_feed(terminal_t *term, char incoming);
+void terminal_feed(terminal_t *term, char incoming, uint32_t millis);
 
 #ifdef __cplusplus
 }
