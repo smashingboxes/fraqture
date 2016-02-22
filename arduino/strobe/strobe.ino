@@ -5,7 +5,7 @@
 terminal_t terminal;
 led_strip_t strip;
 
-typedef struct {
+typedef struct __attribute__((__packed__)) {
   uint16_t index;
   color_t color;
 } set_packet_t;
