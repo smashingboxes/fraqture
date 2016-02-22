@@ -18,18 +18,21 @@ void clear_led_f(uint16_t index, color_t *color)
 void clear_leds(void *_none)
 {
   led_map(&strip, clear_led_f);
+  led_refresh(&strip);
 }
 
 void window_leds(void *window)
 {
   window_t cast_window = (window_t *)window;
   led_window(&strip, window);
+  led_refresh(&strip);
 }
 
 void set_leds(void *set)
 {
   set_packet_t cast_set = (set_packet_t *)set;
   led_set(&strip, set->index, &set->color);
+  led_refresh(&strip);
 }
 
 terminal_cmd_t cmd_clear = {
@@ -69,8 +72,5 @@ void setup() {
 }
 
 void loop() {
-  if(Serial.available()) {
-    terminal_feed(&terminal, Serial.read());
-    led_refresh(&strip);
-  }
+  if(Serial.available()) terminal_feed(&terminal, Serial.read(), millis());
 }
