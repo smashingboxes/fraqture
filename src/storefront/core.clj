@@ -54,19 +54,27 @@
   ["-s" "--serial SERIAL" "Serial port for LEDs"
    :parse-fn #(str %)
    :validate [#(led/validate-serial-port %) "Serial port not connected"]]
+  ["-m" "--mock"]
   ["-h" "--help"]])
 
 (defn reload-drawing! [drawing]
   (reset! drawing-atom drawing))
 
+(defn curried-draw [drawing-atom with-mock? serial]
+  (if with-mock?
+    (fn [state] (do ((:draw @drawing-atom) state) (led/draw-mock serial)))
+    (fn [state] ((:draw @drawing-atom) state))))
+
 (defn load-drawing [drawing options]
-  (let [quil-options   (:quil (:options drawing))]
+  (let [quil-options   (:quil (:options drawing))
+        with-mock? (:mock options)
+        serial (:serial options)]
     (reload-drawing! drawing)
     (q/defsketch storefront
       :title  (:title drawing)
       :setup  #((:setup @drawing-atom) options)
       :update #((:update @drawing-atom) %)
-      :draw   #((:draw @drawing-atom) %)
+      :draw   (curried-draw drawing-atom with-mock? serial)
       :size   (or (:size quil-options) :fullscreen)
       :features (or (:features quil-options) [:present])
       :middleware [m/fun-mode])))

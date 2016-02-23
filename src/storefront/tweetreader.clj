@@ -134,7 +134,6 @@
            (:initial-states state)
            (:final-states state)
            mask)
-         (q/delay-frame 10)]))
-    (led/draw-mock serial)))
+         (q/delay-frame 10)]))))
 
 (def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil nil))
