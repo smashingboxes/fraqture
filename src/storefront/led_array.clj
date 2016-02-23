@@ -26,15 +26,17 @@
     [:con (ser/open port)]
     [:mock (atom (create-mock-leds))]))
 
-(defn- mock-window
-  "TODO: add me"
-  [mock-atom])
+(defn- mock-window [mock-atom row-s col-s row-e col-e color]
+  (let [pairs (for [row (range row-s (+ 1 row-e))
+                    col (range col-s (+ 1 col-e))]
+                      [row col])]
+    (reduce (fn [acc [row col]] (assoc-in acc [row col] color)) mock-atom pairs)))
 
 (defn paint-window [port row-start col-start row-end col-end [r g b]]
   (let [type (first port) port (second port)]
     (if (= type :con)
       (write port [\W row-start col-start row-end col-end r g b])
-      (swap! port mock-window))))
+      (swap! port mock-window row-start col-start row-end col-end [r g b]))))
 
 (defn- mock-pixel [mock-atom index color]
   (let [row (quot index col-count)
