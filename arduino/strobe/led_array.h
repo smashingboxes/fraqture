@@ -6,7 +6,7 @@
 #define ROW_COUNT 18
 #define COL_COUNT 30
 
-typedef struct {
+typedef struct __attribute__((__packed__)) {
   uint8_t row_start;
   uint8_t col_start;
   uint8_t row_end;

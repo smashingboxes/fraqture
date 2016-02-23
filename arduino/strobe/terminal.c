@@ -6,7 +6,7 @@ void terminal_init(terminal_t *term)
   term->current_handler = NULL;
   term->handler_chain = NULL;
   term->character_index = 0;
-  term->reset_index = 0;
+  term->last_receive = 0;
 }
 
 void terminal_attach(terminal_t *term, terminal_cmd_t *cmd)
@@ -17,19 +17,14 @@ void terminal_attach(terminal_t *term, terminal_cmd_t *cmd)
   last->next = cmd;
 }
 
-void terminal_feed(terminal_t *term, char incoming)
+void terminal_feed(terminal_t *term, char incoming, uint32_t millis)
 {
   // Handle the reset mechanism
-  if(incoming == '*') {
-    term->reset_index++;
-    if(term->reset_index == CMD_LENGTH) {
-      term->current_handler = NULL;
-      term->character_index = 0;
-      return;
-    }
-  } else {
-    term->reset_index = 0;
+  if((millis - term->last_receive) > RESET_TIMEOUT) {
+    term->current_handler = NULL;
+    term->character_index = 0;
   }
+  term->last_receive = millis;
 
   // If there is no handler, see if this triggers one
   if(term->current_handler == NULL) {
