@@ -83,21 +83,6 @@
       errors (exit 1 (string/join \newline errors))
       :else (load-drawing drawing options))))
 
-(defn enumerate-serial-options [options]
-  (if (nil? options)
-    nil
-    (map-indexed #([%1 %2]) options)))
-
-(defn serial-options-string [options]
-  (if (nil? options)
-    "No serial ports available. Continuing without serial"
-    (map #(str %1 " - " %2 "\n") options)))
-
-(defn select-serial []
-  (let [options (ser/port-identifiers)
-        indexed (enumerate-serial-options options)
-        message (serial-options-string options)]))
-
 (def basic-usage
   (str "Usage: lein run <drawing> [args]\n drawings: " (keys drawing-hash)))
 

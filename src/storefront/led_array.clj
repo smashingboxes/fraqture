@@ -1,8 +1,10 @@
 (ns storefront.led-array
-  (:require [serial.core :as ser]))
+  (:require [serial.core :as ser]
+            [quil.core :as q]
+            [storefront.helpers :refer :all]))
 
-(def rows 18)
-(def cols 30)
+(def row-count 18)
+(def col-count 30)
 
 (defn validate-serial-port [port]
   (let [ports (ser/port-identifiers)
@@ -10,7 +12,7 @@
     (some #(= port %) port-names)))
 
 (defn- create-mock-leds []
-  (vec (repeatedly rows #(repeatedly cols #(repeat 3 0)))))
+  (repeatedly row-count (fn [] (repeatedly col-count (fn [] (repeat 3 0))))))
 
 (defn- write [port iter]
   (if port (ser/write port (vec (map byte iter)))))
@@ -26,7 +28,7 @@
 
 (defn paint-window [port row-start col-start row-end col-end [r g b]]
   (let [type (first port) port (second port)]
-    (if (= (first port) :con)
+    (if (= type :con)
       (write port [\W row-start col-start row-end col-end r g b])
       (reset! port (mock-window @port)))))
 
@@ -42,16 +44,24 @@
 
 (defn clear [port]
   (let [type (first port) port (second port)]
-    (if (= (first port) :con)
+    (if (= type :con)
       (write port [\C])
       (reset! port (create-mock-leds)))))
 
 (defn- draw-led [row col color]
-  "TODO add me"
-  [])
+  (let [x-width (/ (q/width) col-count)
+        y-height 8
+        y-adder (if (> row 9) (- (q/height) (* 18 y-height)) 0)
+        x (* col x-width)
+        y (+ y-adder (* row y-height))]
+    (apply q/fill color)
+    (q/rect x y x-width y-height)))
 
 (defn draw-mock [port]
   (let [type (first port) port (second port)]
-    (if (= (first port) :mock)
+    (if (= type :mock)
       (let [mocked-leds @port]
-        (doseq [row mocked-leds col row color col] (draw-led row col color))))))
+        (q/no-stroke)
+        (doseq-indexed [row mocked-leds row-c]
+          (doseq-indexed [color row col-c]
+            (draw-led row-c col-c color)))))))
