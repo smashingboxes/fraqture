@@ -11,8 +11,12 @@
         port-names (map #(.getName %) ports)]
     (some #(= port %) port-names)))
 
-(defn- create-mock-leds []
-  (repeatedly row-count (fn [] (repeatedly col-count (fn [] (repeat 3 0))))))
+(defn- create-mock-leds
+  ([_] (create-mock-leds))
+  ([]
+  (vec (repeatedly row-count
+    (fn [] (vec (repeatedly col-count
+      (fn [] [0 0 0]))))))))
 
 (defn- write [port iter]
   (if port (ser/write port (vec (map byte iter)))))
@@ -30,23 +34,24 @@
   (let [type (first port) port (second port)]
     (if (= type :con)
       (write port [\W row-start col-start row-end col-end r g b])
-      (reset! port (mock-window @port)))))
+      (swap! port mock-window))))
 
-(defn- mock-pixel
-  "TODO: add me"
-  [mock-atom])
+(defn- mock-pixel [mock-atom index color]
+  (let [row (quot index col-count)
+        col (rem index col-count)]
+    (assoc-in mock-atom [row col] color)))
 
 (defn paint-pixel [port index [r g b]]
   (let [type (first port) port (second port)]
     (if (= type :con)
       (write port [\S (rem index 256) (quot index 256) r g b])
-      (reset! port (mock-pixel @port)))))
+      (swap! port mock-pixel index [r g b]))))
 
 (defn clear [port]
   (let [type (first port) port (second port)]
     (if (= type :con)
       (write port [\C])
-      (reset! port (create-mock-leds)))))
+      (swap! port create-mock-leds))))
 
 (defn- draw-led [row col color]
   (let [x-width (/ (q/width) col-count)
