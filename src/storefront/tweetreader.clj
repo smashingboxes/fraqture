@@ -115,7 +115,6 @@
       :options { :letters-per-frame 12 :min-letter-size 12 :max-letter-size 36 } }))
 
 (defn update-state [state]
-  (led/paint-window (:serial state) 0 (:write-index state) 17 (:write-index state) [255 255 255])
   (-> state
       (update-in [:write-index] inc)))
 
