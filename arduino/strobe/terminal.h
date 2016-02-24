@@ -3,9 +3,11 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 // Number of milliseconds between character receives that will trigger a comms reset
 #define RESET_TIMEOUT 2000
+#define CMD_LENGTH 10
 
 typedef void (*terminal_handler)(void *);
 
@@ -29,7 +31,7 @@ extern "C"{
 #endif
 
 void terminal_init(terminal_t *term);
-bool terminal_attach(terminal_t *term, terminal_cmd_t *cmd);
+void terminal_attach(terminal_t *term, terminal_cmd_t *cmd);
 void terminal_feed(terminal_t *term, char incoming, uint32_t millis);
 
 #ifdef __cplusplus

@@ -1,5 +1,6 @@
 #include <SPI.h>
 #include "led_strip.h"
+#include "led_array.h"
 #include "terminal.h"
 
 terminal_t terminal;
@@ -23,15 +24,15 @@ void clear_leds(void *_none)
 
 void window_leds(void *window)
 {
-  window_t cast_window = (window_t *)window;
-  led_window(&strip, window);
+  window_t *cast_window = (window_t *)window;
+  led_window(&strip, cast_window);
   led_refresh(&strip);
 }
 
-void set_leds(void *set)
+void set_leds(void *packet)
 {
-  set_packet_t cast_set = (set_packet_t *)set;
-  led_set(&strip, set->index, &set->color);
+  set_packet_t *cast_set = (set_packet_t *)packet;
+  led_set(&strip, cast_set->index, &cast_set->color);
   led_refresh(&strip);
 }
 
