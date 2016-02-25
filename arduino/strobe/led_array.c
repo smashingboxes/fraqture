@@ -16,5 +16,6 @@ void led_window(led_strip_t *strip, window_t *window)
 
 static uint16_t position_to_index(uint8_t row, uint8_t col)
 {
-  return row * COL_COUNT + col;
+  if(row % 2 == 0) return row * COL_COUNT + col;  
+  return (1 + row) * COL_COUNT - col - 1;
 }
