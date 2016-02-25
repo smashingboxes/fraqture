@@ -11,9 +11,15 @@ void terminal_init(terminal_t *term)
 
 void terminal_attach(terminal_t *term, terminal_cmd_t *cmd)
 {
-  // Attach the new one to the end of the linked list
+  // If there are no commands, start the chain.
+  if(term->handler_chain == NULL) {
+    term->handler_chain = cmd;
+    return;
+  }
+
+  // Otherwise traverse the chain and add it to the end
   terminal_cmd_t *last;
-  for(last = term->handler_chain; last != NULL; last = last->next);
+  for(last = term->handler_chain; last->next != NULL; last = last->next);
   last->next = cmd;
 }
 
@@ -26,8 +32,14 @@ void terminal_feed(terminal_t *term, char incoming, uint32_t millis)
   }
   term->last_receive = millis;
 
+  // Handle the incoming data
+  if(term->current_handler) {
+    term->buffer[term->character_index] = incoming;
+    term->character_index++;
+  }
+
   // If there is no handler, see if this triggers one
-  if(term->current_handler == NULL) {
+  if(!term->current_handler && term->handler_chain) {
     terminal_cmd_t *cmd;
     for(cmd = term->handler_chain; cmd != NULL; cmd = cmd->next) {
       if(cmd->trigger == incoming) {
@@ -37,14 +49,10 @@ void terminal_feed(terminal_t *term, char incoming, uint32_t millis)
     }
   }
 
-  // Handle the incoming data
-  if(term->current_handler) {
-    term->buffer[term->character_index] = incoming;
-    term->character_index++;
-    if(term->character_index > term->current_handler->length) {
-      term->character_index = 0;
-      term->current_handler = NULL;
-      term->current_handler->handler((void *)term->buffer);
-    }
+  // If we have all the characters, trigger the handler.
+  if(term->character_index == term->current_handler->length) {
+    term->current_handler->handler((void *)term->buffer);
+    term->character_index = 0;
+    term->current_handler = NULL;
   }
 }

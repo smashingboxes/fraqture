@@ -59,11 +59,11 @@ terminal_cmd_t cmd_set = {
 
 void led_transfer(uint8_t x) {
   SPI.transfer(x);
-  Serial.begin(9600);
 }
 
 void setup() {
   SPI.begin();
+  Serial.begin(9600);
   led_init(&strip, led_transfer);
   clear_leds(NULL);
   terminal_init(&terminal);
@@ -73,5 +73,9 @@ void setup() {
 }
 
 void loop() {
-  if(Serial.available()) terminal_feed(&terminal, Serial.read(), millis());
+  if(Serial.available()) {
+    char new_char = Serial.read();
+    Serial.print(new_char);
+    terminal_feed(&terminal, new_char, millis());
+  }
 }
