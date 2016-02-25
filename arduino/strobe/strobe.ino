@@ -11,6 +11,8 @@ typedef struct __attribute__((__packed__)) {
   color_t color;
 } set_packet_t;
 
+SPISettings spi_settings(2000000, MSBFIRST, SPI_MODE0); 
+
 void clear_led_f(uint16_t index, color_t *color)
 {
   memset(color, 0, sizeof(color_t));
@@ -61,10 +63,18 @@ void led_transfer(uint8_t x) {
   SPI.transfer(x);
 }
 
+void led_start(void) {
+  SPI.beginTransaction(spi_settings);
+}
+
+void led_stop(void) {
+  SPI.endTransaction();
+}
+
 void setup() {
   SPI.begin();
   Serial.begin(9600);
-  led_init(&strip, led_transfer);
+  led_init(&strip, led_transfer, led_start, led_stop);
   clear_leds(NULL);
   terminal_init(&terminal);
   terminal_attach(&terminal, &cmd_clear);
@@ -73,9 +83,5 @@ void setup() {
 }
 
 void loop() {
-  if(Serial.available()) {
-    char new_char = Serial.read();
-    Serial.print(new_char);
-    terminal_feed(&terminal, new_char, millis());
-  }
+  if(Serial.available()) terminal_feed(&terminal, Serial.read(), millis());
 }
