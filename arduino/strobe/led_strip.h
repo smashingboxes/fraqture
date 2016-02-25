@@ -15,7 +15,12 @@ typedef void (*led_map_f)(uint16_t, color_t *);
 // A write function for this library to use
 typedef void (*led_write_f)(uint8_t);
 
+// A transaction start/stop
+typedef void (*led_void_f)(void);
+
 typedef struct {
+  led_void_f start;
+  led_void_f stop;
   led_write_f write;
   color_t leds[LED_COUNT];
 } led_strip_t;
@@ -24,7 +29,12 @@ typedef struct {
 extern "C"{
 #endif
 
-void led_init(led_strip_t *strip, led_write_f write_func);
+void led_init(
+  led_strip_t *strip, 
+  led_write_f write_func,
+  led_void_f start_func,
+  led_void_f stop_func
+);
 void led_refresh(led_strip_t *strip);
 void led_set(led_strip_t *strip, uint16_t index, color_t *color);
 void led_map(led_strip_t *strip, led_map_f map_func);

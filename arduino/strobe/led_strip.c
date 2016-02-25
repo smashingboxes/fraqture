@@ -3,19 +3,23 @@
 
 void led_write(led_strip_t *strip, color_t *color);
 
-void led_init(led_strip_t *strip, led_write_f write_func)
+void led_init(led_strip_t *strip, led_write_f write_func, led_void_f start_func, led_void_f stop_func)
 {
   color_t black = { 0, 0, 0 };
   uint16_t x;
   for(x = 0; x < LED_COUNT; x++) memcpy(&strip->leds[x], &black, sizeof(color_t));
   strip->write = write_func;
+  strip->start = start_func;
+  strip->stop = stop_func;
 }
 
 void led_refresh(led_strip_t *strip)
 {
   uint16_t x;
+  strip->start();
   for(x = 0; x < 4; x++) strip->write(0);
   for(x = 0; x < LED_COUNT; x++) led_write(strip, &strip->leds[x]);
+  strip->stop();
 }
 
 void led_set(led_strip_t *strip, uint16_t index, color_t *color)
