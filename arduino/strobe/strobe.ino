@@ -21,20 +21,22 @@ void clear_led_f(uint16_t index, color_t *color)
 void clear_leds(void *_none)
 {
   led_map(&strip, clear_led_f);
-  led_refresh(&strip);
 }
 
 void window_leds(void *window)
 {
   window_t *cast_window = (window_t *)window;
   led_window(&strip, cast_window);
-  led_refresh(&strip);
 }
 
 void set_leds(void *packet)
 {
   set_packet_t *cast_set = (set_packet_t *)packet;
   led_set(&strip, cast_set->index, &cast_set->color);
+}
+
+void refresh_leds(void *_none) 
+{
   led_refresh(&strip);
 }
 
@@ -42,6 +44,13 @@ terminal_cmd_t cmd_clear = {
   .trigger = 'C',
   .length = 0,
   .handler = clear_leds,
+  .next = NULL
+};
+
+terminal_cmd_t cmd_refresh = {
+  .trigger = 'R',
+  .length = 0,
+  .handler = refresh_leds,
   .next = NULL
 };
 
@@ -80,6 +89,7 @@ void setup() {
   terminal_attach(&terminal, &cmd_clear);
   terminal_attach(&terminal, &cmd_window);
   terminal_attach(&terminal, &cmd_set);
+  terminal_attach(&terminal, &cmd_refresh);
 }
 
 void loop() {

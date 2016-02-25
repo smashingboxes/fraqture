@@ -70,6 +70,13 @@ numbers larger than 8 bits are packed little endian.
 New commands can easily be added using the `terminal_attach(terminal_t *term, terminal_cmd_t *cmd)`
 function found in `arduino/strobe/terminal.c`.
 
+### Refresh Pixels
+
+This command will refresh the LED array. This allows you to do multiple paint operations without
+eating the cost of refreshing the array after each one.
+
+Command ID: `R`
+
 ### Clear Pixels
 
 This command will clear the LED arrays. This command has no payload.

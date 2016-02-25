@@ -19,7 +19,7 @@
       (fn [] [0 0 0]))))))))
 
 (defn- write [port iter]
-  (if port (ser/write port (vec (map byte iter)))))
+  (if port (ser/write port (vec (map int iter)))))
 
 (defn connect [port]
   (if port
@@ -54,6 +54,10 @@
     (if (= type :con)
       (write port [\C])
       (swap! port create-mock-leds))))
+
+(defn refresh [port]
+  (let [type (first port) port (second port)]
+    (if (= type :con) (write port [\R]))))
 
 (defn- draw-led [row col color]
   (let [x-width (/ (q/width) col-count)
