@@ -1,11 +1,13 @@
 (ns storefront.textify
   (:require [storefront.drawing]
             [storefront.helpers :refer :all]
+            [storefront.led-array :as led]
             [quil.core :as q]
             [clojure.core.matrix :as m])
   (:import  [storefront.drawing Drawing]))
 
 (def uppers (map char (range 66 92)))
+(def leds-each 1)
 
 (defn text-width [height text-str]
   (q/text-size height)
@@ -42,26 +44,37 @@
       :parse-fn #(Integer/parseInt %)]
   ])
 
+(defn randomize-leds []
+  (shuffle (range 540)))
+
 (defn setup [options]
     (q/frame-rate 30)
     (let [image (loader (:image-path options) true)]
       { :image image
-        :start (q/millis)
-        :options options }))
+        :options options
+        :leds-left (shuffle (range 540))
+        :leds '() }))
 
-(defn update-state [state] state)
+(defn update-state [state]
+  (let [[current rest] (split-at leds-each (:leds-left state))]
+    (-> state
+      (assoc :leds current)
+      (assoc :leds-left rest))))
 
 (defn draw-state [state]
   (let [options      (:options state)
         at-a-time    (:letters-per-frame options)
         min-y        (:min-letter-size options)
         max-y        (:max-letter-size options)
+        serial       (:serial options)
         ys           (repeatedly at-a-time #(rand-in-range 0 (- (q/height) min-y)))
         xs           (repeatedly at-a-time #(rand-in-range 0 (q/width)))
         heights      (repeatedly at-a-time #(rand-in-range min-y max-y))
         text-strs    (repeatedly at-a-time #(str (rand-nth uppers)))
         zipped       (map vector xs ys heights text-strs)
         curried-text (fn [x y height text-str] (make-text (:image state) x y height text-str))]
+    (doseq [pixel (:leds state)] (led/paint-pixel serial pixel [255 255 255]))
+    (led/refresh serial)
     (doseq [zip zipped] (apply curried-text zip))))
 
 (def drawing
