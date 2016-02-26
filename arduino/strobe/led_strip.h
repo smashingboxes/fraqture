@@ -3,9 +3,10 @@
 
 #include "color.h"
 
-// Set the LED count to 540, 18m @ 30/m
+// Our installation has 18 meters of LED at 30 LEDs per meter (540 total), but
+// this can be anything up to 65536
 #ifndef LED_COUNT
-#define LED_COUNT 540
+#define LED_COUNT (18 * 30)
 #endif
 
 // Function definition for mapping over the LEDs
@@ -30,7 +31,7 @@ extern "C"{
 #endif
 
 void led_init(
-  led_strip_t *strip, 
+  led_strip_t *strip,
   led_write_f write_func,
   led_void_f start_func,
   led_void_f stop_func
