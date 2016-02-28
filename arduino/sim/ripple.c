@@ -15,12 +15,14 @@ typedef struct ripple_state {
 
 void zero_heightmap(frame_ptr heightmap)
 {
-    memset(heightmap, 0, sizeof(heightmap[0][0]) * COL_COUNT * HALF_ROW_COUNT);
+  memset(heightmap, 0, sizeof(heightmap[0][0]) * COL_COUNT * HALF_ROW_COUNT);
 }
 
 ripple_state_t* ripple_init()
 {
   ripple_state_t* ripple = (ripple_state_t*)malloc(sizeof(ripple_state_t));
+  ripple->active_frame = ripple->frame_one;
+  ripple->inactive_frame = ripple->frame_two;
   zero_heightmap(ripple->active_frame);
   zero_heightmap(ripple->inactive_frame);
   return ripple;
@@ -28,8 +30,7 @@ ripple_state_t* ripple_init()
 
 void ripple_release(ripple_state_t* ripple)
 {
-    free(ripple);
-    ripple = NULL;
+  free(ripple);
 }
 
 void swap_buffers(ripple_state_t* ripple)
