@@ -1,62 +1,97 @@
 #include <SPI.h>
 #include "led_strip.h"
+#include "led_array.h"
+#include "terminal.h"
 
-color_t pink  = { 0xEB, 0x16, 0x67 };
-color_t black = { 0, 0, 0 };
+terminal_t terminal;
 led_strip_t strip;
-uint8_t current = 0;
 
-void led_transfer(uint8_t x) {
-  SPI.transfer(x);
-  Serial.begin(9600);
-}
+typedef struct __attribute__((__packed__)) {
+  uint16_t index;
+  color_t color;
+} set_packet_t;
 
-void setup() {
-  SPI.begin();
-  led_init(&strip, led_transfer);
-}
+SPISettings spi_settings(2000000, MSBFIRST, SPI_MODE0); 
 
-int offset_count(int current, int led)
-{
-  if(led > current) return (120 - led + current);
-  return current - led;
-}
-
-float offset_to_lerp(int offs)
-{
-  if(offs > 10) return 0.0;
-  return 1.0 / (float)offs;
-}
-
-void move_function(uint16_t index, color_t *color)
-{
-  uint8_t distance_from_head = offset_count(current, index);
-  float lerp_amount = offset_to_lerp(distance_from_head);
-  lerp_color(&pink, &black, lerp_amount, color);
-}
-
-void clear_leds(uint16_t index, color_t *color)
+void clear_led_f(uint16_t index, color_t *color)
 {
   memset(color, 0, sizeof(color_t));
 }
 
-void loop() {
-  static bool moving = false;
-  if(!moving) {
-    led_map(&strip, clear_leds);
-    while(Serial.available()) {
-      Serial.read();
-      moving = true;
-    }
-  } else {
-    current = (current + 1) % 120;
-    if (current == 0) {
-      moving = false;
-    } else {
-    led_map(&strip, move_function);
-    }
-  }
-  
+void clear_leds(void *_none)
+{
+  led_map(&strip, clear_led_f);
+}
+
+void window_leds(void *window)
+{
+  window_t *cast_window = (window_t *)window;
+  led_window(&strip, cast_window);
+}
+
+void set_leds(void *packet)
+{
+  set_packet_t *cast_set = (set_packet_t *)packet;
+  led_set(&strip, cast_set->index, &cast_set->color);
+}
+
+void refresh_leds(void *_none) 
+{
   led_refresh(&strip);
-  delay(25);
+}
+
+terminal_cmd_t cmd_clear = {
+  .trigger = 'C',
+  .length = 0,
+  .handler = clear_leds,
+  .next = NULL
+};
+
+terminal_cmd_t cmd_refresh = {
+  .trigger = 'R',
+  .length = 0,
+  .handler = refresh_leds,
+  .next = NULL
+};
+
+terminal_cmd_t cmd_window = {
+  .trigger = 'W',
+  .length = sizeof(window_t),
+  .handler = window_leds,
+  .next = NULL
+};
+
+terminal_cmd_t cmd_set = {
+  .trigger = 'S',
+  .length = sizeof(set_packet_t),
+  .handler = set_leds,
+  .next = NULL
+};
+
+void led_transfer(uint8_t x) {
+  SPI.transfer(x);
+}
+
+void led_start(void) {
+  SPI.beginTransaction(spi_settings);
+}
+
+void led_stop(void) {
+  SPI.endTransaction();
+}
+
+void setup() {
+  SPI.begin();
+  Serial.begin(9600);
+  led_init(&strip, led_transfer, led_start, led_stop);
+  clear_leds(NULL);
+  terminal_init(&terminal);
+  terminal_attach(&terminal, &cmd_clear);
+  terminal_attach(&terminal, &cmd_window);
+  terminal_attach(&terminal, &cmd_set);
+  terminal_attach(&terminal, &cmd_refresh);
+}
+
+void loop() {
+  if(Serial.available()) terminal_feed(&terminal, Serial.read(), millis());
 }

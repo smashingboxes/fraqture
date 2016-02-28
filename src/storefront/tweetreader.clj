@@ -3,7 +3,8 @@
             [storefront.helpers :refer :all]
             [quil.core :as q]
             [clojure.string :as str]
-            [storefront.textify :as textify])
+            [storefront.textify :as textify]
+            [storefront.led-array :as led])
   (:import  [storefront.drawing Drawing]))
 
 (def tweeter "@smashingboxes")
@@ -110,6 +111,7 @@
       :final-states (compute-final-states tweet-lines)
       :mask-order (shuffled-indexes (count (apply str tweet-lines)))
       :image image
+      :serial (:serial options)
       :options { :letters-per-frame 12 :min-letter-size 12 :max-letter-size 36 } }))
 
 (defn update-state [state]
@@ -120,7 +122,8 @@
   (let [str-len (count (apply str (:message state)))
         left-over (max (- (:write-index state) str-len padding-time) 0)
         mask (current-mask (:mask-order state) left-over)
-        done? (> left-over (+ str-len padding-time))]
+        done? (> left-over (+ str-len padding-time))
+        serial (:serial state)]
     (if done?
       (textify/draw-state state)
       (doall
