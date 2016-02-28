@@ -1,81 +1,73 @@
 #include "ripple.h"
 #include "../strobe/color.h"
 #include "../strobe/led_strip.h"
+#include "../strobe/led_array.h"
+#include <string.h>
 
-#define HALF_ROW_COUNT floor(ROW_COUNT / 2)
+#define HALF_ROW_COUNT (int)(ROW_COUNT / 2)
 
-// Heightmaps to keep the wave data.
-// Run two separate simulations: top & bottom.
-uint8_t top_frame[HALF_ROW_COUNT][COL_COUNT];
-uint8_t bottom_frame[HALF_ROW_COUNT][COL_COUNT];
+uint8_t frame_one[HALF_ROW_COUNT][COL_COUNT];
+uint8_t frame_two[HALF_ROW_COUNT][COL_COUNT];
+
+typedef uint8_t(* frame_ptr)[COL_COUNT];
+
+frame_ptr active_frame = frame_one;
+frame_ptr inactive_frame = frame_two;
+
+void zero_heightmap(frame_ptr heightmap)
+{
+    memset(heightmap, 0, sizeof(heightmap[0][0]) * COL_COUNT * HALF_ROW_COUNT);
+}
 
 void ripple_init()
 {
-  zero_heightmap(&top_frame);
-  zero_heightmap(&bottom_frame);
+  zero_heightmap(active_frame);
+  zero_heightmap(inactive_frame);
 }
 
-void zero_heightmap(uint8_t* heightmap)
+void swap_buffers()
 {
-  memset(heightmap, 0, sizeof(heightmap[0][0]) * COL_COUNT * HALF_ROW_COUNT);
+  frame_ptr temp = active_frame;
+  active_frame = inactive_frame;
+  inactive_frame = temp;
 }
 
-uint8_t* heightmap_for_sim(RippleSim sim) {
-  switch (sim) {
-    case RippleSimTop:
-      return &top_frame;
-    case RippleSimBottom:
-      return &bottom_frame;
-    default:
-      fprintf(stderr, "Unmatched simulation type: %d", sim);
-      return &top_frame;
-  }
-}
-
-void ripple_touch_point(RippleSim sim, float x, float y, float strength)
+void ripple_touch_point(float x, float y, float strength)
 {
-  uint8_t* heightmap = heightmap_for_sim(sim);
-  heightmap[x][y] = 255 * strength;
+  int x_index = (int)(x * COL_COUNT);
+  int y_index = (int)(y * HALF_ROW_COUNT);
+  active_frame[x_index][y_index] = 255 * strength;
 }
 
 void ripple_update()
 {
-  update_heightmap(&top_frame);
-  update_heightmap(&bottom_frame);
-}
-
-void update_heightmap(uint8_t* heigtmap)
-{
-  uint8_t* heightmap = heightmap_for_sim(sim);
-
-  for (int i = 0; i < COL_COUNT; i++) {
-    for (int j = 0; j < HALF_ROW_COUNT; j++) {
-      // todo: advance the ripples
+  // http://freespace.virgin.net/hugo.elias/graphics/x_water.htm
+  float decay = 0.88;
+  for (int x = 1; x < COL_COUNT-1; x++) {
+    for (int y = 1; y < HALF_ROW_COUNT-1; y++) {
+      uint8_t avg = (active_frame[x-1][y] +
+                     active_frame[x+1][y] +
+                     active_frame[x][y-1] +
+                     active_frame[x][y+1]) / 4;
+      inactive_frame[x][y] = (avg * 2 - inactive_frame[x][y]) * decay;
     }
   }
+  swap_buffers();
 }
 
-void ripple_sim_to_colors(RippleSim sim, color_t* colors)
+void ripple_sim_to_colors(color_t* colors)
 {
-  uint8_t *heightmap = heightmap_for_sim(sim);
-  heightmap_to_colors(&heightmap, &colors);
-}
+  color_t high = { 200, 200, 255 };
+  color_t low = { 0, 0, 0 };
 
-void heightmap_to_colors(uint8_t* heightmap, color_t* colors)
-{
-  // Convet the heightmap to color values
-  high = (color_t){200, 200, 255};
-  low = (color_t){0, 0, 0};
+  for (int x = 0; x < COL_COUNT; x++) {
+    for (int y = 0; y < HALF_ROW_COUNT; y++) {
 
-  for (int i = 0; i < COL_COUNT; i++) {
-    for (int j = 0; j < HALF_ROW_COUNT; j++) {
-
-      float amount  = heightmap[i][j] / 255.0f;
+      float amount  = active_frame[x][y] / 255.0f;
       color_t color;
-      lerp_color(&high, &low, amount, &color);
+      lerp_color(&low, &high, amount, &color);
 
-      // TODO: convert the index correctly
-      int flatIndex = i + (j * COL_COUNT);
+      uint16_t flatIndex = led_position_to_index(x, y);
       colors[flatIndex] = color;
     }
   }

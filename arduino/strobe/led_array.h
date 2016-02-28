@@ -20,6 +20,8 @@ extern "C"{
 
 void led_window(led_strip_t *strip, window_t *window);
 
+uint16_t led_position_to_index(uint8_t row, uint8_t col);
+
 #ifdef __cplusplus
 }
 #endif
