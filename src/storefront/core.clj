@@ -2,6 +2,7 @@
   (:gen-class)
   (:require [quil.core :as q]
             [quil.middleware :as m]
+            [storefront.led-array :as led]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
             [storefront.color-swap :as color-swap]
@@ -49,26 +50,42 @@
 
 (defonce drawing-atom (atom nil))
 
+(def defaults [
+  ["-s" "--serial SERIAL" "Serial port for LEDs"
+   :parse-fn #(str %)
+   :validate [#(led/validate-serial-port %) "Serial port not connected"]]
+  ["-m" "--mock"]
+  ["-h" "--help"]])
+
 (defn reload-drawing! [drawing]
   (reset! drawing-atom drawing))
 
+(defn curried-draw [drawing-atom with-mock? serial]
+  (if with-mock?
+    (fn [state] (do ((:draw @drawing-atom) state) (led/draw-mock serial)))
+    (fn [state] ((:draw @drawing-atom) state))))
+
 (defn load-drawing [drawing options]
-  (let [quil-options   (:quil (:options drawing))]
+  (let [quil-options   (:quil (:options drawing))
+        with-mock? (:mock options)
+        serial (:serial options)]
     (reload-drawing! drawing)
     (q/defsketch storefront
       :title  (:title drawing)
       :setup  #((:setup @drawing-atom) options)
       :update #((:update @drawing-atom) %)
-      :draw   #((:draw @drawing-atom) %)
+      :draw   (curried-draw drawing-atom with-mock? serial)
       :size   (or (:size quil-options) :fullscreen)
       :features (or (:features quil-options) [:present])
       :middleware [m/fun-mode])))
 
 (defn parse-cli [drawing-name args]
   (let [drawing        (get drawing-hash drawing-name)
-        cli-options    (merge (:cli drawing) ["-h" "--help"])
+        cli-options    (into [] (concat (or (:cli drawing) []) defaults))
         {:keys [options arguments errors summary]} (parse-opts args cli-options)
+        options        (update-in options [:serial] #(led/connect %))
         help?          (:help options)]
+    (led/clear (:serial options))
     (cond
       help? (exit 1 (usage drawing-name summary))
       errors (exit 1 (string/join \newline errors))
