@@ -4,38 +4,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef uint8_t(* frame_ptr)[COL_COUNT];
-
-typedef struct ripple_state {
-  uint8_t frame_one[HALF_ROW_COUNT][COL_COUNT];
-  uint8_t frame_two[HALF_ROW_COUNT][COL_COUNT];
-  frame_ptr active_frame;
-  frame_ptr inactive_frame;
-} ripple_state_t;
-
-void zero_heightmap(frame_ptr heightmap)
+void zero_heightmap(ripple_frame_ptr heightmap)
 {
   memset(heightmap, 0, sizeof(heightmap[0][0]) * COL_COUNT * HALF_ROW_COUNT);
 }
 
-ripple_state_t* ripple_init()
+void ripple_init(ripple_state_t* ripple)
 {
-  ripple_state_t* ripple = (ripple_state_t*)malloc(sizeof(ripple_state_t));
   ripple->active_frame = ripple->frame_one;
   ripple->inactive_frame = ripple->frame_two;
   zero_heightmap(ripple->active_frame);
   zero_heightmap(ripple->inactive_frame);
-  return ripple;
-}
-
-void ripple_release(ripple_state_t* ripple)
-{
-  free(ripple);
 }
 
 void swap_buffers(ripple_state_t* ripple)
 {
-  frame_ptr temp = ripple->active_frame;
+  ripple_frame_ptr temp = ripple->active_frame;
   ripple->active_frame = ripple->inactive_frame;
   ripple->inactive_frame = temp;
 }
@@ -71,7 +55,7 @@ void ripple_sim_to_colors(ripple_state_t* ripple, color_t* colors)
   for (int x = 0; x < COL_COUNT; x++) {
     for (int y = 0; y < HALF_ROW_COUNT; y++) {
 
-      float amount  = ripple->active_frame[x][y] / 255.0f;
+      float amount = ripple->active_frame[x][y] / 255.0f;
       color_t color;
       lerp_color(&low, &high, amount, &color);
 

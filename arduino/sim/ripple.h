@@ -5,21 +5,23 @@
 #include "../strobe/led_array.h"
 #define HALF_ROW_COUNT (int)(ROW_COUNT / 2)
 
+typedef uint8_t(* ripple_frame_ptr)[COL_COUNT];
+
+typedef struct ripple_state {
+    uint8_t frame_one[HALF_ROW_COUNT][COL_COUNT];
+    uint8_t frame_two[HALF_ROW_COUNT][COL_COUNT];
+    ripple_frame_ptr active_frame;
+    ripple_frame_ptr inactive_frame;
+} ripple_state_t;
+
 #ifdef __cplusplus
 extern "C"{
 #endif
 
-typedef struct ripple_state ripple_state_t;
-
 /**
  *  Create a new ripple simulation.
  */
-ripple_state_t* ripple_init();
-
-/**
- *  Destroy an existing ripple simulation.
- */
-void ripple_release(ripple_state_t* ripple);
+void ripple_init(ripple_state_t* ripple);
 
 /**
  *  Step the simulation.
