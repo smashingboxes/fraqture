@@ -33,7 +33,8 @@
 
 (defn bootstrap-state [state]
   (let [current-drawing (current-drawing state)
-        options         (default-options current-drawing)]
+        options         (default-options current-drawing)
+        options         (assoc options :serial (:serial (:options state)))]
   (assoc state :drawing-state ((:setup current-drawing) options))))
 
 (def cli-options
