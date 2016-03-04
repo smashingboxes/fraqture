@@ -164,9 +164,7 @@
         strlen (count fullstr)
         current-states (take strlen (map resolve-state initials finals mask))
         last-char (last fullstr)]
-    (led/clear serial)
-    (if new-chars? (light-key serial last-char [255 255 255]))
-    (led/refresh serial)
+    (if new-chars? (do (led/clear serial) (light-key serial last-char [255 255 255])))
     (doall (map (fn [state char] (write-letter state char)) current-states fullstr))))
 
 ; Given a length, return a list of shuffled indexes
@@ -196,10 +194,20 @@
       :final-states (compute-final-states tweet-lines)
       :mask-order (shuffled-indexes (count (apply str tweet-lines)))
       :serial (:serial options)
-      :done? false}))
+      :done? false
+      :leds-left (shuffle (range 540))
+      :leds '() }))
 
 (defn update-textify [state]
   (if (:done? state) (assoc state :textify-state (textify/update-state (:textify-state state))) state))
+
+(defn update-leds [state second-stage?]
+  (if second-stage?
+    (let [[current rest] (split-at 3 (:leds-left state))]
+      (-> state
+        (assoc :leds current)
+        (assoc :leds-left rest)))
+    state))
 
 (defn update-state [state]
   (let [write-index (inc (:write-index state))
@@ -207,13 +215,22 @@
         left-over (max (- write-index str-len padding-time) 0)
         new-chars? (< write-index str-len)
         mask (current-mask (:mask-order state) left-over)
-        done? (> left-over (+ str-len padding-time))]
+        done? (> left-over (+ str-len padding-time))
+        second-stage? (and (> left-over 0) (not done?))]
     (-> state
+        (assoc :clear-last-key? (= write-index (+ 1 str-len)))
         (assoc :done? done?)
         (assoc :new-chars? new-chars?)
         (assoc :mask mask)
         (assoc :write-index write-index)
-        (update-textify))))
+        (update-textify)
+        (update-leds second-stage?))))
+
+(defn random-color []
+  [(rand 255) (rand 255) (rand 255)])
+
+(defn clear-last-character [state]
+  (if (:clear-last-key? state) (led/clear (:serial state))))
 
 (defn draw-state [state]
   (if (:done? state)
@@ -227,6 +244,9 @@
          (:initial-states state)
          (:final-states state)
          (:mask state))
+       (clear-last-character state)
+       (doseq [pixel (:leds state)] (led/paint-pixel (:serial state) pixel (random-color)))
+       (led/refresh (:serial state))
        (q/delay-frame 100)])))
 
 (def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil nil))
