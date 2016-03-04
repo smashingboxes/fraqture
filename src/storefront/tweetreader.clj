@@ -13,6 +13,85 @@
 (def y-offset 34)
 (def chars-per-line 80)
 (def padding-time 30)
+(def qwerty (apply hash-map [
+  ; row column width height
+  "1" [0 0 1 1]
+  "2" [0 1 1 1]
+  "3" [0 2 1 1]
+  "4" [0 3 1 1]
+  "5" [0 4 1 1]
+  "6" [0 5 1 1]
+  "7" [0 6 1 1]
+  "8" [0 7 1 1]
+  "9" [0 8 1 1]
+  "0" [0 9 1 1]
+  "a" [2 0 1 1]
+  "b" [3 5 1 1]
+  "c" [3 3 1 1]
+  "d" [2 2 1 1]
+  "e" [1 2 1 1]
+  "f" [2 3 1 1]
+  "g" [2 4 1 1]
+  "h" [2 5 1 1]
+  "i" [1 7 1 1]
+  "j" [2 6 1 1]
+  "k" [2 7 1 1]
+  "l" [2 8 1 1]
+  "m" [3 7 1 1]
+  "n" [3 6 1 1]
+  "o" [1 8 1 1]
+  "p" [1 9 1 1]
+  "q" [1 0 1 1]
+  "r" [1 3 1 1]
+  "s" [2 1 1 1]
+  "t" [1 3 1 1]
+  "u" [1 5 1 1]
+  "v" [3 4 1 1]
+  "w" [1 1 1 1]
+  "x" [3 2 1 1]
+  "y" [1 5 1 1]
+  "z" [3 1 1 1]
+  "'" [3 9 2 1]
+  ";" [2 9 1 1]
+  "\\" [2 10 1 1]
+  "," [3 8 1 1]
+  "." [4 8 1 1]
+  " " [4 2 5 1]
+  "\n" [3 9 2 1]]))
+
+(def key-convert (apply hash-map [
+  "!" "1"
+  "@" "2"
+  "#" "3"
+  "$" "4"
+  "%" "5"
+  "^" "6"
+  "&" "7"
+  "*" "8"
+  "(" "9"
+  ")" "0"
+  "\"" "'"
+  ":" ";"
+  "<" ","
+  ">" "."
+  "?" "/" ]))
+
+(def shift-key [4 0 2 1])
+(def offsets [10 10])
+
+(defn character-to-place [character]
+  (let [lower-case (clojure.string/lower-case character)
+        converted-key (get-in key-convert [lower-case])
+        final-key (or converted-key lower-case)]
+    (or (get-in qwerty [final-key]) [0 0 0 0])))
+
+; Emulate a QWERTY keyboard on the LED board
+(defn light-key [serial character [r g b]]
+  (let [[row col width height] (character-to-place character)
+        [row-offset col-offset] offsets
+        row (+ row row-offset)
+        col (+ col col-offset)]
+    (led/paint-window serial row col (+ row height) (+ col width) [r g b])))
 
 ; This will split a string into an array of < 80 character strings
 (defn create-string-array [str_array word]
@@ -24,7 +103,6 @@
       (> (+ line_length len) chars-per-line) (conj str_array word)
       (= 0 (count current)) (conj other_strings word)
       :else (conj other_strings (str current " " word)))))
-
 
 ; The reduction function that will return N characters from an array of strings
 (defn reduce-string-array [[array-out chars-left] string]
@@ -80,10 +158,14 @@
   (if is-final? final-state initial-state))
 
 ; Take in the state arrays and mask and write it out
-(defn write-characters [strarray initials finals mask]
+(defn write-characters [new-chars? serial strarray initials finals mask]
   (let [fullstr (apply str strarray)
         strlen (count fullstr)
-        current-states (take strlen (map resolve-state initials finals mask))]
+        current-states (take strlen (map resolve-state initials finals mask))
+        last-char (last fullstr)]
+    (led/clear serial)
+    (if new-chars? (light-key serial last-char [255 255 255]))
+    (led/refresh serial)
     (doall (map (fn [state char] (write-letter state char)) current-states fullstr))))
 
 ; Given a length, return a list of shuffled indexes
@@ -121,6 +203,7 @@
 (defn draw-state [state]
   (let [str-len (count (apply str (:message state)))
         left-over (max (- (:write-index state) str-len padding-time) 0)
+        new-chars? (< (:write-index state) str-len)
         mask (current-mask (:mask-order state) left-over)
         done? (> left-over (+ str-len padding-time))
         serial (:serial state)]
@@ -129,10 +212,12 @@
       (doall
         [(q/background 30)
          (write-characters
+           new-chars?
+           serial
            (clip-to-length (:message state) (:write-index state))
            (:initial-states state)
            (:final-states state)
            mask)
-         (q/delay-frame 10)]))))
+         (q/delay-frame 100)]))))
 
 (def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil nil))
