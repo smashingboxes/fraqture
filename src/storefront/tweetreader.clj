@@ -4,6 +4,7 @@
             [quil.core :as q]
             [clojure.string :as str]
             [storefront.textify :as textify]
+            [clojure.tools.cli :refer [parse-opts]]
             [storefront.led-array :as led])
   (:import  [storefront.drawing Drawing]))
 
@@ -183,41 +184,49 @@
 
 (defn setup [options]
   (let [tweet-lines (concat [tweeter] (reduce create-string-array [""] words))
-        image (textify/loader "images/logo.png" false)]
+        textify-options (:options (parse-opts "" textify/cli-options))
+        textify-options (assoc textify-options :serial (:serial options))]
     (q/frame-rate 30)
     (q/text-font (q/create-font "Monoid-Regular.ttf" 20))
     (q/stroke-weight 3)
-    { :write-index 1
+    { :textify-state (textify/setup textify-options)
+      :write-index 1
       :message tweet-lines
       :initial-states (compute-initial-states tweet-lines (q/text-width " "))
       :final-states (compute-final-states tweet-lines)
       :mask-order (shuffled-indexes (count (apply str tweet-lines)))
-      :image image
       :serial (:serial options)
-      :options { :letters-per-frame 12 :min-letter-size 12 :max-letter-size 36 } }))
+      :done? false}))
+
+(defn update-textify [state]
+  (if (:done? state) (assoc state :textify-state (textify/update-state (:textify-state state))) state))
 
 (defn update-state [state]
-  (-> state
-      (update-in [:write-index] inc)))
+  (let [write-index (inc (:write-index state))
+        str-len (count (apply str (:message state)))
+        left-over (max (- write-index str-len padding-time) 0)
+        new-chars? (< write-index str-len)
+        mask (current-mask (:mask-order state) left-over)
+        done? (> left-over (+ str-len padding-time))]
+    (-> state
+        (assoc :done? done?)
+        (assoc :new-chars? new-chars?)
+        (assoc :mask mask)
+        (assoc :write-index write-index)
+        (update-textify))))
 
 (defn draw-state [state]
-  (let [str-len (count (apply str (:message state)))
-        left-over (max (- (:write-index state) str-len padding-time) 0)
-        new-chars? (< (:write-index state) str-len)
-        mask (current-mask (:mask-order state) left-over)
-        done? (> left-over (+ str-len padding-time))
-        serial (:serial state)]
-    (if done?
-      (textify/draw-state state)
-      (doall
-        [(q/background 30)
-         (write-characters
-           new-chars?
-           serial
-           (clip-to-length (:message state) (:write-index state))
-           (:initial-states state)
-           (:final-states state)
-           mask)
-         (q/delay-frame 100)]))))
+  (if (:done? state)
+    (textify/draw-state (:textify-state state))
+    (doall
+      [(q/background 30)
+       (write-characters
+         (:new-chars? state)
+         (:serial state)
+         (clip-to-length (:message state) (:write-index state))
+         (:initial-states state)
+         (:final-states state)
+         (:mask state))
+       (q/delay-frame 100)])))
 
 (def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil nil))
