@@ -42,6 +42,7 @@
     [nil "--max-letter-size INT" "Maximum letter height, in pixels"
       :default 36
       :parse-fn #(Integer/parseInt %)]
+    [nil "--leave-background" "Do not erase the background if set"]
   ])
 
 (defn randomize-leds []
@@ -49,7 +50,7 @@
 
 (defn setup [options]
     (q/frame-rate 30)
-    (let [image (loader (:image-path options) true)]
+    (let [image (loader (:image-path options) (not (:leave-background options)))]
       { :image image
         :options options
         :leds-left (shuffle (range 540))
