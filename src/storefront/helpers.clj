@@ -1,6 +1,6 @@
 (ns storefront.helpers
-  (:require [quil.core :as q]
-            [clojure.core.matrix :as m]))
+  (:require [quil.core :as q]))
+            ;; [clojure.core.matrix :as m]))
 
 ; Milliseconds to seconds
 (defn seconds [x] (* 1000 x))
@@ -71,7 +71,7 @@
         :x-ends     x-ends
         :y-ends     y-ends })))
 
-(defn average-color [image]
+(defn average-color [image opts]
   (let [pixels (q/pixels image)
         reds   (map q/red pixels)
         greens (map q/green pixels)

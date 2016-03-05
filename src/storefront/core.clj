@@ -5,20 +5,20 @@
             [storefront.led-array :as led]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
-            [storefront.color-swap :as color-swap]
-            [storefront.cycle :as cycle]
-            [storefront.glitch-drag :as drag]
-            [storefront.spirograph :as spirograph]
-            [storefront.shifting-grid :as shifting-grid]
-            [storefront.hexagons :as hexagons]
-            [storefront.hex-spinner :as hex-spinner]
-            [storefront.pixelate :as pixelate]
-            [storefront.weather-drawing :as weather]
-            [storefront.textify :as textify]
-            [storefront.sierpinski :as sierpinski]
-            [storefront.plant :as plant]
-            [storefront.throw :as thro]
-            [storefront.tweetreader :as tweetreader]))
+            [storefront.color-swap :as color-swap]))
+            ;; [storefront.cycle :as cycle]
+            ;; [storefront.glitch-drag :as drag]
+            ;; [storefront.spirograph :as spirograph]
+            ;; [storefront.shifting-grid :as shifting-grid]
+            ;; [storefront.hexagons :as hexagons]
+            ;; [storefront.hex-spinner :as hex-spinner]
+            ;; [storefront.pixelate :as pixelate]
+            ;; [storefront.weather-drawing :as weather]
+            ;; [storefront.textify :as textify]
+            ;; [storefront.sierpinski :as sierpinski]
+            ;; [storefront.plant :as plant]
+            ;; [storefront.throw :as thro]
+            ;; [storefront.tweetreader :as tweetreader]))
 
 (defn exit [status msg]
   (println msg)
@@ -33,19 +33,19 @@
 
 (def drawing-hash (hash-map
     "swap"          color-swap/drawing
-    "spiro"         spirograph/drawing
-    "drag"          drag/drawing
-    "shifting-grid" shifting-grid/drawing
-    "hex"           hexagons/drawing
-    "hex-spinner"   hex-spinner/drawing
-    "cycle"         cycle/drawing
-    "pixelate"      pixelate/drawing
-    "weather"       weather/drawing
-    "sierpinski"    sierpinski/drawing
-    "plant"         plant/drawing
-    "textify"       textify/drawing
-    "throw"         thro/drawing
-    "tweetreader"   tweetreader/drawing
+    ;; "spiro"         spirograph/drawing
+    ;; "drag"          drag/drawing
+    ;; "shifting-grid" shifting-grid/drawing
+    ;; "hex"           hexagons/drawing
+    ;; "hex-spinner"   hex-spinner/drawing
+    ;; "cycle"         cycle/drawing
+    ;; "pixelate"      pixelate/drawing
+    ;; "weather"       weather/drawing
+    ;; "sierpinski"    sierpinski/drawing
+    ;; "plant"         plant/drawing
+    ;; "textify"       textify/drawing
+    ;; "throw"         thro/drawing
+    ;; "tweetreader"   tweetreader/drawing
   ))
 
 (defonce drawing-atom (atom nil))
