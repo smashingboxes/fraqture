@@ -150,7 +150,8 @@
     (and (:finished-at state) (> (q/millis) (+ (:finished-at state) 5000)))
       (-> state
           (merge (setup-new-image (:image-file state) (:serial (:options state))))
-          (assoc :finished-at nil))
+          (assoc :finished-at nil)
+          (update :times-run inc))
     (not (nil? (:finished-at state)))
       state
     (and (nil? (:finished-at state)) (all-columns-done? (:columns state)))
@@ -164,7 +165,7 @@
     (dorun (map #(draw-column % serial) active-columns))
     (led/refresh serial)))
 
-(defn exit? [state] (>= (:times-run state) 2))
+(defn exit? [state] (= (:times-run state) 1))
 
 (def drawing
   (Drawing. "Drag Glitch" setup update-state draw-state nil exit? nil))
