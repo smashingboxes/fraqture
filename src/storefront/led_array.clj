@@ -76,3 +76,10 @@
         (doseq-indexed [row mocked-leds row-c]
           (doseq-indexed [color row col-c]
             (draw-led row-c col-c color)))))))
+
+(defn make-america-great-again [port]
+  (clear port)
+  (doseq [y (range 1 10 2)] (paint-window port y 0 (+ y 1) 30 [130 0 0]))
+  (doseq [y (range 0 9 2)] (paint-window port y 0 (+ y 1) 30 [100 100 100]))
+  (paint-window port 0 0 5 9 [20 20 120])
+  (refresh port))

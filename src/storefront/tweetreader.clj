@@ -4,6 +4,7 @@
             [quil.core :as q]
             [clojure.string :as str]
             [storefront.textify :as textify]
+            [clojure.tools.cli :refer [parse-opts]]
             [storefront.led-array :as led])
   (:import  [storefront.drawing Drawing]))
 
@@ -13,6 +14,85 @@
 (def y-offset 34)
 (def chars-per-line 80)
 (def padding-time 30)
+(def qwerty (apply hash-map [
+  ; row column width height
+  "1" [0 0 1 1]
+  "2" [0 1 1 1]
+  "3" [0 2 1 1]
+  "4" [0 3 1 1]
+  "5" [0 4 1 1]
+  "6" [0 5 1 1]
+  "7" [0 6 1 1]
+  "8" [0 7 1 1]
+  "9" [0 8 1 1]
+  "0" [0 9 1 1]
+  "a" [2 0 1 1]
+  "b" [3 5 1 1]
+  "c" [3 3 1 1]
+  "d" [2 2 1 1]
+  "e" [1 2 1 1]
+  "f" [2 3 1 1]
+  "g" [2 4 1 1]
+  "h" [2 5 1 1]
+  "i" [1 7 1 1]
+  "j" [2 6 1 1]
+  "k" [2 7 1 1]
+  "l" [2 8 1 1]
+  "m" [3 7 1 1]
+  "n" [3 6 1 1]
+  "o" [1 8 1 1]
+  "p" [1 9 1 1]
+  "q" [1 0 1 1]
+  "r" [1 3 1 1]
+  "s" [2 1 1 1]
+  "t" [1 3 1 1]
+  "u" [1 5 1 1]
+  "v" [3 4 1 1]
+  "w" [1 1 1 1]
+  "x" [3 2 1 1]
+  "y" [1 5 1 1]
+  "z" [3 1 1 1]
+  "'" [3 9 2 1]
+  ";" [2 9 1 1]
+  "\\" [2 10 1 1]
+  "," [3 8 1 1]
+  "." [4 8 1 1]
+  " " [4 2 5 1]
+  "\n" [3 9 2 1]]))
+
+(def key-convert (apply hash-map [
+  "!" "1"
+  "@" "2"
+  "#" "3"
+  "$" "4"
+  "%" "5"
+  "^" "6"
+  "&" "7"
+  "*" "8"
+  "(" "9"
+  ")" "0"
+  "\"" "'"
+  ":" ";"
+  "<" ","
+  ">" "."
+  "?" "/" ]))
+
+(def shift-key [4 0 2 1])
+(def offsets [10 10])
+
+(defn character-to-place [character]
+  (let [lower-case (clojure.string/lower-case character)
+        converted-key (get-in key-convert [lower-case])
+        final-key (or converted-key lower-case)]
+    (or (get-in qwerty [final-key]) [0 0 0 0])))
+
+; Emulate a QWERTY keyboard on the LED board
+(defn light-key [serial character [r g b]]
+  (let [[row col width height] (character-to-place character)
+        [row-offset col-offset] offsets
+        row (+ row row-offset)
+        col (+ col col-offset)]
+    (led/paint-window serial row col (+ row height) (+ col width) [r g b])))
 
 ; This will split a string into an array of < 80 character strings
 (defn create-string-array [str_array word]
@@ -24,7 +104,6 @@
       (> (+ line_length len) chars-per-line) (conj str_array word)
       (= 0 (count current)) (conj other_strings word)
       :else (conj other_strings (str current " " word)))))
-
 
 ; The reduction function that will return N characters from an array of strings
 (defn reduce-string-array [[array-out chars-left] string]
@@ -80,10 +159,12 @@
   (if is-final? final-state initial-state))
 
 ; Take in the state arrays and mask and write it out
-(defn write-characters [strarray initials finals mask]
+(defn write-characters [new-chars? serial strarray initials finals mask]
   (let [fullstr (apply str strarray)
         strlen (count fullstr)
-        current-states (take strlen (map resolve-state initials finals mask))]
+        current-states (take strlen (map resolve-state initials finals mask))
+        last-char (last fullstr)]
+    (if new-chars? (do (led/clear serial) (light-key serial last-char [255 255 255])))
     (doall (map (fn [state char] (write-letter state char)) current-states fullstr))))
 
 ; Given a length, return a list of shuffled indexes
@@ -101,38 +182,71 @@
 
 (defn setup [options]
   (let [tweet-lines (concat [tweeter] (reduce create-string-array [""] words))
-        image (textify/loader "images/logo.png" false)]
+        textify-options (:options (parse-opts "" textify/cli-options))
+        textify-options (assoc textify-options :serial (:serial options))]
     (q/frame-rate 30)
     (q/text-font (q/create-font "Monoid-Regular.ttf" 20))
     (q/stroke-weight 3)
-    { :write-index 1
+    { :textify-state (textify/setup textify-options)
+      :write-index 1
       :message tweet-lines
       :initial-states (compute-initial-states tweet-lines (q/text-width " "))
       :final-states (compute-final-states tweet-lines)
       :mask-order (shuffled-indexes (count (apply str tweet-lines)))
-      :image image
       :serial (:serial options)
-      :options { :letters-per-frame 12 :min-letter-size 12 :max-letter-size 36 } }))
+      :done? false
+      :leds-left (shuffle (range 540))
+      :leds '() }))
+
+(defn update-textify [state]
+  (if (:done? state) (assoc state :textify-state (textify/update-state (:textify-state state))) state))
+
+(defn update-leds [state second-stage?]
+  (if second-stage?
+    (let [[current rest] (split-at 3 (:leds-left state))]
+      (-> state
+        (assoc :leds current)
+        (assoc :leds-left rest)))
+    state))
 
 (defn update-state [state]
-  (-> state
-      (update-in [:write-index] inc)))
-
-(defn draw-state [state]
-  (let [str-len (count (apply str (:message state)))
-        left-over (max (- (:write-index state) str-len padding-time) 0)
+  (let [write-index (inc (:write-index state))
+        str-len (count (apply str (:message state)))
+        left-over (max (- write-index str-len padding-time) 0)
+        new-chars? (< write-index str-len)
         mask (current-mask (:mask-order state) left-over)
         done? (> left-over (+ str-len padding-time))
-        serial (:serial state)]
-    (if done?
-      (textify/draw-state state)
-      (doall
-        [(q/background 30)
-         (write-characters
-           (clip-to-length (:message state) (:write-index state))
-           (:initial-states state)
-           (:final-states state)
-           mask)
-         (q/delay-frame 10)]))))
+        second-stage? (and (> left-over 0) (not done?))]
+    (-> state
+        (assoc :clear-last-key? (= write-index (+ 1 str-len)))
+        (assoc :done? done?)
+        (assoc :new-chars? new-chars?)
+        (assoc :mask mask)
+        (assoc :write-index write-index)
+        (update-textify)
+        (update-leds second-stage?))))
+
+(defn random-color []
+  [(rand 255) (rand 255) (rand 255)])
+
+(defn clear-last-character [state]
+  (if (:clear-last-key? state) (led/clear (:serial state))))
+
+(defn draw-state [state]
+  (if (:done? state)
+    (textify/draw-state (:textify-state state))
+    (doall
+      [(q/background 30)
+       (write-characters
+         (:new-chars? state)
+         (:serial state)
+         (clip-to-length (:message state) (:write-index state))
+         (:initial-states state)
+         (:final-states state)
+         (:mask state))
+       (clear-last-character state)
+       (doseq [pixel (:leds state)] (led/paint-pixel (:serial state) pixel (random-color)))
+       (led/refresh (:serial state))
+       (q/delay-frame 100)])))
 
 (def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil nil))
