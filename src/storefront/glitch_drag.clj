@@ -1,98 +1,152 @@
 (ns storefront.glitch-drag
   (:require [storefront.drawing]
             [storefront.helpers :refer :all]
+            [storefront.led-array :as led]
             [quil.core :as q])
   (:import  [storefront.drawing Drawing]))
 
+(defn update [collection index function]
+  (assoc collection index (function (get collection index))))
+
+(defrecord Column [index status row-index color])
 (def column-count 30)
+(def row-count 30)
 
-(defn clamp-rgb [rgb]
-  (max (min rgb 255) 0))
+; Setup functions
+(defn color-to-rgb [color]
+  [(q/red color) (q/green color) (q/blue color)])
 
-(defn jitter [max-jitter]
-  (fn [d] (+ d (- (rand-int (inc max-jitter)) (/ max-jitter 2)))))
+(defn setup-new-image
+  "Select a new image, display it, and setup the columns for trickle"
+  [last-file serial]
+  (let [image-file  (random-image-file :except #{last-file})
+        sample-row-indices (repeatedly column-count #(rand-int row-count))
+        sample-ys   (map #(* % (/ (q/height) row-count)) sample-row-indices)
+        sample-xs   (map #(* % (/ (q/width) column-count)) (range column-count))
+        samples     (map (fn [x y] (color-to-rgb (q/get-pixel x y))) sample-xs sample-ys)
+        columns     (map (fn [n c] (->Column n :ready 0 c)) (range) samples)]
+    (q/image (q/load-image image-file) 0 0 (q/width) (q/height))
+    (led/clear serial)
+    { :image-file image-file
+      :columns  (vec columns) }))
 
-(defn color-walk [color jitter-amount]
-  (map clamp-rgb (map (jitter jitter-amount) color)))
+; Update functions
+(defn all-columns-done?
+  "Return if every column has a status of :finished"
+  [columns]
+  (every? #(= (:status %) :finished) columns))
 
-(defn random-color []
-  [(rand-int 255) (rand-int 255) (rand-int 255)])
+(defn all-columns-inactive?
+  "Return if no columns are active"
+  [columns]
+  (not-any? #(= (:status %) :active) columns))
 
-(defn cycle-index [column]
-  (mod (inc (:current-index column)) (:y-count column)))
+(defn indexes-of-col-status
+  "Return the index of all columns with a given status"
+  [columns status]
+  (remove nil? (map-indexed (fn [idx col] (if (= (:status col) status) idx nil)) columns)))
 
-(defn color-with-opac [color]
-  (conj (into [] color) 120))
+(defn column-each
+  "Takes in the `columns` and an array of indexes that should be updated and applies
+  `function` to all of those indexes"
+  [columns act-on-indexes function]
+  (reduce (fn [cols current] (update cols current function)) columns act-on-indexes))
 
-(defn rect-at-index [x-index y-index y-count color]
+(defn activate-random-columns
+  "Activates `count` random columns from all columns marked as :ready"
+  [columns count]
+  (let [ready-indexes (indexes-of-col-status columns :ready)
+        ready-indexes (shuffle ready-indexes)
+        ready-indexes (take count ready-indexes)]
+    (column-each columns ready-indexes #(assoc % :status :active))))
+
+(defn activate-columns-if-inactive
+  "Calls the activate-random-columns function if there are no active columns"
+  [columns]
+  (if (all-columns-inactive? columns) (activate-random-columns columns 3) columns))
+
+(defn advance-active-column
+  "Advances the row index of an active column, setting it to :finished if it is done."
+  [column]
+  (let [new-row-index (inc (:row-index column))
+        new-status (if (= new-row-index (+ row-count 17)) :finished :active)]
+    (assoc column :row-index new-row-index :status new-status)))
+
+(defn advance-all-active
+  "Applies advance-active-column to all active columns"
+  [columns]
+  (let [active-indexes (indexes-of-col-status columns :active)]
+    (column-each columns active-indexes advance-active-column)))
+
+(defn update-columns
+  "Updates the state of all columns"
+  [columns]
+  (-> columns
+      activate-columns-if-inactive
+      advance-all-active))
+
+; Draw functions
+(defn rect-at-index
+  "Draws a rectangle at the given index with color `color`"
+  [x-index y-index y-count color]
   (let [width             (/ (q/width) column-count)
         height            (/ (q/height) y-count)
         x                 (* width x-index)
         y                 (* height y-index)]
     (q/no-stroke)
-    (apply q/fill (color-with-opac color))
+    (apply q/fill color)
     (q/rect x y width height)))
 
-(defrecord Column [current-index color y-count])
+(defn is-led?
+  "Checks if the given row should be displayed on an LED or the screen."
+  [row-c row-n]
+  (or (< row-n 9)
+      (> row-n (+ row-c 8))))
 
-(defn color-to-rgb [color]
-  [(q/red color) (q/green color) (q/blue color)])
+(defn to-led-index
+  "Converts the overall row-index to an LED index"
+  [row-c row-n]
+  (assert (is-led? row-c row-n))
+  (if (> row-n 9)
+    (- row-n row-c)
+    row-n))
 
-(defn setup-new-image [last-file y-blocks]
-  (let [image-file  (random-image-file :except #{last-file})
-        column-y-blocks (repeatedly column-count #(rand-int y-blocks))
-        column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
-        column-xs   (map #(* % (/ (q/width) column-count)) (range column-count))
-        raw-samples (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
-        samples     (map #(color-to-rgb %) raw-samples)
-        columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
-    (q/image (q/load-image image-file) 0 0 (q/width) (q/height))
-    { :image-file image-file
-      :last-update (q/millis)
-      :columns  columns }))
+(defn to-screen-index
+  "Converts the overall row-index to a screen rectangle index"
+  [row-c row-n]
+  (assert (not (is-led? row-c row-n)))
+  (- row-n 9))
 
-(def cli-options
-  [
-    ["-y" "--y-blocks INT" "Number of blocks in the vertical direction"
-      :default 30
-      :parse-fn #(Integer/parseInt %)
-      :validate [#(< 2 % 200) "Must be a number between 0 and 200"]]
-    ["-u" "--update-interval INT" "Number of seconds between switching images"
-      :default 20
-      :parse-fn #(Integer/parseInt %)]
-    ["-j" "--jitter-amount INT" "How much to vary the color as it slides down"
-      :default 10
-      :parse-fn #(Integer/parseInt %)]
-  ])
+(defn draw-column
+  "Draw a column using the appropriate method."
+  [column serial]
+  (let [col-n (:index column)
+        row-n (:row-index column)
+        color (:color column)]
+    (if (is-led? row-count row-n)
+      (let [row-n (to-led-index row-count row-n)]
+        (led/paint-window serial row-n col-n (inc row-n) (inc col-n) color))
+      (rect-at-index col-n (to-screen-index row-count row-n) row-count color))))
 
+; Storefront functions
 (defn setup [options]
-    (q/frame-rate 10)
-    (-> (setup-new-image nil (:y-blocks options))
-        (assoc state :options options)
-        (assoc state :times-run 0)))
-
-(defn update-column-generator [jitter-amount]
-  (fn [column]
-    (Column. (cycle-index column) (color-walk (:color column) jitter-amount) (:y-count column))))
+  (q/frame-rate 10)
+  (-> (setup-new-image nil (:serial options))
+      (assoc :options options)
+      (assoc :times-run 0)))
 
 (defn update-state [state]
-  (let [options         (:options state)
-        update-interval (:update-interval options)
-        times-run       (inc (:times-run state))
-        jitter-amount   (:jitter-amount options)
-        y-blocks        (:y-blocks options)]
-    (if (> (time-elapsed (:last-update state)) (seconds update-interval))
-      (assoc (setup-new-image (:image-file state) y-blocks) :options options :times-run times-run)
-      (update-in state [:columns] #(map (update-column-generator jitter-amount) %)))))
+  (if (all-columns-done? (:columns state))
+    (merge state (setup-new-image (:image-file state) (:serial (:options state))))
+    (update state :columns update-columns)))
 
 (defn draw-state [state]
-  (dorun
-    (map-indexed
-      (fn [idx column]
-        (rect-at-index idx (:current-index column) (:y-count column) (:color column)))
-      (:columns state))))
+  (let [active-columns (filter #(= (:status %) :active) (:columns state))
+        serial (:serial (:options state))]
+    (dorun (map #(draw-column % serial) active-columns))
+    (led/refresh serial)))
 
 (defn exit? [state] (>= (:times-run state) 2))
 
 (def drawing
-  (Drawing. "Drag Glitch" setup update-state draw-state cli-options exit? nil))
+  (Drawing. "Drag Glitch" setup update-state draw-state nil exit? nil))
