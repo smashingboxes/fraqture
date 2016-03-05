@@ -4,6 +4,8 @@
             [quil.core :as q])
   (:import  [storefront.drawing Drawing]))
 
+(def column-count 30)
+
 (defn clamp-rgb [rgb]
   (max (min rgb 255) 0))
 
@@ -22,8 +24,8 @@
 (defn color-with-opac [color]
   (conj (into [] color) 120))
 
-(defn rect-at-index [x-index y-index x-count y-count color]
-  (let [width             (/ (q/width) x-count)
+(defn rect-at-index [x-index y-index y-count color]
+  (let [width             (/ (q/width) column-count)
         height            (/ (q/height) y-count)
         x                 (* width x-index)
         y                 (* height y-index)]
@@ -36,11 +38,11 @@
 (defn color-to-rgb [color]
   [(q/red color) (q/green color) (q/blue color)])
 
-(defn setup-new-image [last-file x-blocks y-blocks]
+(defn setup-new-image [last-file y-blocks]
   (let [image-file  (random-image-file :except #{last-file})
-        column-y-blocks (repeatedly x-blocks #(rand-int y-blocks))
+        column-y-blocks (repeatedly column-count #(rand-int y-blocks))
         column-ys   (map #(* % (/ (q/height) y-blocks)) column-y-blocks)
-        column-xs   (map #(* % (/ (q/width) x-blocks)) (range x-blocks))
+        column-xs   (map #(* % (/ (q/width) column-count)) (range column-count))
         raw-samples (map (fn [x y] (q/get-pixel x y)) column-xs column-ys)
         samples     (map #(color-to-rgb %) raw-samples)
         columns     (map (fn [y c] (->Column y c (+ 20 (rand-int 20)))) column-y-blocks samples)]
@@ -51,10 +53,6 @@
 
 (def cli-options
   [
-    ["-x" "--x-blocks INT" "Number of blocks in the horizontal"
-      :default 50
-      :parse-fn #(Integer/parseInt %)
-      :validate [#(< 2 % 200) "Must be a number between 2 and 200"]]
     ["-y" "--y-blocks INT" "Number of blocks in the vertical direction"
       :default 30
       :parse-fn #(Integer/parseInt %)
@@ -68,7 +66,7 @@
   ])
 
 (defn setup [options]
-  (let [state (setup-new-image nil (:x-blocks options) (:y-blocks options))
+  (let [state (setup-new-image nil (:y-blocks options))
         state (assoc state :options options)
         state (assoc state :times-run 0)]
     (q/frame-rate 10)
@@ -83,20 +81,16 @@
         update-interval (:update-interval options)
         times-run       (inc (:times-run state))
         jitter-amount   (:jitter-amount options)
-        x-blocks        (:x-blocks options)
         y-blocks        (:y-blocks options)]
     (if (> (time-elapsed (:last-update state)) (seconds update-interval))
-      (assoc (setup-new-image (:image-file state) x-blocks y-blocks) :options options :times-run times-run)
+      (assoc (setup-new-image (:image-file state) y-blocks) :options options :times-run times-run)
       (update-in state [:columns] #(map (update-column-generator jitter-amount) %)))))
 
 (defn draw-state [state]
   (dorun
     (map-indexed
       (fn [idx column]
-        (rect-at-index
-          idx (:current-index column)
-          (:x-blocks (:options state)) (:y-count column)
-          (:color column)))
+        (rect-at-index idx (:current-index column) (:y-count column) (:color column)))
       (:columns state))))
 
 (defn exit? [state] (>= (:times-run state) 2))
