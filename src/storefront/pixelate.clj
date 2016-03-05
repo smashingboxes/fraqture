@@ -1,6 +1,7 @@
 (ns storefront.pixelate
   (:require [storefront.drawing]
             [storefront.helpers :refer :all]
+            [storefront.led-array :as led]
             [quil.core :as q]
             [storefront.stream :as stream]
             [clojure.data :refer :all])
@@ -33,6 +34,7 @@
   (let [pixel-multiplier 1]
     (-> (stream/get-image!) (q/load-image) (q/image 0 0 (q/width) (q/height)))
     { :pixel-multiplier pixel-multiplier
+      :options options
       :hidden-pixels (shuffled-pixels pixel-multiplier)
       :showing-pixels '() }))
 
@@ -44,16 +46,43 @@
         n          (/ pixelation-speed (exp multiplier 2))
         new-pixels (take n hidden)
         hidden     (drop n hidden)
-        showing    (concat (:showing-pixels state) new-pixels)]
+        showing    (concat (:showing-pixels state) new-pixels)
+        options    (:options state)]
   { :pixel-multiplier multiplier
     :hidden-pixels hidden
-    :showing-pixels showing }))
+    :showing-pixels showing
+    :options options}))
+
+(defn convert-window [pixel]
+  ; convert a rectangular pixel region on the main screen to
+  ; a paint-window region on the led screen
+  (let [x (/ (:x pixel) (q/width))
+        y (/ (:y pixel) (q/height))
+        width (/ (:w pixel) (q/width))
+        height (/ (:h pixel) (q/height))
+        window-x (int (* x led/col-count))
+        window-y (int (* y led/row-count))
+        window-width (int (* width led/col-count))
+        window-height (int (* height led/row-count))]
+    { :x-start window-x
+      :y-start window-y
+      :x-end (+ window-x window-width)
+      :y-end (+ window-y window-height) }))
+
+(defn decompose-color [color]
+  [(q/red color) (q/green color) (q/blue color)])
 
 (defn draw-state [state]
-  (q/no-stroke)
-  (doseq [pixel (:showing-pixels state)]
-    (q/fill (:color pixel))
-    (q/rect (:x pixel) (:y pixel) (:w pixel) (:h pixel))))
+  (let [options (:options state)
+        serial  (:serial options)]
+    (q/no-stroke)
+    (doseq [pixel (:showing-pixels state)
+      :let [window (convert-window pixel)
+            color (:color pixel)]]
+      (q/fill color)
+      (q/rect (:x pixel) (:y pixel) (:w pixel) (:h pixel))
+      (led/paint-window serial (:y-start window) (:x-start window) (:y-end window) (:x-end window) (decompose-color color)))
+    (led/refresh serial)))
 
 (defn exit? [state]
   (let [mult (:pixel-multiplier state)
