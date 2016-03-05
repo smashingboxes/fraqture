@@ -8,6 +8,8 @@
 (defn update [collection index function]
   (assoc collection index (function (get collection index))))
 
+(defn any? [function collection] (not (nil? (some function collection))))
+
 (defrecord Column [index status row-index color])
 (def column-count 30)
 (def row-count 30)
@@ -41,6 +43,12 @@
   [columns]
   (not-any? #(= (:status %) :active) columns))
 
+(defn any-column-index-x
+  "Generates a function that will return if any column is at row index [x]"
+  [x]
+  (fn [columns]
+    (any? #(= (:row-index %) x) columns)))
+
 (defn indexes-of-col-status
   "Return the index of all columns with a given status"
   [columns status]
@@ -60,10 +68,12 @@
         ready-indexes (take count ready-indexes)]
     (column-each columns ready-indexes #(assoc % :status :active))))
 
-(defn activate-columns-if-inactive
-  "Calls the activate-random-columns function if there are no active columns"
+(defn activate-columns-if-ready
+  "Calls the activate-random-columns function if any column is 1/3 done"
   [columns]
-  (if (all-columns-inactive? columns) (activate-random-columns columns 3) columns))
+  (if (or ((any-column-index-x 10) columns)
+          (all-columns-inactive? columns))
+      (activate-random-columns columns 1) columns))
 
 (defn advance-active-column
   "Advances the row index of an active column, setting it to :finished if it is done."
@@ -82,7 +92,7 @@
   "Updates the state of all columns"
   [columns]
   (-> columns
-      activate-columns-if-inactive
+      activate-columns-if-ready
       advance-all-active))
 
 ; Draw functions
