@@ -66,11 +66,10 @@
   ])
 
 (defn setup [options]
-  (let [state (setup-new-image nil (:y-blocks options))
-        state (assoc state :options options)
-        state (assoc state :times-run 0)]
     (q/frame-rate 10)
-    state))
+    (-> (setup-new-image nil (:y-blocks options))
+        (assoc state :options options)
+        (assoc state :times-run 0)))
 
 (defn update-column-generator [jitter-amount]
   (fn [column]
