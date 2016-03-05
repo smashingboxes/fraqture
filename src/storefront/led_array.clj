@@ -27,8 +27,8 @@
     [:mock (atom (create-mock-leds))]))
 
 (defn- mock-window [mock-atom row-s col-s row-e col-e color]
-  (let [pairs (for [row (range row-s (+ 1 row-e))
-                    col (range col-s (+ 1 col-e))]
+  (let [pairs (for [row (range row-s row-e)
+                    col (range col-s col-e)]
                       [row col])]
     (reduce (fn [acc [row col]] (assoc-in acc [row col] color)) mock-atom pairs)))
 
@@ -62,7 +62,7 @@
 (defn- draw-led [row col color]
   (let [x-width (/ (q/width) col-count)
         y-height 8
-        y-adder (if (> row 9) (- (q/height) (* 18 y-height)) 0)
+        y-adder (if (> row 8) (- (q/height) (* 18 y-height)) 0)
         x (* col x-width)
         y (+ y-adder (* row y-height))]
     (apply q/fill color)
