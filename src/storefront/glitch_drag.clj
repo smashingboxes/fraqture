@@ -146,9 +146,17 @@
       (assoc :times-run 0)))
 
 (defn update-state [state]
-  (if (all-columns-done? (:columns state))
-    (merge state (setup-new-image (:image-file state) (:serial (:options state))))
-    (update state :columns update-columns)))
+  (cond
+    (and (:finished-at state) (> (q/millis) (+ (:finished-at state) 5000)))
+      (-> state
+          (merge (setup-new-image (:image-file state) (:serial (:options state))))
+          (assoc :finished-at nil))
+    (not (nil? (:finished-at state)))
+      state
+    (and (nil? (:finished-at state)) (all-columns-done? (:columns state)))
+      (assoc state :finished-at (q/millis))
+    :else
+      (update state :columns update-columns)))
 
 (defn draw-state [state]
   (let [active-columns (filter #(= (:status %) :active) (:columns state))
