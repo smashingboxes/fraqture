@@ -36,6 +36,7 @@
     { :pixel-multiplier pixel-multiplier
       :options options
       :hidden-pixels (shuffled-pixels pixel-multiplier)
+      :new-pixels '()
       :showing-pixels '() }))
 
 (defn update-state [state]
@@ -50,6 +51,7 @@
         options    (:options state)]
   { :pixel-multiplier multiplier
     :hidden-pixels hidden
+    :new-pixels new-pixels
     :showing-pixels showing
     :options options}))
 
@@ -72,17 +74,23 @@
 (defn decompose-color [color]
   [(q/red color) (q/green color) (q/blue color)])
 
-(defn draw-state [state]
+(defn draw-screen [state]
+    (q/no-stroke)
+    (doseq [pixel (:showing-pixels state)]
+      (q/fill (:color pixel))
+      (q/rect (:x pixel) (:y pixel) (:w pixel) (:h pixel))))
+
+(defn draw-leds [state]
   (let [options (:options state)
         serial  (:serial options)]
-    (q/no-stroke)
-    (doseq [pixel (:showing-pixels state)
-      :let [window (convert-window pixel)
-            color (:color pixel)]]
-      (q/fill color)
-      (q/rect (:x pixel) (:y pixel) (:w pixel) (:h pixel))
-      (led/paint-window serial (:y-start window) (:x-start window) (:y-end window) (:x-end window) (decompose-color color)))
+    (doseq [pixel (:new-pixels state)
+      :let [window (convert-window pixel)]]
+      (led/paint-window serial (:y-start window) (:x-start window) (:y-end window) (:x-end window) (decompose-color (:color pixel))))
     (led/refresh serial)))
+
+(defn draw-state [state]
+  (draw-screen state)
+  (draw-leds state))
 
 (defn exit? [state]
   (let [mult (:pixel-multiplier state)
