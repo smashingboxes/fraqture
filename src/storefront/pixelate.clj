@@ -68,8 +68,8 @@
         window-height (int (* height led/row-count))]
     { :x-start window-x
       :y-start window-y
-      :x-end (+ window-x window-width)
-      :y-end (+ window-y window-height) }))
+      :x-end (+ 1 (+ window-x window-width))
+      :y-end (+ 1 (+ window-y window-height)) }))
 
 (defn decompose-color [color]
   [(q/red color) (q/green color) (q/blue color)])
