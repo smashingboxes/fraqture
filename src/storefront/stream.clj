@@ -42,7 +42,7 @@
         filename (if (empty? new-files) (rand-weighted folder-contents) (rand-nth new-files))
         folder-contents (if (empty? folder-contents) {} (update-in folder-contents [filename] inc))]
     (swap! file-states assoc folder-name (->FolderState filename folder-contents))
-    (str folder-name "/" filename)))
+    (if filename (str folder-name "/" filename))))
 
 (defn get-tweet! [] (get-file! "tweets" tweet-extensions))
 (defn get-image! [] (get-file! "images" image-extensions))
