@@ -3,17 +3,18 @@
             [storefront.helpers :refer :all]
             [quil.core :as q]
             [storefront.stream :as stream]
-            [clojure.core.matrix :as m])
+            [clojure.core.matrix :as m]
+            [storefront.led-array :as led])
   (:import  [storefront.drawing Drawing]))
 
 (def cli-options
   [
     ["-x" "--x-blocks INT" "Number of blocks in the horizontal"
-      :default 50
+      :default 30
       :parse-fn #(Integer/parseInt %)
       :validate [#(< 2 % 200) "Must be a number between 2 and 200"]]
     ["-y" "--y-blocks INT" "Number of blocks in the vertical direction"
-      :default 30
+      :default 18
       :parse-fn #(Integer/parseInt %)
       :validate [#(< 2 % 200) "Must be a number between 0 and 200"]]
     ["-c" "--chunk-size INT" "Number of columns/rows to slide together"
@@ -113,7 +114,9 @@
           :options options
           :block-w block-w
           :block-h block-h
-          :ops ops }))
+          :ops ops
+          :top-leds [[[255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0]]]
+          :bottom-leds [[[0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255]]] }))
 
 (defn update-state [state]
   (let [options (:options state)
@@ -127,7 +130,7 @@
       (assoc :blocks blocks)
       (assoc :ops ops))))
 
-(defn draw-state [state]
+(defn draw-screen [state]
   (dorun
     (map-indexed (fn [x-index column]
       (dorun
@@ -135,6 +138,31 @@
           (draw-block block x-index y-index (:block-w state) (:block-h state)))
         column)))
     (:blocks state))))
+
+
+(defn draw-array [serial array offset]
+  (dorun
+    (map-indexed (fn [x-index column]
+      (dorun
+        (map-indexed (fn [y-index led]
+          (let [y-start (+ y-index offset)
+                x-start x-index]
+          (led/paint-window serial y-start x-start (+ y-start 1) (+ x-start 1) led)))
+        column)))
+    array)))
+
+(defn draw-leds [state]
+  (let [options (:options state)
+        serial  (:serial options)
+        top     (:top-leds state)
+        bottom  (:bottom-leds state)]
+    (draw-array serial top 0)
+    (draw-array serial bottom 9)
+    (led/refresh serial)))
+
+(defn draw-state [state]
+  (draw-screen state)
+  (draw-leds state))
 
 (defn exit? [state]
   (let [ops (:ops state)]
