@@ -75,10 +75,10 @@
   [(q/red color) (q/green color) (q/blue color)])
 
 (defn draw-screen [state]
-    (q/no-stroke)
-    (doseq [pixel (:showing-pixels state)]
-      (q/fill (:color pixel))
-      (q/rect (:x pixel) (:y pixel) (:w pixel) (:h pixel))))
+  (q/no-stroke)
+  (doseq [pixel (:showing-pixels state)]
+    (q/fill (:color pixel))
+    (q/rect (:x pixel) (:y pixel) (:w pixel) (:h pixel))))
 
 (defn draw-leds [state]
   (let [options (:options state)
