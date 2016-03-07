@@ -2,6 +2,7 @@
   (:require [storefront.drawing]
             [storefront.helpers :refer :all]
             [quil.core :as q]
+            [storefront.stream :as stream]
             [clojure.data :refer :all])
   (:import  [storefront.drawing Drawing]))
 
@@ -30,10 +31,10 @@
 
 (defn setup [options]
   (let [pixel-multiplier 1]
-  (q/image (q/load-image (random-image-file)) 0 0 (q/width) (q/height))
-  { :pixel-multiplier pixel-multiplier
-    :hidden-pixels (shuffled-pixels pixel-multiplier)
-    :showing-pixels '() }))
+    (-> (stream/get-image!) (q/load-image) (q/image 0 0 (q/width) (q/height)))
+    { :pixel-multiplier pixel-multiplier
+      :hidden-pixels (shuffled-pixels pixel-multiplier)
+      :showing-pixels '() }))
 
 (defn update-state [state]
   (let [hidden     (:hidden-pixels state)

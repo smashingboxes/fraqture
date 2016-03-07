@@ -2,6 +2,7 @@
   (:require [storefront.drawing]
             [storefront.helpers :refer :all]
             [storefront.led-array :as led]
+            [storefront.stream :as stream]
             [quil.core :as q])
   (:import  [storefront.drawing Drawing]))
 
@@ -20,17 +21,15 @@
 
 (defn setup-new-image
   "Select a new image, display it, and setup the columns for trickle"
-  [last-file serial]
-  (let [image-file  (random-image-file :except #{last-file})
-        sample-row-indices (repeatedly column-count #(rand-int row-count))
+  [serial]
+  (let [sample-row-indices (repeatedly column-count #(rand-int row-count))
         sample-ys   (map #(* % (/ (q/height) row-count)) sample-row-indices)
         sample-xs   (map #(* % (/ (q/width) column-count)) (range column-count))
         samples     (map (fn [x y] (color-to-rgb (q/get-pixel x y))) sample-xs sample-ys)
         columns     (map (fn [n c] (->Column n :ready 0 c)) (range) samples)]
-    (q/image (q/load-image image-file) 0 0 (q/width) (q/height))
+    (-> (stream/get-image!) (q/load-image) (q/image 0 0 (q/width) (q/height)))
     (led/clear serial)
-    { :image-file image-file
-      :columns  (vec columns) }))
+    { :columns  (vec columns) }))
 
 ; Update functions
 (defn all-columns-done?
@@ -141,7 +140,7 @@
 ; Storefront functions
 (defn setup [options]
   (q/frame-rate 10)
-  (-> (setup-new-image nil (:serial options))
+  (-> (setup-new-image (:serial options))
       (assoc :options options)
       (assoc :times-run 0)))
 
@@ -149,7 +148,7 @@
   (cond
     (and (:finished-at state) (> (q/millis) (+ (:finished-at state) 5000)))
       (-> state
-          (merge (setup-new-image (:image-file state) (:serial (:options state))))
+          (merge (setup-new-image (:serial (:options state))))
           (assoc :finished-at nil)
           (update :times-run inc))
     (not (nil? (:finished-at state)))

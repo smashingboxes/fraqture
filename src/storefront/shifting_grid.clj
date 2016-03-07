@@ -2,6 +2,7 @@
   (:require [storefront.drawing]
             [storefront.helpers :refer :all]
             [quil.core :as q]
+            [storefront.stream :as stream]
             [clojure.core.matrix :as m])
   (:import  [storefront.drawing Drawing]))
 
@@ -93,7 +94,7 @@
 
 (defn setup [options]
   (q/frame-rate 5)
-  (let [image-file (random-image-file)
+  (let [image-file (stream/get-image!)
         image  (q/load-image image-file)
         _resized (q/resize image (q/width) (q/height))
         x-blocks (:x-blocks options)

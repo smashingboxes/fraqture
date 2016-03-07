@@ -2,6 +2,7 @@
   (:require [storefront.drawing]
             [storefront.helpers :refer :all]
             [storefront.led-array :as led]
+            [storefront.stream :as stream]
             [quil.core :as q])
   (:import  [storefront.drawing Drawing]))
 
@@ -33,15 +34,14 @@
    id))
 
 (defn setup [options]
-  (let [image (q/load-image (random-image-file))]
-    (load-new-image image)
-    {:pixel-array (pixel-array)
-     :led-array (led-array)
-     :pixels-to-blend []
-     :dpixels-to-blend []
-     :leds-to-modify []
-     :serial (:serial options)
-     :effects [:blend]}))
+  (->> (stream/get-image!) (q/load-image) (load-new-image))
+  {:pixel-array (pixel-array)
+   :led-array (led-array)
+   :pixels-to-blend []
+   :dpixels-to-blend []
+   :leds-to-modify []
+   :serial (:serial options)
+   :effects [:blend]})
 
 (defn draw-state [state]
   (let [leds (:leds-to-modify state)]
@@ -56,9 +56,8 @@
 
   (if (:load-new-image state)
     (do
-      (load-new-image (q/load-image (random-image-file)))
-      (led/clear (:serial state))
-    ))
+      (->> (stream/get-image!) (q/load-image) (load-new-image))
+      (led/clear (:serial state))))
 
   (let [pixels (:pixels-to-sample state)]
     (let [dpixels (:pixels-to-modify state)]
