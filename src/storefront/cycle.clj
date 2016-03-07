@@ -5,12 +5,10 @@
             [clojure.tools.cli :refer [parse-opts]]
             [storefront.glitch-drag :as drag]
             [storefront.color-swap :as swap]
-            [storefront.spirograph :as spirograph]
             [storefront.shifting-grid :as shifting-grid]
-            [storefront.hexagons :as hexagons]
-            [storefront.hex-spinner :as hex-spinner]
             [storefront.pixelate :as pixelate]
-            [storefront.textify :as textify]
+            [storefront.tweetreader :as tweetreader]
+            [storefront.led-array :as led]
             )
   (:import  [storefront.drawing Drawing]))
 
@@ -18,12 +16,9 @@
   (shuffle
    [drag/drawing
     swap/drawing
-    spirograph/drawing
     shifting-grid/drawing
-    hexagons/drawing
-    hex-spinner/drawing
     pixelate/drawing
-    textify/drawing]))
+    tweetreader/drawing]))
 
 (defn current-drawing [state]
   (nth drawing-list (:drawing-i state)))
@@ -33,8 +28,11 @@
 
 (defn bootstrap-state [state]
   (let [current-drawing (current-drawing state)
+        serial          (:serial (:options state))
         options         (default-options current-drawing)
-        options         (assoc options :serial (:serial (:options state)))]
+        options         (assoc options :serial serial)]
+  (led/clear serial)
+  (led/refresh serial)
   (assoc state :drawing-state ((:setup current-drawing) options))))
 
 (def cli-options
