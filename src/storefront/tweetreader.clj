@@ -2,15 +2,16 @@
   (:require [storefront.drawing]
             [storefront.helpers :refer :all]
             [quil.core :as q]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [storefront.textify :as textify]
             [clojure.tools.cli :refer [parse-opts]]
-            [storefront.led-array :as led])
+            [storefront.led-array :as led]
+            [storefront.stream :as stream])
   (:import  [storefront.drawing Drawing]))
 
-(def tweeter "@smashingboxes")
-(def tweet "Designer @schombombadil talks to @designationio about making stuff at SB and smashing established UI patterns. http://sbox.es/1Qxe9OH")
-(def words (str/split tweet #" "))
+(def test-tweet "@test-tweet
+  The text of the tweet goes here.")
+
 (def y-offset 34)
 (def chars-per-line 80)
 (def padding-time 30)
@@ -81,7 +82,7 @@
 (def offsets [10 10])
 
 (defn character-to-place [character]
-  (let [lower-case (clojure.string/lower-case character)
+  (let [lower-case (string/lower-case character)
         converted-key (get-in key-convert [lower-case])
         final-key (or converted-key lower-case)]
     (or (get-in qwerty [final-key]) [0 0 0 0])))
@@ -181,7 +182,13 @@
     (reduce mask-reducer (vec (repeat arrlen false)) flipped)))
 
 (defn setup [options]
-  (let [tweet-lines (concat [tweeter] (reduce create-string-array [""] words))
+  (let [tweet-file (stream/get-tweet!)
+        tweet-text (if (nil? tweet-file) test-tweet (slurp tweet-file))
+        tweet-split (string/split tweet-text #"\n")
+        tweet-author (first tweet-split)
+        tweet-body (string/join " " (rest tweet-split))
+        words (string/split tweet-body #" ")
+        tweet-lines (concat [tweet-author] (reduce create-string-array [""] words))
         textify-options (:options (parse-opts "" textify/cli-options))
         textify-options (assoc textify-options :serial (:serial options))]
     (q/frame-rate 30)
