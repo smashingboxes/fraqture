@@ -28,16 +28,6 @@
         x (q/sin (* s (/ 1.0 rate)))]
     (+ mid (* x half))))
 
-; Get a random file, except the given file
-(defn random-image-file
-  [& {:keys [except]
-      :or {except #{}}}]
-  (let [directory      (clojure.java.io/file "./images")
-        files          (file-seq directory)
-        image-files    (filter valid-image files)
-        included-files (apply list (apply disj (set image-files) except))]
-    (rand-nth included-files)))
-
 ; Average: sum / count
 (defn average [numbers]
   (if (= (count numbers) 0)
