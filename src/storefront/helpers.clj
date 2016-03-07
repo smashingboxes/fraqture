@@ -71,7 +71,7 @@
         :x-ends     x-ends
         :y-ends     y-ends })))
 
-(defn average-color [image opts]
+(defn average-color [image]
   (let [pixels (q/pixels image)
         reds   (map q/red pixels)
         greens (map q/green pixels)
