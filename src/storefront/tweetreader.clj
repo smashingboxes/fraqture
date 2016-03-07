@@ -79,20 +79,21 @@
   "?" "/" ]))
 
 (def shift-key [4 0 2 1])
-(def offsets [10 10])
+(def offsets [10 5])
 
 (defn character-to-place [character]
   (let [lower-case (string/lower-case character)
-        converted-key (get-in key-convert [lower-case])
+        converted-key (get key-convert lower-case)
         final-key (or converted-key lower-case)]
-    (or (get-in qwerty [final-key]) [0 0 0 0])))
+    (or (get qwerty final-key) [0 0 0 0])))
+
+(defn properly-spaced [[row col width height]]
+  (let [[row-offset col-offset] offsets]
+    [(+ row-offset row) (+ col-offset (* 2 col)) (* 2 width) height]))
 
 ; Emulate a QWERTY keyboard on the LED board
 (defn light-key [serial character [r g b]]
-  (let [[row col width height] (character-to-place character)
-        [row-offset col-offset] offsets
-        row (+ row row-offset)
-        col (+ col col-offset)]
+  (let [[row col width height] (-> character (character-to-place) (properly-spaced))]
     (led/paint-window serial row col (+ row height) (+ col width) [r g b])))
 
 ; This will split a string into an array of < 80 character strings
