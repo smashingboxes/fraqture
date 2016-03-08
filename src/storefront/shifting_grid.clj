@@ -106,7 +106,13 @@
         block-h (/ (q/height) y-blocks)
         xs     (map #(* % block-w) (range x-blocks))
         ys     (map #(* % block-h) (range y-blocks))
-        blocks (map (fn [y] (map (fn [x] (q/get-pixel image x y block-w block-h)) xs)) ys)
+        ; Build the TV matrix
+        tv (map (fn [y] (map (fn [x] (q/get-pixel image x y block-w block-h)) xs)) ys)
+        ; Build the LED matrices
+        top    (map (fn [y] (map (fn [x] (q/create-image block-w block-h :rgb)) (range 30))) (range 8))
+        bottom  top
+        ; Join the three matrices
+        blocks (concat top tv bottom)
         [blocks ops] (if (:mix options)
                          [blocks nil]
                          (pre-mix blocks max-rotation chunk-size))]
@@ -114,9 +120,7 @@
           :options options
           :block-w block-w
           :block-h block-h
-          :ops ops
-          :top-leds [[[255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0]]]
-          :bottom-leds [[[0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255]]] }))
+          :ops ops }))
 
 (defn update-state [state]
   (let [options (:options state)
@@ -131,13 +135,17 @@
       (assoc :ops ops))))
 
 (defn draw-screen [state]
-  (dorun
-    (map-indexed (fn [y-index row]
-      (dorun
-        (map-indexed (fn [x-index block]
-          (draw-block block x-index y-index (:block-w state) (:block-h state)))
-        row)))
-    (:blocks state))))
+  (let [all-blocks (:blocks state)
+        start 8
+        end (- (count all-blocks) 8)
+        screen-blocks (subvec all-blocks start end)]
+    (dorun
+      (map-indexed (fn [y-index row]
+        (dorun
+          (map-indexed (fn [x-index block]
+            (draw-block block x-index y-index (:block-w state) (:block-h state)))
+          row)))
+      screen-blocks))))
 
 
 (defn draw-array [serial array offset]
@@ -146,16 +154,20 @@
       (dorun
         (map-indexed (fn [x-index led]
           (let [y-start (+ y-index offset)
-                x-start x-index]
-          (led/paint-window serial y-start x-start (+ y-start 1) (+ x-start 1) led)))
+                x-start x-index
+                color (average-color led)
+                color-array [(q/red color) (q/green color) (q/blue color)]]
+          (led/paint-window serial y-start x-start (+ y-start 1) (+ x-start 1) color-array)))
         row)))
     array)))
 
 (defn draw-leds [state]
   (let [options (:options state)
         serial  (:serial options)
-        top     (:top-leds state)
-        bottom  (:bottom-leds state)]
+        y-blocks (:y-blocks options)
+        all-blocks  (:blocks state)
+        top     (subvec all-blocks 0 8)
+        bottom  (subvec all-blocks (+ 9 y-blocks))]
     (draw-array serial top 0)
     (draw-array serial bottom 9)
     (led/refresh serial)))
