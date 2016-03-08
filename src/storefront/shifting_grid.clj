@@ -106,7 +106,7 @@
         block-h (/ (q/height) y-blocks)
         xs     (map #(* % block-w) (range x-blocks))
         ys     (map #(* % block-h) (range y-blocks))
-        blocks (map (fn [x] (map (fn [y] (q/get-pixel image x y block-w block-h)) ys)) xs)
+        blocks (map (fn [y] (map (fn [x] (q/get-pixel image x y block-w block-h)) xs)) ys)
         [blocks ops] (if (:mix options)
                          [blocks nil]
                          (pre-mix blocks max-rotation chunk-size))]
@@ -115,8 +115,8 @@
           :block-w block-w
           :block-h block-h
           :ops ops
-          :top-leds [[[255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0]]]
-          :bottom-leds [[[0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255]]] }))
+          :top-leds [[[255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0] [255 0 0]]]
+          :bottom-leds [[[0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255] [0 0 255]]] }))
 
 (defn update-state [state]
   (let [options (:options state)
@@ -132,23 +132,23 @@
 
 (defn draw-screen [state]
   (dorun
-    (map-indexed (fn [x-index column]
+    (map-indexed (fn [y-index row]
       (dorun
-        (map-indexed (fn [y-index block]
+        (map-indexed (fn [x-index block]
           (draw-block block x-index y-index (:block-w state) (:block-h state)))
-        column)))
+        row)))
     (:blocks state))))
 
 
 (defn draw-array [serial array offset]
   (dorun
-    (map-indexed (fn [x-index column]
+    (map-indexed (fn [y-index row]
       (dorun
-        (map-indexed (fn [y-index led]
+        (map-indexed (fn [x-index led]
           (let [y-start (+ y-index offset)
                 x-start x-index]
           (led/paint-window serial y-start x-start (+ y-start 1) (+ x-start 1) led)))
-        column)))
+        row)))
     array)))
 
 (defn draw-leds [state]
