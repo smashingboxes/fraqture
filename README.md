@@ -1,47 +1,29 @@
 # Storefront
 
-An interactive art framework that takes in inputs and events, maps them to the
-interactive parts of a drawing, and renders the art.
+An interactive art framework that takes inputs from social media, maps them to the
+interactive parts of a drawing, and renders the art. The platform consists of a 50"
+TV display driven by Clojure's Quil library outlined with 540 DotStar LEDs driven by
+a Teensy 3.2.
 
-## Usage
+![installation-pic](resources/shifting-grid.jpg)
 
-### Drag Glitch
+## Exhibitions
 
-`lein run drag`
+Come see the Storefront live!
 
-![drag](http://i.imgur.com/S6xkjRi.gif)
-
-### Crazy Acid Spiral Glitch
-
-`lein run spiro`
-
-![spiro](http://i.imgur.com/wmZ6mXa.gif)
-
-### Sliding Grid
-
-`lein run shifting-grid`
-
-![shifting-grid](http://i.imgur.com/SbHLrKK.gif)
-
-### Hexagonal Spinner
-
-`lein run hex-spinner`
-
-![shifting-grid](http://i.imgur.com/Og9sotK.gif)
-
-### Pixelation
-
-`lein run pixelate`
-
-![pixelate](http://i.imgur.com/VnmskAA.gif)
-
-### Textify
-
-`lein run textify`
+- March 14-16th - [New Orleans Entrepreneurs Week](https://noew.org/)
+- April ? - A storefront TBD in downtown Durham, NC.
 
 ![textify](http://i.imgur.com/99fEYH9.gif)
 
-# LED Panel Specifications
+## Usage
+
+`lein run <drawing name>`
+
+For examples of what each of the drawings does, check out the gifs in [examples.md](examples.md).
+Start by trying `lein run cycle`.
+
+# Hardware
 
 The Storefront Project uses two custom-build LED panels with 270 individually addressable LEDs each
 to extend our canvas out from the screen. We are using a
