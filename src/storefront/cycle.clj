@@ -16,8 +16,6 @@
   (shuffle
    [drag/drawing
     swap/drawing
-    shifting-grid/drawing
-    pixelate/drawing
     tweetreader/drawing]))
 
 (defn current-drawing [state]
@@ -38,7 +36,7 @@
 (def cli-options
   [
     [nil "--update-interval INT" "Number of seconds between animations"
-      :default 120
+      :default 100
       :parse-fn #(Integer/parseInt %)]
   ])
 

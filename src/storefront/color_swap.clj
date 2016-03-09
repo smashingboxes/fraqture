@@ -23,7 +23,7 @@
     (concat array (reverse array))))
 
 (defn led-array []
-  (rand-xy-array (- 18 led-pixel-size) (- 34 led-pixel-size) led-pixel-size))
+  (rand-xy-array (- 19 led-pixel-size) (- 34 led-pixel-size) led-pixel-size))
 
 (defn load-new-image [image]
   (q/image image 0 0 (q/width) (q/height)))
