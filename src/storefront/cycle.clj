@@ -16,6 +16,8 @@
   (shuffle
    [drag/drawing
     swap/drawing
+    pixelate/drawing
+    shifting-grid/drawing
     tweetreader/drawing]))
 
 (defn current-drawing [state]
