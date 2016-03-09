@@ -3,17 +3,18 @@
             [storefront.helpers :refer :all]
             [quil.core :as q]
             [storefront.stream :as stream]
-            [clojure.core.matrix :as m])
+            [clojure.core.matrix :as m]
+            [storefront.led-array :as led])
   (:import  [storefront.drawing Drawing]))
 
 (def cli-options
   [
     ["-x" "--x-blocks INT" "Number of blocks in the horizontal"
-      :default 50
+      :default 30
       :parse-fn #(Integer/parseInt %)
       :validate [#(< 2 % 200) "Must be a number between 2 and 200"]]
     ["-y" "--y-blocks INT" "Number of blocks in the vertical direction"
-      :default 30
+      :default 18
       :parse-fn #(Integer/parseInt %)
       :validate [#(< 2 % 200) "Must be a number between 0 and 200"]]
     ["-c" "--chunk-size INT" "Number of columns/rows to slide together"
@@ -105,7 +106,13 @@
         block-h (/ (q/height) y-blocks)
         xs     (map #(* % block-w) (range x-blocks))
         ys     (map #(* % block-h) (range y-blocks))
-        blocks (map (fn [x] (map (fn [y] (q/get-pixel image x y block-w block-h)) ys)) xs)
+        ; Build the TV matrix
+        tv (map (fn [y] (map (fn [x] (q/get-pixel image x y block-w block-h)) xs)) ys)
+        ; Build the LED matrices
+        top    (map (fn [y] (map (fn [x] (q/create-image block-w block-h :rgb)) (range 30))) (range 8))
+        bottom  top
+        ; Join the three matrices
+        blocks (concat top tv bottom)
         [blocks ops] (if (:mix options)
                          [blocks nil]
                          (pre-mix blocks max-rotation chunk-size))]
@@ -127,14 +134,47 @@
       (assoc :blocks blocks)
       (assoc :ops ops))))
 
-(defn draw-state [state]
+(defn draw-screen [state]
+  (let [all-blocks (:blocks state)
+        start 8
+        end (- (count all-blocks) 8)
+        screen-blocks (subvec all-blocks start end)]
+    (dorun
+      (map-indexed (fn [y-index row]
+        (dorun
+          (map-indexed (fn [x-index block]
+            (draw-block block x-index y-index (:block-w state) (:block-h state)))
+          row)))
+      screen-blocks))))
+
+
+(defn draw-array [serial array offset]
   (dorun
-    (map-indexed (fn [x-index column]
+    (map-indexed (fn [y-index row]
       (dorun
-        (map-indexed (fn [y-index block]
-          (draw-block block x-index y-index (:block-w state) (:block-h state)))
-        column)))
-    (:blocks state))))
+        (map-indexed (fn [x-index led]
+          (let [y-start (+ y-index offset)
+                x-start x-index
+                color (average-color led)
+                color-array [(q/red color) (q/green color) (q/blue color)]]
+          (led/paint-window serial y-start x-start (+ y-start 1) (+ x-start 1) color-array)))
+        row)))
+    array)))
+
+(defn draw-leds [state]
+  (let [options (:options state)
+        serial  (:serial options)
+        y-blocks (:y-blocks options)
+        all-blocks  (:blocks state)
+        top     (subvec all-blocks 0 8)
+        bottom  (subvec all-blocks (+ 9 y-blocks))]
+    (draw-array serial top 0)
+    (draw-array serial bottom 9)
+    (led/refresh serial)))
+
+(defn draw-state [state]
+  (draw-screen state)
+  (draw-leds state))
 
 (defn exit? [state]
   (let [ops (:ops state)]
