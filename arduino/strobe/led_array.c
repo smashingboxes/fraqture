@@ -30,7 +30,7 @@ static uint16_t position_to_index(uint8_t row, uint8_t col)
     offset = 540 - 1;
     row -= 9;
   } else {
-    offset = 270 - 1
+    offset = 270 - 1;
   }
 
   if(row % 2 == 0) return offset - (row * COL_COUNT + col);  
