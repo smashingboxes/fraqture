@@ -6,6 +6,8 @@ require 'securerandom'
 
 Dotenv.load
 
+STDOUT.sync = true
+
 client = Twitter::Streaming::Client.new do |config|
   config.consumer_key        = ENV['CONSUMER_KEY']
   config.consumer_secret     = ENV['CONSUMER_SECRET']
@@ -20,7 +22,7 @@ client.user do |object|
   when Twitter::Tweet
     object.media.each do |media|
       url = media.media_url
-      puts "Downloading #{url.to_s}..."
+      puts "[Downloading] #{url.to_s}"
       open("images/#{url.basename}", 'wb') do |f|
         f << open(url.to_s).read
       end
@@ -30,7 +32,7 @@ client.user do |object|
       tweet = object.retweeted_status
       username = '@' + tweet.user.screen_name
       text = tweet.text
-      puts "Saving tweet: #{tweet.text}..."
+      puts "[SAVING TWEET] #{tweet.text}"
       open("tweets/#{username}-#{SecureRandom.hex(10)}.txt", 'a') do |f|
         f.puts username
         f.puts text
