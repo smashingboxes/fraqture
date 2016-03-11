@@ -1,13 +1,13 @@
-(ns storefront.tweetreader
-  (:require [storefront.drawing]
-            [storefront.helpers :refer :all]
+(ns fraqture.tweetreader
+  (:require [fraqture.drawing]
+            [fraqture.helpers :refer :all]
             [quil.core :as q]
             [clojure.string :as string]
-            [storefront.textify :as textify]
+            [fraqture.textify :as textify]
             [clojure.tools.cli :refer [parse-opts]]
-            [storefront.led-array :as led]
-            [storefront.stream :as stream])
-  (:import  [storefront.drawing Drawing]))
+            [fraqture.led-array :as led]
+            [fraqture.stream :as stream])
+  (:import  [fraqture.drawing Drawing]))
 
 (def test-tweet "@test-tweet
   The text of the tweet goes here.")

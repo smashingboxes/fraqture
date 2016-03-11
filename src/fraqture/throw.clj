@@ -1,8 +1,8 @@
-(ns storefront.throw
+(ns fraqture.throw
   (:require [quil.core :as q]
-            [storefront.drawing]
+            [fraqture.drawing]
             [serial.core :as ser])
-  (:import  [storefront.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]))
 
 (def cli-options [["-p" "--port PATH" "Serial port, /dev/cu.*"]])
 (def csize 80)

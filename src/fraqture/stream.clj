@@ -1,8 +1,8 @@
-(ns storefront.stream
+(ns fraqture.stream
   (:require [clojure.java.io :as io]
             [clojure.set :refer :all]
             [clojure.string :refer [split]]
-            [storefront.helpers :refer [image-extensions]]))
+            [fraqture.helpers :refer [image-extensions]]))
 
 (def tweet-extensions [".txt"])
 

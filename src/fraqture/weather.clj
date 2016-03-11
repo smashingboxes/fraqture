@@ -1,5 +1,5 @@
-(ns storefront.weather
-  (:require [storefront.async :refer :all]))
+(ns fraqture.weather
+  (:require [fraqture.async :refer :all]))
 
 (defn parse-weather [open-weather-data]
   (println open-weather-data)

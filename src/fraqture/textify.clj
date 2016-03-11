@@ -1,10 +1,10 @@
-(ns storefront.textify
-  (:require [storefront.drawing]
-            [storefront.helpers :refer :all]
-            [storefront.led-array :as led]
+(ns fraqture.textify
+  (:require [fraqture.drawing]
+            [fraqture.helpers :refer :all]
+            [fraqture.led-array :as led]
             [quil.core :as q]
             [clojure.core.matrix :as m])
-  (:import  [storefront.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]))
 
 (def uppers (map char (range 66 92)))
 (def leds-each 1)

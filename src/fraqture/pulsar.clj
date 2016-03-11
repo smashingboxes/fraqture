@@ -1,4 +1,4 @@
-(ns storefront.pulsar
+(ns fraqture.pulsar
   (:require [quil.core :as q]))
 
 (defn initialize

@@ -1,20 +1,20 @@
-(ns storefront.core
+(ns fraqture.core
   (:gen-class)
   (:require [quil.core :as q]
             [quil.middleware :as m]
-            [storefront.led-array :as led]
+            [fraqture.led-array :as led]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
-            [storefront.color-swap :as color-swap]
-            [storefront.cycle :as cycle]
-            [storefront.glitch-drag :as drag]
-            [storefront.spirograph :as spirograph]
-            [storefront.shifting-grid :as shifting-grid]
-            [storefront.hexagons :as hexagons]
-            [storefront.hex-spinner :as hex-spinner]
-            [storefront.pixelate :as pixelate]
-            [storefront.textify :as textify]
-            [storefront.tweetreader :as tweetreader]))
+            [fraqture.color-swap :as color-swap]
+            [fraqture.cycle :as cycle]
+            [fraqture.glitch-drag :as drag]
+            [fraqture.spirograph :as spirograph]
+            [fraqture.shifting-grid :as shifting-grid]
+            [fraqture.hexagons :as hexagons]
+            [fraqture.hex-spinner :as hex-spinner]
+            [fraqture.pixelate :as pixelate]
+            [fraqture.textify :as textify]
+            [fraqture.tweetreader :as tweetreader]))
 
 (defn exit [status msg]
   (println msg)
@@ -62,7 +62,7 @@
         with-mock? (:mock options)
         serial (:serial options)]
     (reload-drawing! drawing)
-    (q/defsketch storefront
+    (q/defsketch fraqture
       :title  (:title drawing)
       :setup  #((:setup @drawing-atom) options)
       :update #((:update @drawing-atom) %)

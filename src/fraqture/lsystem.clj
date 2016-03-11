@@ -1,4 +1,4 @@
-(ns storefront.lsystem)
+(ns fraqture.lsystem)
 
 (defrecord Lindenmayer [axiom rule-set function-map])
 

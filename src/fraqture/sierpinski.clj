@@ -1,10 +1,10 @@
-(ns storefront.sierpinski
-  (:require [storefront.drawing]
-            [storefront.lsystem :as lsys]
-            [storefront.turtle :as turtle]
+(ns fraqture.sierpinski
+  (:require [fraqture.drawing]
+            [fraqture.lsystem :as lsys]
+            [fraqture.turtle :as turtle]
             [quil.core :as q])
-  (:import  [storefront.drawing Drawing]
-            [storefront.lsystem Lindenmayer]))
+  (:import  [fraqture.drawing Drawing]
+            [fraqture.lsystem Lindenmayer]))
 
 (defn setup [options]
   (let [turtle     (turtle/build 100 (- (q/height) 100))

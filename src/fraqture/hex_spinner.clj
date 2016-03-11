@@ -1,9 +1,9 @@
-(ns storefront.hex-spinner
-  (:require [storefront.drawing]
-            [storefront.helpers :refer :all]
+(ns fraqture.hex-spinner
+  (:require [fraqture.drawing]
+            [fraqture.helpers :refer :all]
             [quil.core :as q]
             [clojure.core.matrix :as m])
-  (:import  [storefront.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]))
 
 (defrecord Triangle [x1 y1 x2 y2 x3 y3])
 

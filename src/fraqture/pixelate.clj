@@ -1,11 +1,11 @@
-(ns storefront.pixelate
-  (:require [storefront.drawing]
-            [storefront.helpers :refer :all]
-            [storefront.led-array :as led]
+(ns fraqture.pixelate
+  (:require [fraqture.drawing]
+            [fraqture.helpers :refer :all]
+            [fraqture.led-array :as led]
             [quil.core :as q]
-            [storefront.stream :as stream]
+            [fraqture.stream :as stream]
             [clojure.data :refer :all])
-  (:import  [storefront.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]))
 
 (def pixel-width 10)
 (def pixel-height 10)

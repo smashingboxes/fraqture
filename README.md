@@ -1,4 +1,4 @@
-# Storefront
+# fraqture
 
 An interactive art framework that takes inputs from social media, maps them to the
 interactive parts of a drawing, and renders the art. The platform consists of a 50"
@@ -9,10 +9,10 @@ a Teensy 3.2.
 
 ## Exhibitions
 
-Come see the Storefront live!
+Come see fraqture live!
 
 - March 14-16th - [New Orleans Entrepreneurs Week](https://noew.org/)
-- April ? - A storefront TBD in downtown Durham, NC.
+- April ? - A fraqture TBD in downtown Durham, NC.
 
 ![textify](http://i.imgur.com/99fEYH9.gif)
 
@@ -25,7 +25,7 @@ Start by trying `lein run cycle`.
 
 # Hardware
 
-The Storefront Project uses two custom-build LED panels with 270 individually addressable LEDs each
+The Fraqture Project uses two custom-build LED panels with 270 individually addressable LEDs each
 to extend our canvas out from the screen. We are using a
 [Teensy 3.2](https://www.pjrc.com/store/teensy32.html) to receive commands over a serial connection
 and use them to refresh the panels. The sections below discusses how to connect and issue commands

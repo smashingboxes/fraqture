@@ -1,4 +1,4 @@
-(ns storefront.helpers
+(ns fraqture.helpers
   (:require [quil.core :as q]))
             ;; [clojure.core.matrix :as m]))
 

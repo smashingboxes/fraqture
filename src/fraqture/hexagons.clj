@@ -1,8 +1,8 @@
-(ns storefront.hexagons
-  (:require [storefront.drawing]
-            [storefront.helpers :refer :all]
+(ns fraqture.hexagons
+  (:require [fraqture.drawing]
+            [fraqture.helpers :refer :all]
             [quil.core :as q])
-  (:import  [storefront.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]))
 
 (def padding 5)
 (def COS_PI_OVER_6 (q/cos (/ q/PI 6)))

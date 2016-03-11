@@ -1,10 +1,10 @@
-(ns storefront.color-swap
-  (:require [storefront.drawing]
-            [storefront.helpers :refer :all]
-            [storefront.led-array :as led]
-            [storefront.stream :as stream]
+(ns fraqture.color-swap
+  (:require [fraqture.drawing]
+            [fraqture.helpers :refer :all]
+            [fraqture.led-array :as led]
+            [fraqture.stream :as stream]
             [quil.core :as q])
-  (:import  [storefront.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]))
 
 (def pixel-size 50)
 (def pixel-count 5)

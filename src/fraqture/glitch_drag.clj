@@ -1,10 +1,10 @@
-(ns storefront.glitch-drag
-  (:require [storefront.drawing]
-            [storefront.helpers :refer :all]
-            [storefront.led-array :as led]
-            [storefront.stream :as stream]
+(ns fraqture.glitch-drag
+  (:require [fraqture.drawing]
+            [fraqture.helpers :refer :all]
+            [fraqture.led-array :as led]
+            [fraqture.stream :as stream]
             [quil.core :as q])
-  (:import  [storefront.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]))
 
 (defn update [collection index function]
   (assoc collection index (function (get collection index))))
@@ -137,7 +137,7 @@
         (led/paint-window serial row-n col-n (inc row-n) (inc col-n) color))
       (rect-at-index col-n (to-screen-index row-count row-n) row-count color))))
 
-; Storefront functions
+; fraqture functions
 (defn setup [options]
   (q/frame-rate 10)
   (-> (setup-new-image (:serial options))

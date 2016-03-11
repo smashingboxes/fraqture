@@ -1,4 +1,4 @@
-(ns storefront.spiral
+(ns fraqture.spiral
   (:require [quil.core :as q]
             [quil.middleware :as m]
             [quil.helpers.drawing :refer [line-join-points]]

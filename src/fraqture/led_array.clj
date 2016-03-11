@@ -1,7 +1,7 @@
-(ns storefront.led-array
+(ns fraqture.led-array
   (:require [serial.core :as ser]
             [quil.core :as q]
-            [storefront.helpers :refer :all]))
+            [fraqture.helpers :refer :all]))
 
 (def row-count 18)
 (def col-count 30)

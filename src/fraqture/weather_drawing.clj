@@ -1,9 +1,9 @@
-(ns storefront.weather-drawing
-  (:require [storefront.drawing]
-            [storefront.helpers :refer [interpolate]]
-            [storefront.weather :refer [weather]]
+(ns fraqture.weather-drawing
+  (:require [fraqture.drawing]
+            [fraqture.helpers :refer [interpolate]]
+            [fraqture.weather :refer [weather]]
             [quil.core :as q])
-  (:import  [storefront.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]))
 
 (defn k-to-h [kelvin]
   (- (* kelvin (/ 9 5)) 459.67))

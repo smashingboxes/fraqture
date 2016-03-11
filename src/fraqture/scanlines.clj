@@ -1,4 +1,4 @@
-(ns storefront.scanlines
+(ns fraqture.scanlines
   (:require [quil.core :as q]))
 
 (defn horizontals

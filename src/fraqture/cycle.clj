@@ -1,16 +1,16 @@
-(ns storefront.cycle
-  (:require [storefront.drawing]
-            [storefront.helpers :refer :all]
+(ns fraqture.cycle
+  (:require [fraqture.drawing]
+            [fraqture.helpers :refer :all]
             [quil.core :as q]
             [clojure.tools.cli :refer [parse-opts]]
-            [storefront.glitch-drag :as drag]
-            [storefront.color-swap :as swap]
-            [storefront.shifting-grid :as shifting-grid]
-            [storefront.pixelate :as pixelate]
-            [storefront.tweetreader :as tweetreader]
-            [storefront.led-array :as led]
+            [fraqture.glitch-drag :as drag]
+            [fraqture.color-swap :as swap]
+            [fraqture.shifting-grid :as shifting-grid]
+            [fraqture.pixelate :as pixelate]
+            [fraqture.tweetreader :as tweetreader]
+            [fraqture.led-array :as led]
             )
-  (:import  [storefront.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]))
 
 (def drawing-list
   (shuffle

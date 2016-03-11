@@ -1,8 +1,8 @@
-(ns storefront.spirograph
-  (:require [storefront.drawing]
-            [storefront.helpers :refer :all]
+(ns fraqture.spirograph
+  (:require [fraqture.drawing]
+            [fraqture.helpers :refer :all]
             [quil.core :as q :include-macros true])
-  (:import  [storefront.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]))
 
 (def current-color-path-location 0)
 (def color-path

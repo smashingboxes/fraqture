@@ -1,11 +1,11 @@
-(ns storefront.spiral-glitch
-  (:require [storefront.drawing]
-            [storefront.scanlines :as scanlines]
-            [storefront.spiral :as spiral]
-            [storefront.pulsar :as pulsar]
-            [storefront.arduino :as arduino]
+(ns fraqture.spiral-glitch
+  (:require [fraqture.drawing]
+            [fraqture.scanlines :as scanlines]
+            [fraqture.spiral :as spiral]
+            [fraqture.pulsar :as pulsar]
+            [fraqture.arduino :as arduino]
             [quil.core :as q])
-  (:import  [storefront.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]))
 
 (def noise-jitter 300)
 (def update-interval 1000)

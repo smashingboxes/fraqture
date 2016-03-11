@@ -1,5 +1,5 @@
-(defproject storefront "0.0.0-megabeta"
-  :description "The Beta testing grounds for the storefront project"
+(defproject fraqture "0.1.0"
+  :description "An interactive digital art project built with Clojure and Arduino"
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/core.async "0.2.374"]
                  [quil "2.2.6"]
@@ -12,4 +12,4 @@
                  ]
 
   :jvm-opts ["-Xmx1G"]
-  :main storefront.core)
+  :main fraqture.core)

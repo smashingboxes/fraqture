@@ -1,11 +1,11 @@
-(ns storefront.shifting-grid
-  (:require [storefront.drawing]
-            [storefront.helpers :refer :all]
+(ns fraqture.shifting-grid
+  (:require [fraqture.drawing]
+            [fraqture.helpers :refer :all]
             [quil.core :as q]
-            [storefront.stream :as stream]
+            [fraqture.stream :as stream]
             [clojure.core.matrix :as m]
-            [storefront.led-array :as led])
-  (:import  [storefront.drawing Drawing]))
+            [fraqture.led-array :as led])
+  (:import  [fraqture.drawing Drawing]))
 
 (def cli-options
   [
