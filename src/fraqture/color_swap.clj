@@ -6,8 +6,8 @@
             [quil.core :as q])
   (:import  [fraqture.drawing Drawing]))
 
-(def pixel-size 50)
-(def pixel-count 5)
+(def pixel-size 28)
+(def pixel-count 11)
 (def led-pixel-size 2)
 
 (defn rand-xy-array [x-max y-max step]
@@ -40,6 +40,7 @@
    :pixels-to-blend []
    :dpixels-to-blend []
    :leds-to-modify []
+   :reversing false
    :serial (:serial options)
    :effects [:blend]})
 
@@ -75,7 +76,9 @@
         pixels-to-sample (take pixel-count (drop pixel-count (:pixel-array state)))]
     {:pixels-to-modify pixels-to-modify
      :pixels-to-sample pixels-to-sample
-     :reversing (if (and loading-new-image (not reversing)) false reversing)
+     :reversing (if (or (and reversing (not (:reversing state))) loading-new-image)
+                  (not (:reversing state))
+                  (:reversing state))
      :modified-pixels (concat pixels-to-sample pixels-to-modify)
      :pixel-array (if loading-new-image
                     (pixel-array)
