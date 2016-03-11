@@ -28,8 +28,8 @@ client.user do |object|
       end
     end
 
-    if object.retweeted_status
-      tweet = object.retweeted_status
+    if object.media.empty?
+      tweet = (object.retweeted_status.class == Twitter::NullObject)? object : object.retweeted_status
       username = '@' + tweet.user.screen_name
       text = tweet.text
       puts "[SAVING TWEET] #{tweet.text}"
