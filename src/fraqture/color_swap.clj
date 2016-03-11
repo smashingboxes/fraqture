@@ -34,6 +34,7 @@
    id))
 
 (defn setup [options]
+  (q/frame-rate 30)
   (->> (stream/get-image!) (q/load-image) (load-new-image))
   {:pixel-array (pixel-array)
    :led-array (led-array)

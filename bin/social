@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+require 'twitter'
+require 'open-uri'
+require 'dotenv'
+require 'securerandom'
+
+Dotenv.load
+
+client = Twitter::Streaming::Client.new do |config|
+  config.consumer_key        = ENV['CONSUMER_KEY']
+  config.consumer_secret     = ENV['CONSUMER_SECRET']
+  config.access_token        = ENV['ACCESS_TOKEN']
+  config.access_token_secret = ENV['ACCESS_TOKEN_SECRET']
+end
+
+STDOUT.puts "Starting..."
+
+client.user do |object|
+  case object
+  when Twitter::Tweet
+    object.media.each do |media|
+      url = media.media_url
+      puts "Downloading #{url.to_s}..."
+      open("images/#{url.basename}", 'wb') do |f|
+        f << open(url.to_s).read
+      end
+    end
+
+    if object.retweeted_status
+      tweet = object.retweeted_status
+      username = '@' + tweet.user.screen_name
+      text = tweet.text
+      puts "Saving tweet: #{tweet.text}..."
+      open("tweets/#{username}-#{SecureRandom.hex(10)}.txt", 'a') do |f|
+        f.puts username
+        f.puts text
+      end
+    end
+  end
+end
