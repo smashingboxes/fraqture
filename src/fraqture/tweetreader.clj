@@ -10,10 +10,10 @@
   (:import  [fraqture.drawing Drawing]))
 
 (def test-tweet "@test-tweet
-  The text of the tweet goes here.")
+  The text of the tweet goes here. For a longer tweet, I'm hoping it wraps around nicely.")
 
-(def y-offset 34)
-(def chars-per-line 80)
+(def y-offset 50)
+(def chars-per-line 60)
 (def padding-time 30)
 (def qwerty (apply hash-map [
   ; row column width height
@@ -152,8 +152,8 @@
   (if underline?
     (doall
       [(apply q/stroke color)
-      (q/line x (+ y 7) (+ x 6) (+ y 10))
-      (q/line (+ x 6) (+ y 10) (+ x 13) (+ y 7))]))
+      (q/line x (+ y 7) (+ x 9) (+ y 10))
+      (q/line (+ x 9) (+ y 10) (+ x 18) (+ y 7))]))
   (q/text-char character x y))
 
 ; Mapping function that takes in the two states and a mask and returns the proper state
@@ -193,7 +193,7 @@
         textify-options (:options (parse-opts "" textify/cli-options))
         textify-options (assoc textify-options :serial (:serial options))]
     (q/frame-rate 30)
-    (q/text-font (q/create-font "Monoid-Regular.ttf" 20))
+    (q/text-font (q/create-font "Monoid-Regular.ttf" 30))
     (q/stroke-weight 3)
     { :textify-state (textify/setup textify-options)
       :write-index 1
