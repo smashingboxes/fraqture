@@ -1,0 +1,184 @@
+body {
+  font-size: 16px;
+  font-family: sans-serif;
+  text-align: center;
+  background-color: #2E373D;
+}
+
+.outer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  background-image: url('../images/gif-fraqture.gif');
+  background-size: cover;
+}
+
+@media screen and (min-width: 640px) {
+  .outer { flex-direction: row; }
+}
+
+.header {
+  font-family: "Orbitron", sans-serif;
+  letter-spacing: 10px;
+  font-size: 4em;
+  color: #B7F6C9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.content {
+  flex: 1;
+  font-family: "Roboto Mono";
+  color: #e7e7e7;
+  padding: 5em 2em;
+  overflow-y: auto;
+  text-align: justify;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.content p {
+  max-width: 400px;
+  line-height: 2;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.footer__inner {
+  position: relative;
+}
+
+.footer__inner::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  background-color: #2E373D;
+  animation: fade-out 2s;
+  opacity: 0;
+}
+
+.footer__inner a {
+  padding: 2em;
+}
+
+.footer img {
+  width: 200px;
+}
+
+@-webkit-keyframes fade-in {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+@-webkit-keyframes fade-out {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* GLITCH */
+.glitch {
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 0.25em 0.125em;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.glitch::before {
+  left: 2px;
+  text-shadow: -1px 0 red;
+  background-color: rgba(0, 0, 0, 0.2);
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim-1 10s infinite linear alternate-reverse;
+}
+.glitch::after {
+  left: -2px;
+  text-shadow: -1px 0 blue;
+  background-color: rgba(0, 0, 0, 0.2);
+  animation: glitch-anim-2 5s infinite linear alternate-reverse;
+  clip: rect(20px, 400px, 66px, 0);
+}
+
+@keyframes glitch-anim-1 {
+  0% {
+    clip: rect(70px, 400px, 76px, 0);
+  }
+  10% {
+    clip: rect(1px, 400px, 0px, 0);
+  }
+  20% {
+    clip: rect(29px, 400px, 16px, 0);
+  }
+  40% {
+    clip: rect(76px, 400px, 3px, 0);
+  }
+  60% {
+    clip: rect(42px, 400px, 78px, 0);
+  }
+  80% {
+    clip: rect(15px, 400px, 13px, 0);
+  }
+  100% {
+    clip: rect(53px, 400px, 5px, 0);
+  }
+}
+
+@keyframes glitch-anim-2 {
+  0% {
+    clip: rect(15px, 450px, 13px, 0);
+  }
+  20% {
+    clip: rect(0px, 450px, 16px, 0);
+  }
+  40% {
+    clip: rect(0px, 450px, 250px, 0);
+  }
+  60% {
+    clip: rect(100px, 450px, 4px, 0);
+  }
+  80% {
+    clip: rect(60px, 450px, 336px, 0);
+  }
+  100% {
+    clip: rect(15px, 450px, 5px, 0);
+  }
+}
+
+.button {
+  border: none;
+  background-color: transparent;
+  text-transform: uppercase;
+  font-weight: bold;
+  padding: 1em 2em;
+  text-decoration: none;
+  color: white;
+  border: 2px solid white;
+  letter-spacing: 2px;
+  display: inline-block;
+  margin: 1em 0;
+}
