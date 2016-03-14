@@ -27,9 +27,9 @@
         sample-xs   (map #(* % (/ (q/width) column-count)) (range column-count))
         samples     (map (fn [x y] (color-to-rgb (q/get-pixel x y))) sample-xs sample-ys)
         columns     (map (fn [n c] (->Column n :ready 0 c)) (range) samples)]
+    (-> (stream/get-image!) (q/load-image) (q/image 0 0 (q/width) (q/height)))
     (led/clear serial)
-    { :columns  (vec columns)
-      :image (stream/get-image!) }))
+    { :columns  (vec columns) }))
 
 ; Update functions
 (defn all-columns-done?
@@ -144,33 +144,27 @@
       (assoc :options options)
       (assoc :times-run 0)))
 
-(defn ensure-image-drawn [state]
-  (assoc state :draw-image (:image state) :image nil))
-
 (defn update-state [state]
   (cond
     (and (:finished-at state) (> (q/millis) (+ (:finished-at state) 5000)))
       (-> state
           (merge (setup-new-image (:serial (:options state))))
           (assoc :finished-at nil)
-          (update :times-run inc)
-          (ensure-image-drawn))
+          (update :times-run inc))
     (not (nil? (:finished-at state)))
       state
     (and (nil? (:finished-at state)) (all-columns-done? (:columns state)))
       (assoc state :finished-at (q/millis))
     :else
-      (-> (update state :columns update-columns) (ensure-image-drawn))))
+      (update state :columns update-columns)))
 
 (defn draw-state [state]
   (let [active-columns (filter #(= (:status %) :active) (:columns state))
-        serial (:serial (:options state))
-        base-image (:draw-image state)]
-    (if (not (nil? base-image)) (-> base-image (q/load-image) (q/image 0 0 (q/width) (q/height))))
+        serial (:serial (:options state))]
     (dorun (map #(draw-column % serial) active-columns))
     (led/refresh serial)))
 
-(defn exit? [state] (= (:times-run state) 2))
+(defn exit? [state] (= (:times-run state) 1))
 
 (def drawing
   (Drawing. "Drag Glitch" setup update-state draw-state nil exit? nil))
