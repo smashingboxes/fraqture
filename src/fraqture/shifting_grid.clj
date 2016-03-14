@@ -179,7 +179,7 @@
 
 (defn exit? [state]
   (let [ops (:ops state)]
-  (= (count ops) 0)))
+  (= (count ops) 3)))
 
 (def drawing
   (Drawing. "Shifting Grid" setup update-state draw-state cli-options exit? nil))
