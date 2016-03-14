@@ -155,9 +155,9 @@
         (map-indexed (fn [x-index led]
           (let [y-start (+ y-index offset)
                 x-start x-index
-                ;; color (average-color led)
-                ;; color-array [(q/red color) (q/green color) (q/blue color)]]
-                color-array [0 0 0]]
+                color (q/get-pixel led 0 0)
+                color-array [(q/red color) (q/green color) (q/blue color)]]
+
           (led/paint-window serial y-start x-start (+ y-start 1) (+ x-start 1) color-array)))
         row)))
     array)))
