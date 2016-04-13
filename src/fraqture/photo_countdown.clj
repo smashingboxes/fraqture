@@ -10,17 +10,7 @@
    :options options})
 
 (defn update-state [state]
-  (-> state
-    (update-in [:time-left] dec)))
-
-(defn center-height
-  []
-  (/ (q/height) 2))
-
-(defn center-width
-  []
-  (/ (q/width) 2))
-
+  (update-in state [:time-left] dec))
 
 (def vertical-line-offset 176)
 
@@ -30,11 +20,17 @@
   (q/text-size 512)
   (q/text-align :center :center)
   (let [options (:options state)
-        serial  (:serial options)]
-  (if (> (:time-left state) 0)
-    (q/text (str (:time-left state)) (center-width) (center-height))
-    (led/paint-window serial 0 0 led/row-count led/col-count [255 255 255]))
-  (q/delay-frame 1000)))
+        serial  (:serial options)
+        center-width (/ (q/width) 2)
+        center-height (/ (q/height) 2)]
+    (if (> (:time-left state) 0)
+      (q/text (str (:time-left state)) center-width center-height)
+      (led/paint-window serial 0 0 led/row-count led/col-count [255 255 255]))
+    (q/delay-frame 1000)))
+
+(defn exit?
+  [state]
+  (< (:time-left state) -1))
 
 (def drawing
-  (Drawing. "Photo Countdown" setup update-state draw-state nil nil nil))
+  (Drawing. "Photo Countdown" setup update-state draw-state nil exit? nil))
