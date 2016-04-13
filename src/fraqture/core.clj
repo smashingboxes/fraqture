@@ -14,7 +14,8 @@
             [fraqture.hex-spinner :as hex-spinner]
             [fraqture.pixelate :as pixelate]
             [fraqture.textify :as textify]
-            [fraqture.tweetreader :as tweetreader]))
+            [fraqture.tweetreader :as tweetreader]
+            [fraqture.photo-countdown :as countdown]))
 
 (defn exit [status msg]
   (println msg)
@@ -38,6 +39,7 @@
     "pixelate"      pixelate/drawing
     "textify"       textify/drawing
     "tweetreader"   tweetreader/drawing
+    "countdown"     countdown/drawing
   ))
 
 (defonce drawing-atom (atom nil))
