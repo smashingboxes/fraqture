@@ -37,11 +37,26 @@
     (draw-screen-block row col color)))
 
 (defn setup [options]
-  (q/frame-rate 30)
+  (q/frame-rate 1)
   { :serial (:serial options)
-    :position [0 4] })
+    :position [0 4]
+    :direction :south })
 
-(defn update-state [state] state)
+(def directions { :south [0 1] :east [1 0] :north [0 -1] :west [-1 0] })
+
+(defn add-vector [[v1x v1y] [v2x v2y]]
+  [(+ v1x v2x) (+ v1y v2y)])
+
+(defn clamp-position [[x y]]
+  [(cond (= x column-count) 0 (= x -1) (- column-count 1) :else x)
+   (cond (= y (+ 8 screen-row-count)) 0 (= y -1) (+ 7 screen-row-count) :else y)])
+
+(defn update-position [state]
+  (update-in state [:position]
+    #(clamp-position (add-vector % (get directions (get state :direction))))))
+
+(defn update-state [state]
+  (update-position state))
 
 (defn draw-state [state]
   (let [[col row] (:position state)]
