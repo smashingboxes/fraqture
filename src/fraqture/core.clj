@@ -15,6 +15,7 @@
             [fraqture.pixelate :as pixelate]
             [fraqture.textify :as textify]
             [fraqture.tweetreader :as tweetreader]
+            [fraqture.template :as template]
             [fraqture.photo-countdown :as countdown]))
 
 (defn exit [status msg]
@@ -40,6 +41,7 @@
     "textify"       textify/drawing
     "tweetreader"   tweetreader/drawing
     "countdown"     countdown/drawing
+    "new-drawing"   template/drawing
   ))
 
 (defonce drawing-atom (atom nil))
