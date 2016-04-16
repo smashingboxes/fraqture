@@ -54,21 +54,34 @@
 (defn apply-movement [position direction]
   (clamp-position (add-vector position (get directions direction))))
 
-(defn move-head [direction]
+(defn remove-tail-unless-growing [positions growing?]
+  (if growing? positions (butlast positions)))
+
+(defn move-head [direction growing?]
   (fn [positions]
     (-> positions
-        (butlast)
+        (remove-tail-unless-growing growing?)
         (conj (apply-movement (first positions) direction)))))
 
+(def food-position [0 6])
+
+(defn draw-food [serial [row col]]
+  (draw-block serial col row [200 70 100]))
+
 (defn update-positions [state]
-  (update-in state [:positions] (move-head (get state :direction))))
+  (update-in state [:positions] (move-head (get state :direction) (get state :is-eating?))))
+
+(defn update-food [state]
+  (assoc state :is-eating?
+    (-> state (get :positions) (first) (apply-movement (get state :direction)) (= food-position))))
 
 (defn update-state [state]
-  (update-positions state))
+  (-> state (update-food) (update-positions)))
 
 (defn draw-state [state]
   (q/background 70 100 100)
   (led/clear (:serial state))
+  (draw-food (:serial state) food-position)
   (doseq [[col row] (:positions state)] (draw-block (:serial state) row col [255 255 255])))
 
 (def drawing
