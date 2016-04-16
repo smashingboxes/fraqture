@@ -40,7 +40,8 @@
 
 (defn setup [options]
   (q/frame-rate 30)
-  { :serial (:serial options)
+  { :options options
+    :serial (:serial options)
     :positions '([0 4] [0 3])
     :direction :south
     :last-render (q/millis)
@@ -75,7 +76,7 @@
   (update-in state [:positions] (move-head (get state :direction) (get state :is-eating?))))
 
 (defn update-timing [state]
-  (assoc state :render-delay (+ 500 (/ 500 (count (:positions state))))))
+  (assoc state :render-delay (+ 200 (/ 800 (count (:positions state))))))
 
 (defn update-eating [state]
   (assoc state :is-eating?
@@ -86,14 +87,14 @@
     (assoc state :last-render (q/millis) :render? true)
     (assoc state :render? false)))
 
-(defn non-snake-positions [state]
+(defn not-snake-occupied [state]
   (filter
     (fn [pos] (not-any? #(= pos %) (:positions state)))
     (for [row (range row-count) col (range column-count)] [col row])))
 
 (defn update-food [state]
   (if (:is-eating? state)
-    (assoc state :food-position (rand-nth (non-snake-positions state)))
+    (assoc state :food-position (rand-nth (not-snake-occupied state)))
     state))
 
 (defn possible-directions [direction]
@@ -102,29 +103,32 @@
         (= direction :north) [:north :east :west]
         (= direction :south) [:south :east :west]))
 
-(defn possible-next-positions [head dir]
-  (map (fn [dir] [(apply-movement head dir) dir]) (possible-directions dir)))
+(defn possible-next-positions [positions dir]
+  (->> dir
+       (possible-directions)
+       (map (fn [dir] [(apply-movement (first positions) dir) dir]))
+       (filter (fn [[pos dir]] (not-any? #(= pos %) positions)))))
 
 (defn manhattan-distance [[x1 y1] [x2 y2]]
   (+ (Math/abs (- x1 x2)) (Math/abs (- y1 y2))))
 
 (defn position-distances [positions food]
-  (println positions)
   (map (fn [[pos dir]] [(manhattan-distance food pos) dir]) positions))
 
 (defn fastest-dir [positions]
-  (println positions)
   (->> positions (sort-by first) (first) (second)))
 
 (defn update-direction [state]
-  (assoc state :direction
-    (-> (possible-next-positions (first (:positions state)) (:direction state))
-        (position-distances (:food-position state))
-        (fastest-dir))))
+  (let [best-direction (-> (possible-next-positions (:positions state) (:direction state))
+                           (position-distances (:food-position state))
+                           (fastest-dir))]
+    (if (nil? best-direction)
+      (setup (:options state))
+      (assoc state :direction best-direction))))
 
 (defn update-frame-if-rendering [state]
   (if (:render? state)
-    (-> state (update-timing) (update-eating) (update-direction) (update-positions) (update-food))
+    (-> state (update-timing) (update-direction) (update-eating) (update-positions) (update-food))
     state))
 
 (defn update-state [state]
