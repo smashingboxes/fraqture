@@ -97,31 +97,41 @@
     (assoc state :food-position (rand-nth (not-snake-occupied state)))
     state))
 
-(defn possible-directions [direction]
-  (cond (= direction :east) [:east :south :north]
-        (= direction :west) [:west :south :north]
-        (= direction :north) [:north :east :west]
-        (= direction :south) [:south :east :west]))
-
-(defn possible-next-positions [positions dir]
-  (->> dir
-       (possible-directions)
-       (map (fn [dir] [(apply-movement (first positions) dir) dir]))
-       (filter (fn [[pos dir]] (not-any? #(= pos %) positions)))))
+(defn possible-next-positions [positions]
+  (->> [:north :south :east :west]
+       (map (fn [dir] [dir (apply-movement (first positions) dir)]))
+       (filter (fn [[dir pos]] (not-any? #(= pos %) positions)))))
 
 (defn manhattan-distance [[x1 y1] [x2 y2]]
   (+ (Math/abs (- x1 x2)) (Math/abs (- y1 y2))))
 
 (defn position-distances [positions food]
-  (map (fn [[pos dir]] [(manhattan-distance food pos) dir]) positions))
+  (map (fn [[dir pos]] [dir pos (manhattan-distance food pos)]) positions))
 
-(defn fastest-dir [positions]
-  (->> positions (sort-by first) (first) (second)))
+(defn find-nearest-obstacle
+  ([dir pos state] (find-nearest-obstacle dir pos state 0))
+  ([dir pos state count]
+    (let [new-pos (apply-movement pos dir)]
+      (if (some (partial = new-pos) (:positions state))
+        count
+        (find-nearest-obstacle dir new-pos state (inc count))))))
+
+(defn best-dir [positions state]
+  (let [current-trajectory (apply-movement (first (:positions state)) (:direction state))
+        ordered-by-distance (sort-by #(nth % 2) positions)
+        lowest-distance (nth (first ordered-by-distance) 2)
+        only-fastest (filter #(= (nth % 2) lowest-distance) ordered-by-distance)
+        same-direction (first (filter #(= (first %) (:direction state)) only-fastest))
+        turning-because-snake? (some (partial = current-trajectory) (:positions state))
+        obstacle-set (if turning-because-snake? positions only-fastest)
+        nearest-obstacles (map (fn [[dir pos dis]] [dir (find-nearest-obstacle dir pos state)]) obstacle-set)
+        least-obstacles (first (sort-by second > nearest-obstacles))]
+    (first (or same-direction least-obstacles))))
 
 (defn update-direction [state]
-  (let [best-direction (-> (possible-next-positions (:positions state) (:direction state))
+  (let [best-direction (-> (possible-next-positions (:positions state))
                            (position-distances (:food-position state))
-                           (fastest-dir))]
+                           (best-dir state))]
     (if (nil? best-direction)
       (setup (:options state))
       (assoc state :direction best-direction))))
