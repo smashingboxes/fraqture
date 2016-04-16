@@ -37,10 +37,12 @@
     (draw-screen-block row col color)))
 
 (defn setup [options]
-  (q/frame-rate 1)
+  (q/frame-rate 30)
   { :serial (:serial options)
     :positions '([0 4] [0 3])
-    :direction :south })
+    :direction :south
+    :last-render (q/millis)
+    :render-delay 700 })
 
 (def directions { :south [0 1] :east [1 0] :north [0 -1] :west [-1 0] })
 
@@ -71,18 +73,33 @@
 (defn update-positions [state]
   (update-in state [:positions] (move-head (get state :direction) (get state :is-eating?))))
 
+(defn update-timing [state]
+  (assoc state :render-delay (+ 500 (/ 500 (count (:positions state))))))
+
 (defn update-food [state]
-  (assoc state :is-eating?
-    (-> state (get :positions) (first) (apply-movement (get state :direction)) (= food-position))))
+  (let [new-position (-> state (get :positions) (first) (apply-movement (get state :direction)))
+        eating? (= new-position food-position)]
+    (assoc state :is-eating? eating?)))
+
+(defn update-render [state]
+  (if (> (q/millis) (+ (:last-render state) (:render-delay state)))
+    (assoc state :last-render (q/millis) :render? true)
+    (assoc state :render? false)))
+
+(defn update-frame-if-rendering [state]
+  (if (:render? state) (-> state (update-timing) (update-food) (update-positions)) state))
 
 (defn update-state [state]
-  (-> state (update-food) (update-positions)))
+  (-> state (update-render) (update-frame-if-rendering)))
 
-(defn draw-state [state]
+(defn render-frame [state]
   (q/background 70 100 100)
   (led/clear (:serial state))
   (draw-food (:serial state) food-position)
   (doseq [[col row] (:positions state)] (draw-block (:serial state) row col [255 255 255])))
+
+(defn draw-state [state]
+  (if (:render? state) (render-frame state)))
 
 (def drawing
  (Drawing. "Snake" setup update-state draw-state nil nil nil))
