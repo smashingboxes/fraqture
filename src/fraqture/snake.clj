@@ -10,6 +10,8 @@
 
 (def column-count 15)
 (def screen-row-count 9)
+(def led-row-count 4)
+(def row-count (+ (* 2 led-row-count) screen-row-count))
 
 (defn is-led-row [row]
   (or (< row 4) (> row (+ 3 screen-row-count))))
@@ -42,7 +44,8 @@
     :positions '([0 4] [0 3])
     :direction :south
     :last-render (q/millis)
-    :render-delay 700 })
+    :render-delay 700
+    :food-position [0 6]})
 
 (def directions { :south [0 1] :east [1 0] :north [0 -1] :west [-1 0] })
 
@@ -65,8 +68,6 @@
         (remove-tail-unless-growing growing?)
         (conj (apply-movement (first positions) direction)))))
 
-(def food-position [0 6])
-
 (defn draw-food [serial [row col]]
   (draw-block serial col row [200 70 100]))
 
@@ -76,18 +77,29 @@
 (defn update-timing [state]
   (assoc state :render-delay (+ 500 (/ 500 (count (:positions state))))))
 
-(defn update-food [state]
-  (let [new-position (-> state (get :positions) (first) (apply-movement (get state :direction)))
-        eating? (= new-position food-position)]
-    (assoc state :is-eating? eating?)))
+(defn update-eating [state]
+  (assoc state :is-eating?
+    (-> state (get :positions) (first) (apply-movement (get state :direction)) (= (:food-position state)))))
 
 (defn update-render [state]
   (if (> (q/millis) (+ (:last-render state) (:render-delay state)))
     (assoc state :last-render (q/millis) :render? true)
     (assoc state :render? false)))
 
+(defn non-snake-positions [state]
+  (filter
+    (fn [pos] (not-any? #(= pos %) (:positions state)))
+    (for [row (range row-count) col (range column-count)] [col row])))
+
+(defn update-food [state]
+  (if (:is-eating? state)
+    (assoc state :food-position (rand-nth (non-snake-positions state)))
+    state))
+
 (defn update-frame-if-rendering [state]
-  (if (:render? state) (-> state (update-timing) (update-food) (update-positions)) state))
+  (if (:render? state)
+    (-> state (update-timing) (update-eating) (update-positions) (update-food))
+    state))
 
 (defn update-state [state]
   (-> state (update-render) (update-frame-if-rendering)))
@@ -95,7 +107,7 @@
 (defn render-frame [state]
   (q/background 70 100 100)
   (led/clear (:serial state))
-  (draw-food (:serial state) food-position)
+  (draw-food (:serial state) (:food-position state))
   (doseq [[col row] (:positions state)] (draw-block (:serial state) row col [255 255 255])))
 
 (defn draw-state [state]
