@@ -39,7 +39,7 @@
 (defn setup [options]
   (q/frame-rate 1)
   { :serial (:serial options)
-    :position [0 4]
+    :positions '([0 4] [0 3])
     :direction :south })
 
 (def directions { :south [0 1] :east [1 0] :north [0 -1] :west [-1 0] })
@@ -51,17 +51,25 @@
   [(cond (= x column-count) 0 (= x -1) (- column-count 1) :else x)
    (cond (= y (+ 8 screen-row-count)) 0 (= y -1) (+ 7 screen-row-count) :else y)])
 
-(defn update-position [state]
-  (update-in state [:position]
-    #(clamp-position (add-vector % (get directions (get state :direction))))))
+(defn apply-movement [position direction]
+  (clamp-position (add-vector position (get directions direction))))
+
+(defn move-head [direction]
+  (fn [positions]
+    (-> positions
+        (butlast)
+        (conj (apply-movement (first positions) direction)))))
+
+(defn update-positions [state]
+  (update-in state [:positions] (move-head (get state :direction))))
 
 (defn update-state [state]
-  (update-position state))
+  (update-positions state))
 
 (defn draw-state [state]
-  (let [[col row] (:position state)]
-    (q/background 70 100 100)
-    (draw-block (:serial state) row col [255 255 255])))
+  (q/background 70 100 100)
+  (led/clear (:serial state))
+  (doseq [[col row] (:positions state)] (draw-block (:serial state) row col [255 255 255])))
 
 (def drawing
  (Drawing. "Snake" setup update-state draw-state nil nil nil))
