@@ -96,9 +96,35 @@
     (assoc state :food-position (rand-nth (non-snake-positions state)))
     state))
 
+(defn possible-directions [direction]
+  (cond (= direction :east) [:east :south :north]
+        (= direction :west) [:west :south :north]
+        (= direction :north) [:north :east :west]
+        (= direction :south) [:south :east :west]))
+
+(defn possible-next-positions [head dir]
+  (map (fn [dir] [(apply-movement head dir) dir]) (possible-directions dir)))
+
+(defn manhattan-distance [[x1 y1] [x2 y2]]
+  (+ (Math/abs (- x1 x2)) (Math/abs (- y1 y2))))
+
+(defn position-distances [positions food]
+  (println positions)
+  (map (fn [[pos dir]] [(manhattan-distance food pos) dir]) positions))
+
+(defn fastest-dir [positions]
+  (println positions)
+  (->> positions (sort-by first) (first) (second)))
+
+(defn update-direction [state]
+  (assoc state :direction
+    (-> (possible-next-positions (first (:positions state)) (:direction state))
+        (position-distances (:food-position state))
+        (fastest-dir))))
+
 (defn update-frame-if-rendering [state]
   (if (:render? state)
-    (-> state (update-timing) (update-eating) (update-positions) (update-food))
+    (-> state (update-timing) (update-eating) (update-direction) (update-positions) (update-food))
     state))
 
 (defn update-state [state]
