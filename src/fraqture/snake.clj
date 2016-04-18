@@ -182,9 +182,10 @@
 (defn draw-screen-block
   "Draw a single screen snake block"
   [row col color]
-  (let [width  (/ (q/width) column-count)
+  (let [offset 90
+        width  (/ (- (q/width) (* 2 offset)) column-count)
         height (/ (q/height) screen-row-count)
-        x      (* width col)
+        x      (+ (* width col) offset)
         y      (* height (- row 4))]
     (apply q/fill color)
     (q/rect x y width height)))
