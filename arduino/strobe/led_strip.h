@@ -6,8 +6,10 @@
 // Our installation has 18 meters of LED at 30 LEDs per meter (540 total), but
 // this can be anything up to 65536
 #ifndef LED_COUNT
-#define LED_COUNT (18 * 30)
+#define LED_COUNT (19 * 30)
 #endif
+
+#define LED_BRIGHTNESS 0.5
 
 // Function definition for mapping over the LEDs
 // index, color

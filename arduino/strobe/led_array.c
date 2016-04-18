@@ -10,12 +10,6 @@ void led_window(led_strip_t *strip, window_t *window)
   for (row = window->row_start; row < window->row_end; row++) {
     for (col = window->col_start; col < window->col_end; col++) {
       uint16_t index = position_to_index(row, col);
-      color_t output_color;
-      color_t black;
-      black.r = 0;
-      black.b = 0;
-      black.g = 0;
-      lerp_color(&window->color, &black, 0.5, &output_color);
       led_set(strip, index, &window->color);
     }
   }
