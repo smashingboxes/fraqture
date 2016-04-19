@@ -29,7 +29,7 @@
         center-height (/ (q/height) 2)]
     (if (> (:time-left state) 0)
       (q/text (str (:time-left state)) center-width center-height))
-    (if (< (:time-left state) 1)
+    (if (< (:time-left state) 0)
       (do (led/paint-window serial 0 0 led/row-count led/col-count [255 255 255])))
     (led/refresh serial)
 
