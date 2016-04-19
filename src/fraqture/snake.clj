@@ -96,10 +96,20 @@
   [[x1 y1] [x2 y2]]
   (+ (Math/abs (- x1 x2)) (Math/abs (- y1 y2))))
 
+(defn manhattan-with-wraparound
+  "Project the manhattan distances using wraparound"
+  [pos-1 pos-2]
+  (let [potential-x-offsets [(- column-count) 0 column-count]
+        potential-y-offsets [(- row-count) 0 row-count]
+        potential-offsets (for [x potential-x-offsets y potential-y-offsets] [x y])
+        realized-points (map #(add-positions % pos-1) potential-offsets)
+        realized-distances (map #(manhattan-distance % pos-2) realized-points)]
+    (apply min realized-distances)))
+
 (defn position-distances
   "Create a map of distances to the food piece."
   [positions food]
-  (map (fn [[dir pos]] [dir pos (manhattan-distance food pos)]) positions))
+  (map (fn [[dir pos]] [dir pos (manhattan-with-wraparound food pos)]) positions))
 
 (defn find-nearest-obstacle
   "Recurse through looking for how many blocks it will take to hit a snake piece
