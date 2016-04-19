@@ -9,7 +9,8 @@
                  [org.clojure/data.json "0.2.6"]
                  [net.mikera/core.matrix "0.47.0"]
                  [org.clojure/tools.cli "0.3.3"]
+                 [vision "1.0.0-SNAPSHOT"]
                  ]
 
-  :jvm-opts ["-Xmx1G"]
+  :jvm-opts ["-Xmx1G" "-Djna.library.path=/~/work/vision/resources/lib"]
   :main fraqture.core)

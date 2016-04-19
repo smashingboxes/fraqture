@@ -1,7 +1,8 @@
 (ns fraqture.photo-countdown
   (:require [fraqture.drawing]
             [quil.core :as q]
-            [fraqture.led-array :as led])
+            [fraqture.led-array :as led]
+            [clojure.java.shell :as shell])
   (:import  [fraqture.drawing Drawing]))
 
 (defn setup [options]
@@ -14,10 +15,13 @@
 
 (def vertical-line-offset 176)
 
+(defn now [] (System/currentTimeMillis))
+
 (defn draw-state [state]
   (apply q/background (:background-color state))
   (q/fill 255 255 255)
   (q/text-size 512)
+  (q/delay-frame 1000)
   (q/text-align :center :center)
   (let [options (:options state)
         serial  (:serial options)
@@ -25,10 +29,13 @@
         center-height (/ (q/height) 2)]
     (if (> (:time-left state) 0)
       (q/text (str (:time-left state)) center-width center-height))
-    (if (< (:time-left state) 0)
-      (led/paint-window serial 0 0 led/row-count led/col-count [255 255 255]))
+    (if (< (:time-left state) 1)
+      (do (led/paint-window serial 0 0 led/row-count led/col-count [255 255 255])))
     (led/refresh serial)
-    (q/delay-frame 1000)))
+
+    (if (= (:time-left state) -1)
+      (shell/sh "imagesnap" (str "images/" (now) ".jpg")))
+    ))
 
 (defn exit?
   [state]
