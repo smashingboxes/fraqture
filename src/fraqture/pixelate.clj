@@ -31,7 +31,8 @@
   (shuffle (pixelate (* pixel-width mult) (* pixel-height mult))))
 
 (defn setup [options]
-  (let [pixel-multiplier 1]
+  (q/frame-rate 30)
+  (let [pixel-multiplier 3]
     (-> (stream/get-image!) (q/load-image) (q/image 0 0 (q/width) (q/height)))
     { :pixel-multiplier pixel-multiplier
       :options options
