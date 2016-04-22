@@ -35,7 +35,7 @@
     (led/refresh serial)
 
     (if (= (:time-left state) -1)
-      (shell/sh "imagesnap" "-w" "1 " (str "images/" (now) ".jpg")))
+      (shell/sh "imagesnap" "-w" "1 " (str "rasters/" (now) ".jpg")))
     ))
 
 (defn exit?

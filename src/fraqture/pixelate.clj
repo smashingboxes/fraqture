@@ -33,7 +33,7 @@
 (defn setup [options]
   (q/frame-rate 30)
   (let [pixel-multiplier 3]
-    (-> (stream/get-image!) (q/load-image) (q/image 0 0 (q/width) (q/height)))
+    (-> (stream/get-raster!) (q/load-image) (q/image 0 0 (q/width) (q/height)))
     { :pixel-multiplier pixel-multiplier
       :options options
       :hidden-pixels (shuffled-pixels pixel-multiplier)

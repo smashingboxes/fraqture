@@ -45,4 +45,5 @@
     (if filename (str folder-name "/" filename))))
 
 (defn get-tweet! [] (get-file! "tweets" tweet-extensions))
-(defn get-image! [] (get-file! "images" image-extensions))
+(defn get-raster! [] (get-file! "rasters" image-extensions))
+(defn get-logo!  [] (get-file! "logos"  image-extensions))

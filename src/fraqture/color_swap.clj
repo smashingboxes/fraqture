@@ -35,7 +35,7 @@
 
 (defn setup [options]
   (q/frame-rate 30)
-  (->> (stream/get-image!) (q/load-image) (load-new-image))
+  (->> (stream/get-logo!) (q/load-image) (load-new-image))
   {:pixel-array (pixel-array)
    :led-array (led-array)
    :pixels-to-blend []
@@ -58,7 +58,7 @@
 
   (if (:load-new-image state)
     (do
-      (->> (stream/get-image!) (q/load-image) (load-new-image))
+      (->> (stream/get-raster!) (q/load-image) (load-new-image))
       (led/clear (:serial state))))
 
   (let [pixels (:pixels-to-sample state)]
