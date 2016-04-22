@@ -96,3 +96,4 @@ Payload (in order):
 
 - Install Java JRE or JDK from [Oracle's website](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 - `brew install leiningen` (or install it for your OS using [these instructions](http://leiningen.org/))
+- Imagesnap `brew install imagesnap` (or install it from [here](http://iharder.sourceforge.net/current/macosx/imagesnap/))
