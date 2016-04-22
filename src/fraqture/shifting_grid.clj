@@ -94,7 +94,7 @@
   (if (empty? ops) [blocks ops] (pop-block blocks ops)))
 
 (defn setup [options]
-  (q/frame-rate 5)
+  (q/frame-rate 3)
   (let [image-file (stream/get-image!)
         image  (q/load-image image-file)
         _resized (q/resize image (q/width) (q/height))
@@ -178,8 +178,10 @@
   (draw-leds state))
 
 (defn exit? [state]
-  (let [ops (:ops state)]
-  (= (count ops) 3)))
+  (let [ops (:ops state)
+        finished (= (count ops) 0)]
+  (if finished
+    (doall [(q/delay-frame 5000) true]))))
 
 (def drawing
   (Drawing. "Shifting Grid" setup update-state draw-state cli-options exit? nil))
