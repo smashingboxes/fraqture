@@ -95,7 +95,7 @@
 
 (defn setup [options]
   (q/frame-rate 3)
-  (let [image-file (stream/get-image!)
+  (let [image-file (stream/get-raster!)
         image  (q/load-image image-file)
         _resized (q/resize image (q/width) (q/height))
         x-blocks (:x-blocks options)

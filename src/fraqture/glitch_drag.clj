@@ -27,7 +27,7 @@
         sample-xs   (map #(* % (/ (q/width) column-count)) (range column-count))
         samples     (map (fn [x y] (color-to-rgb (q/get-pixel x y))) sample-xs sample-ys)
         columns     (map (fn [n c] (->Column n :ready 0 c)) (range) samples)]
-    (-> (stream/get-image!) (q/load-image) (q/image 0 0 (q/width) (q/height)))
+    (-> (stream/get-raster!) (q/load-image) (q/image 0 0 (q/width) (q/height)))
     (led/clear serial)
     { :columns  (vec columns) }))
 
