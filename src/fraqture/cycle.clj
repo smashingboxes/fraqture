@@ -9,19 +9,26 @@
             [fraqture.pixelate :as pixelate]
             [fraqture.tweetreader :as tweetreader]
             [fraqture.led-array :as led]
+            [fraqture.snake :as snake]
             )
   (:import  [fraqture.drawing Drawing]))
 
-(def drawing-list
-  (shuffle
-   [drag/drawing
-    swap/drawing
-    pixelate/drawing
-    shifting-grid/drawing
-    tweetreader/drawing]))
+(def night-list
+  [snake/drawing])
+
+(def day-list
+  [drag/drawing
+   swap/drawing
+   pixelate/drawing
+   shifting-grid/drawing
+   tweetreader/drawing])
+
+(defn list-by-time []
+  (let [hours (.getHours (new java.util.Date))]
+    (if (< hours 6) night-list day-list)))
 
 (defn current-drawing [state]
-  (nth drawing-list (:drawing-i state)))
+  (nth (:drawing-list state) (:drawing-i state)))
 
 (defn default-options [drawing]
   (:options (parse-opts "" (:cli drawing))))
@@ -43,7 +50,10 @@
   ])
 
 (defn setup [options]
-  (let [initial-state { :last-update (q/millis) :drawing-i 0 :options options }]
+  (let [initial-state { :last-update (q/millis)
+                        :drawing-i 0
+                        :drawing-list (list-by-time)
+                        :options options }]
     (bootstrap-state initial-state)))
 
 (defn update-state [state]
@@ -54,7 +64,8 @@
                           (> (time-elapsed (:last-update state)) update-interval))]
     (if next?
       (-> state
-        (assoc :drawing-i (mod (inc (:drawing-i state)) (count drawing-list)))
+        (assoc :drawing-list (list-by-time))
+        (assoc :drawing-i (mod (inc (:drawing-i state)) (count (:drawing-list state))))
         (assoc :last-update (q/millis))
         (bootstrap-state))
       (update-in state [:drawing-state] (:update (current-drawing state))))))
