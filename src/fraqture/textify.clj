@@ -32,7 +32,7 @@
 (def cli-options
   [
     ["-i" "--image-path PATH" "Path to an image"
-      :default "images/logo.png"]
+      :default "logos/logo.png"]
     ["-l" "--letters-per-frame INT" "Number of letters to add each frame"
       :default 12
       :parse-fn #(Integer/parseInt %)]
