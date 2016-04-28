@@ -148,8 +148,8 @@
                            (position-distances (:food-position state))
                            (best-dir state))]
     (if (nil? best-direction)
-      (setup (:options state))
-      (assoc state :direction best-direction))))
+      (-> (setup (:options state)) (assoc :hit-tail true))
+      (assoc state :direction best-direction :hit-tail false))))
 
 (defn update-frame-if-rendering
   "Only update the state on render frames"
@@ -227,5 +227,10 @@
   [state]
   (if (:render? state) (render-frame state)))
 
+(defn exit?
+  "Exit when the tail is hit"
+  [state]
+  (:hit-tail state))
+
 (def drawing
- (Drawing. "Snake" setup update-state draw-state nil nil nil))
+ (Drawing. "Snake" setup update-state draw-state nil exit? nil))
