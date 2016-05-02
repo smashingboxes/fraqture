@@ -194,6 +194,7 @@
         textify-options (assoc textify-options :serial (:serial options))]
     (q/frame-rate 30)
     (q/text-font (q/create-font "Monoid-Regular.ttf" 30))
+    (q/text-size 30)
     (q/stroke-weight 3)
     { :textify-state (textify/setup textify-options)
       :write-index 1
