@@ -10,6 +10,7 @@
             [fraqture.tweetreader :as tweetreader]
             [fraqture.led-array :as led]
             [fraqture.snake :as snake]
+            [fraqture.photo-countdown :as countdown]
             )
   (:import  [fraqture.drawing Drawing]))
 
@@ -17,7 +18,8 @@
   [snake/drawing])
 
 (def day-list
-  [drag/drawing
+  [countdown/drawing
+   drag/drawing
    swap/drawing
    pixelate/drawing
    shifting-grid/drawing
