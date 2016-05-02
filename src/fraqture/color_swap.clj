@@ -10,6 +10,9 @@
 (def pixel-count 11)
 (def led-pixel-size 2)
 
+(defn exit? [state]
+  (= (:times-run state) 1))
+
 (defn rand-xy-array [x-max y-max step]
   (shuffle (for [x (range 0 x-max step)
         y (range 0 y-max step)]
@@ -36,7 +39,8 @@
 (defn setup [options]
   (q/frame-rate 30)
   (->> (stream/get-logo!) (q/load-image) (load-new-image))
-  {:pixel-array (pixel-array)
+  {:times-run 0
+   :pixel-array (pixel-array)
    :led-array (led-array)
    :pixels-to-blend []
    :dpixels-to-blend []
@@ -56,7 +60,7 @@
         (led/paint-window (:serial state) x y (+ x led-pixel-size) (+ y led-pixel-size) color)
         (led/refresh (:serial state)))))
 
-  (if (:load-new-image state)
+  (if (and (:load-new-image state) (not (exit? state)))
     (do
       (->> (stream/get-raster!) (q/load-image) (load-new-image))
       (led/clear (:serial state))))
@@ -75,7 +79,8 @@
         reversing (not= 0 (count (dups (concat (:pixels-to-modify state) (:pixels-to-sample state)))))
         pixels-to-modify (take pixel-count (:pixel-array state))
         pixels-to-sample (take pixel-count (drop pixel-count (:pixel-array state)))]
-    {:pixels-to-modify pixels-to-modify
+    {:times-run (if loading-new-image (inc (:times-run state)) (:times-run state))
+     :pixels-to-modify pixels-to-modify
      :pixels-to-sample pixels-to-sample
      :reversing (if (or (and reversing (not (:reversing state))) loading-new-image)
                   (not (:reversing state))
@@ -95,4 +100,4 @@
                 (concat (rest (:effects state)) [(first (:effects state))]))}))
 
 (def drawing
-  (Drawing. "Color Swap" setup update-state draw-state nil nil nil))
+  (Drawing. "Color Swap" setup update-state draw-state nil exit? nil))
