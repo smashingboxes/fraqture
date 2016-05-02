@@ -74,7 +74,7 @@
         text-strs    (repeatedly at-a-time #(str (rand-nth uppers)))
         zipped       (map vector xs ys heights text-strs)
         curried-text (fn [x y height text-str] (make-text (:image state) x y height text-str))]
-    (doseq [pixel (:leds state)] (led/paint-pixel serial pixel [255 255 255]))
+    (doseq [pixel (:leds state)] (led/paint-pixel serial pixel [0 0 0]))
     (led/refresh serial)
     (doseq [zip zipped] (apply curried-text zip))))
 
