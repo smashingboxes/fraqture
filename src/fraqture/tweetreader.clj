@@ -217,6 +217,15 @@
         (assoc :leds-left rest)))
     state))
 
+(defn set-done-time [state last-done now-done]
+  (if (and (not last-done) now-done)
+    (assoc state :done-at (q/millis))
+    state))
+
+(defn update-done [state now-done]
+  (let [last-done (:done? state)]
+    (-> state (set-done-time last-done now-done) (assoc :done? now-done))))
+
 (defn update-state [state]
   (let [write-index (inc (:write-index state))
         str-len (count (apply str (:message state)))
@@ -227,7 +236,7 @@
         second-stage? (and (> left-over 0) (not done?))]
     (-> state
         (assoc :clear-last-key? (= write-index (+ 1 str-len)))
-        (assoc :done? done?)
+        (update-done done?)
         (assoc :new-chars? new-chars?)
         (assoc :mask mask)
         (assoc :write-index write-index)
@@ -257,4 +266,9 @@
        (led/refresh (:serial state))
        (q/delay-frame 100)])))
 
-(def drawing (Drawing. "tweet reader" setup update-state draw-state nil nil nil))
+(defn exit [state]
+  (let [done-at (:done-at state)]
+    (if done-at
+      (< (+ done-at 30000) (q/millis)))))
+
+(def drawing (Drawing. "tweet reader" setup update-state draw-state nil exit nil))
