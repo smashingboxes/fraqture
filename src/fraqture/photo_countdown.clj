@@ -17,7 +17,10 @@
 
 (defn take-picture [holdoff]
   (let [now (System/currentTimeMillis)]
-    (future (shell/sh "imagesnap" "-w" (str holdoff) (str "rasters/once_" now ".jpg")))))
+    (future
+      (do (shell/sh "imagesnap" "-w" (str holdoff) (str "rasters/once_" now ".jpg"))
+          (Thread/sleep (+ (* 1000 holdoff) 500)
+          (shutdown-agents))))))
 
 (defn draw-state [state]
   (let [options (:options state)
@@ -25,23 +28,20 @@
         center-width (/ (q/width) 2)
         center-height (/ (q/height) 2)]
     (apply q/background (:background-color state))
-    (q/fill 255 255 255)
-    (q/text-size 512)
-    (q/text-align :center :center)
+    (if (>= (:time-left state) 0) (q/delay-frame 1000) (q/delay-frame 400))
     (cond
       (> (:time-left state) 0)
-        (do (q/text (str (:time-left state)) center-width center-height)
-            (if (= (:time-left state) 2) (take-picture 3))
-            (q/delay-frame 1000))
+        (do (if (= (:time-left state) 2) (take-picture 2.5))
+            (q/fill 255 255 255)
+            (q/text-size 512)
+            (q/text-align :center :center)
+            (q/text (str (:time-left state)) center-width center-height))
       (= (:time-left state) 0)
-        (do (q/text "" center-width center-height)
-            (led/paint-window serial 0 0 led/row-count led/col-count [255 255 255])
-            (led/refresh serial)
-            (q/delay-frame 400))
+        (do (led/paint-window serial 0 0 led/row-count led/col-count [255 255 255])
+            (led/refresh serial))
       (= (:time-left state) -1)
         (do (led/clear serial)
-            (led/refresh serial)
-            (q/delay-frame 400)))))
+            (led/refresh serial)))))
 
 (defn exit?
   [state]
