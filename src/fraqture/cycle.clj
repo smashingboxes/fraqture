@@ -54,6 +54,7 @@
                         :drawing-i 0
                         :drawing-list (list-by-time)
                         :options options }]
+    (q/no-cursor)
     (bootstrap-state initial-state)))
 
 (defn update-state [state]
