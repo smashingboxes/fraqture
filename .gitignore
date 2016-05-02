@@ -12,3 +12,5 @@ pom.xml.asc
 tweets/*.txt
 logs/*
 pids/*
+archived/*
+!archived/.keep

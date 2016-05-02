@@ -23,8 +23,10 @@
 (defn update-folder-state [folder-name extensions]
   (let [folder-state (or (get @file-states folder-name) {})
         known-file-hash (or (:all folder-state) {})
-        known-file-set (->> folder-state (keys) (set))
+        known-file-set (->> known-file-hash (keys) (set))
         live-file-set (->> folder-name (io/file) (.list) (map str) (filter (valid? extensions)) (set))
+        removed-files (difference known-file-set live-file-set)
+        known-file-hash (reduce (fn [hash file] (dissoc hash file)) known-file-hash removed-files)
         new-files (difference live-file-set known-file-set)
         new-hash (->> new-files (map #(vector % 0)) (into {}))]
     [(:current folder-state) (merge new-hash known-file-hash)]))
