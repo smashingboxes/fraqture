@@ -6,6 +6,7 @@
   (:import  [fraqture.drawing Drawing]))
 
 (defn setup [options]
+  (q/fill 255 255 255)
   {:background-color [0 0 0]
    :time-left 3
    :options options})
@@ -28,15 +29,17 @@
     (if (>= (:time-left state) 0) (q/delay-frame 1000))
     (cond
       (> (:time-left state) 0)
-        (do (q/fill 255 255 255)
-            (q/text-size 512)
+        (do (q/text-size 512)
             (q/text-align :center :center)
             (q/text (str (:time-left state)) center-width center-height))
       (= (:time-left state) 0)
         (do (led/paint-window serial 0 0 led/row-count led/col-count [255 255 255])
-            (led/refresh serial))
+            (led/refresh serial)
+            (q/text-size 80)
+            (q/text-align :center :center)
+            (q/text "Say Cheese" center-width center-height))
       (= (:time-left state) -1)
-        (do (take-picture 1)
+        (do (take-picture 0.5)
             (led/clear serial)
             (led/refresh serial)))))
 
