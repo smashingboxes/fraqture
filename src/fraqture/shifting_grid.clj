@@ -184,4 +184,4 @@
     (doall [(q/delay-frame 5000) true]))))
 
 (def drawing
-  (Drawing. "Shifting Grid" setup update-state draw-state cli-options exit? nil))
+  (Drawing. "Shifting Grid" setup update-state draw-state cli-options exit? :raster))

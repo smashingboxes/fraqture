@@ -172,4 +172,4 @@
     (led/refresh serial)))
 
 (def drawing
-  (Drawing. "Drag Glitch" setup update-state draw-state nil exit? nil))
+  (Drawing. "Drag Glitch" setup update-state draw-state nil exit? :raster))

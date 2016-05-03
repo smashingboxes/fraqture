@@ -103,4 +103,4 @@
   (< total-pixels 50)))
 
 (def drawing
-  (Drawing. "Pixelate" setup update-state draw-state nil exit? nil))
+  (Drawing. "Pixelate" setup update-state draw-state nil exit? :raster))

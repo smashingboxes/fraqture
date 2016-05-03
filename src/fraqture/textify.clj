@@ -79,4 +79,4 @@
     (doseq [zip zipped] (apply curried-text zip))))
 
 (def drawing
-  (Drawing. "Textify" setup update-state draw-state cli-options nil nil))
+  (Drawing. "Textify" setup update-state draw-state cli-options nil :logo))

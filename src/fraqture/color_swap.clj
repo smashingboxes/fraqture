@@ -38,7 +38,7 @@
 
 (defn setup [options]
   (q/frame-rate 30)
-  (->> (stream/get-logo!) (q/load-image) (load-new-image))
+  (->> (stream/get-raster!) (q/load-image) (load-new-image))
   {:times-run 0
    :pixel-array (pixel-array)
    :led-array (led-array)
@@ -100,4 +100,4 @@
                 (concat (rest (:effects state)) [(first (:effects state))]))}))
 
 (def drawing
-  (Drawing. "Color Swap" setup update-state draw-state nil exit? nil))
+  (Drawing. "Color Swap" setup update-state draw-state nil exit? :raster))

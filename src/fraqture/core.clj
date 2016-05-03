@@ -62,8 +62,7 @@
     (fn [state] ((:draw @drawing-atom) state))))
 
 (defn load-drawing [drawing options]
-  (let [quil-options   (:quil (:options drawing))
-        with-mock? (:mock options)
+  (let [with-mock? (:mock options)
         serial (:serial options)]
     (reload-drawing! drawing)
     (q/defsketch fraqture
@@ -71,8 +70,8 @@
       :setup  #((:setup @drawing-atom) options)
       :update #((:update @drawing-atom) %)
       :draw   (curried-draw drawing-atom with-mock? serial)
-      :size   (or (:size quil-options) :fullscreen)
-      :features (or (:features quil-options) [:present :keep-on-top])
+      :size   :fullscreen
+      :features [:present :keep-on-top]
       :middleware [m/fun-mode])))
 
 (defn parse-cli [drawing-name args]
