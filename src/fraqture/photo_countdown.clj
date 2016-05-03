@@ -8,7 +8,7 @@
 (defn setup [options]
   (q/fill 255 255 255)
   {:background-color [0 0 0]
-   :time-left 3
+   :time-left 10
    :options options})
 
 (defn update-state [state]
