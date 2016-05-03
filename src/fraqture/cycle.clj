@@ -18,19 +18,32 @@
   [snake/drawing])
 
 (def day-list
-  [countdown/drawing
-   drag/drawing
+  [drag/drawing
    swap/drawing
    pixelate/drawing
    shifting-grid/drawing
    tweetreader/drawing])
 
-(defn list-by-time []
+(defn randomize-day-list
+  "We always want to take a picture, then manipulate it using a raster manipulator,
+  then shuffle the rest"
+  []
+  (let [raster-manipulators (filter #(= (:acts-on %) :raster) day-list)
+        first-drawing (rand-nth raster-manipulators)
+        others (shuffle (remove #{first-drawing} day-list))]
+    (conj others first-drawing countdown/drawing)))
+
+(defn build-list []
   (let [hours (.getHours (new java.util.Date))]
-    (if (< hours 6) night-list day-list)))
+    (if (< hours 6) night-list (randomize-day-list))))
+
+(defn cycle-list [state]
+  (let [more? (> (count (:drawing-list state)) 1)
+        new-list (if more? (rest (:drawing-list state)) (build-list))]
+    (assoc state :drawing-list new-list)))
 
 (defn current-drawing [state]
-  (nth (:drawing-list state) (:drawing-i state)))
+  (first (:drawing-list state)))
 
 (defn default-options [drawing]
   (:options (parse-opts "" (:cli drawing))))
@@ -53,8 +66,7 @@
 
 (defn setup [options]
   (let [initial-state { :last-update (q/millis)
-                        :drawing-i 0
-                        :drawing-list (list-by-time)
+                        :drawing-list (build-list)
                         :options options }]
     (q/no-cursor)
     (bootstrap-state initial-state)))
@@ -67,8 +79,7 @@
                           (> (time-elapsed (:last-update state)) update-interval))]
     (if next?
       (-> state
-        (assoc :drawing-list (list-by-time))
-        (assoc :drawing-i (mod (inc (:drawing-i state)) (count (:drawing-list state))))
+        (cycle-list)
         (assoc :last-update (q/millis))
         (bootstrap-state))
       (update-in state [:drawing-state] (:update (current-drawing state))))))
