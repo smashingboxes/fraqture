@@ -2,6 +2,7 @@
   (:require [fraqture.drawing]
             [fraqture.helpers :refer :all]
             [fraqture.led-array :as led]
+            [fraqture.time :refer [is-night?]]
             [quil.core :as q :include-macros true])
   (:import  [fraqture.drawing Drawing]))
 
@@ -213,6 +214,26 @@
   [serial [row col]]
   (draw-block serial col row [200 70 100]))
 
+(defn overlay-message
+  "At night, we want to let people know they will be able to interact again in the AM"
+  []
+  (let [width  500
+        height 100
+        sides-spacing 40
+        rect-x (- (q/width) (+ width sides-spacing))
+        rect-y (- (q/height) (+ height sides-spacing))
+        text-x (+ rect-x (/ width 2))
+        text-y (+ rect-y (/ height 2))]
+    (q/fill 0 0 0 0.5)
+    (q/stroke 255 255 255)
+    (q/rect rect-x rect-y width height)
+    (q/no-stroke)
+    (q/text-size 30)
+    (q/text-align :center :baseline)
+    (q/fill 255 255 255)
+    (q/text "Mixing things up 6:00 - 24:00" text-x (- text-y 10))
+    (q/text "http://www.fraqture.com" text-x (+ text-y 26))))
+
 (defn render-frame
   "Render a given frame"
   [state]
@@ -221,7 +242,8 @@
     (led/clear serial)
     (draw-food serial (:food-position state))
     (doseq [[col row] (:positions state)] (draw-block serial row col [90 130 200]))
-    (led/refresh serial)))
+    (led/refresh serial)
+    (if (is-night?) (overlay-message))))
 
 (defn draw-state
   "The main draw function"

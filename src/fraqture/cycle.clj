@@ -11,6 +11,7 @@
             [fraqture.led-array :as led]
             [fraqture.snake :as snake]
             [fraqture.photo-countdown :as countdown]
+            [fraqture.time :refer [is-night?]]
             )
   (:import  [fraqture.drawing Drawing]))
 
@@ -34,9 +35,7 @@
         others (shuffle (remove #{first-drawing} day-list))]
     (conj others first-drawing countdown/drawing)))
 
-(defn build-list []
-  (let [hours (.getHours (new java.util.Date))]
-    (if (< hours 6) night-list (randomize-day-list))))
+(defn build-list [] (if (is-night?) night-list (randomize-day-list)))
 
 (defn cycle-list [state]
   (let [more? (> (count (:drawing-list state)) 1)
