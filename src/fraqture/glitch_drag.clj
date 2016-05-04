@@ -140,6 +140,7 @@
 ; fraqture functions
 (defn setup [options]
   (q/frame-rate 10)
+  (q/no-stroke)
   (-> (setup-new-image (:serial options))
       (assoc :options options)
       (assoc :times-run 0)))

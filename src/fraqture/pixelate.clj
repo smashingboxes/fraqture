@@ -32,6 +32,7 @@
 
 (defn setup [options]
   (q/frame-rate 30)
+  (q/no-stroke)
   (let [pixel-multiplier 3]
     (-> (stream/get-raster!) (q/load-image) (q/image 0 0 (q/width) (q/height)))
     { :pixel-multiplier pixel-multiplier
