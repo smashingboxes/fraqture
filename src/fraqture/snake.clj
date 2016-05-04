@@ -217,19 +217,20 @@
 (defn overlay-message
   "At night, we want to let people know they will be able to interact again in the AM"
   []
-  (let [width  500
-        height 100
+  (let [width  600
+        height 140
         sides-spacing 40
-        rect-x (- (q/width) (+ width sides-spacing))
-        rect-y (- (q/height) (+ height sides-spacing))
-        text-x (+ rect-x (/ width 2))
+        ;rect-x (- (q/width) (+ width sides-spacing))
+        ;rect-y (- (q/height) (+ height sides-spacing))
+        rect-x (- (/ (q/width) 2) 300)
+        rect-y (- (/ (q/height) 2) 70)
+        text-x (+ rect-x 87 40)
         text-y (+ rect-y (/ height 2))]
-    (q/fill 0 0 0 0.5)
-    (q/stroke 255 255 255)
-    (q/rect rect-x rect-y width height)
-    (q/no-stroke)
+    (-> "data/snakelogo.png" (q/load-image) (q/image (+ rect-x 20) (+ rect-y 20) 87 100))
+    (q/fill 255 255 255 40)
+    (q/rect rect-x rect-y width height 10)
     (q/text-size 30)
-    (q/text-align :center :baseline)
+    (q/text-align :left :baseline)
     (q/fill 255 255 255)
     (q/text "Mixing things up 6:00 - 24:00" text-x (- text-y 10))
     (q/text "http://www.fraqture.com" text-x (+ text-y 26))))
