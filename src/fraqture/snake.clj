@@ -15,6 +15,7 @@
   "The main setup function."
   [options]
   (q/frame-rate 30)
+  (q/no-stroke)
   { :options options
     :positions '([0 4] [0 3])
     :direction :south
