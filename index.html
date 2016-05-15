@@ -1,46 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="utf-8">
-  <title>fraqture | Smashing Boxes</title>
-  <link href='https://fonts.googleapis.com/css?family=Roboto+Mono:300' rel='stylesheet' type='text/css'>
-  <link href='https://fonts.googleapis.com/css?family=Orbitron:900' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/style.css">
-  <script>
-   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  <head>
+    <title>Fraqture | experimental art platform</title>
+    <script type="text/javascript">
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+       })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      
+       ga('create', 'UA-29292622-21', 'auto');
+       ga('send', 'pageview');
+      
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="header"><svg x="0px" y="0px" width="95.5px" height="255.2px" viewBox="0 0 95.5 255.2">
+  <path id="SVGID_5_" d="M74.5,20.9V0h-21v51.7h21v18.5c-4.8-2-10.2-3.2-16.2-3.2c-22.7,0-37.3,15.9-37.3,37V47.7H0v76.2 h21v41.7H0v89.6h21v-44.6h21.7v-65.2h52V125h-52v-22.1c0-7.7,4.9-15.4,15.6-15.4s15.5,7.7,15.5,15.4v8.2h21.7v-1.4v-5.6V20.9H74.5z" />
+  <rect x="74.5" y="210.4" width="21" height="20.9"/>
+  <rect width="21" height="20.9"/>
+</svg>
 
-   ga('create', 'UA-29292622-21', 'auto');
-   ga('send', 'pageview');
-
-  </script>
-</head>
-<body>
-  <section class="outer">
-    <div class="header">
-      <h2 class="glitch" data-text="fraqture">fraqture</h2>
-    </div>
-    <section class="content">
-      <p>
-        An interactive art framework that takes inputs from social media, maps
-        them to the interactive parts of a drawing, and renders the art.
-      </p>
-      <p>
-        <a href="https://github.com/smashingboxes/fraqture" class="button">
-          View on Github
-        </a>
-    </section>
-  </section>
-  <footer class="footer">
-    <a href="http://smashingboxes.com/?utm_source=fraqture-lp&utm_medium=lp&utm_campaign=sb-product">
-      <div class="footer__inner">
-        <img src="images/smashing-boxes.png" />
+    </header>
+    <main class="main">
+      <div class="container">
+        <section class="section">
+          <div class="content">
+            <p><a class="link" href="http://github.com/smashingboxes/fraqture">Fraqture</a> is an experimental platform that blends art with technology, exploring the parallels between glitch art and graffiti.</p>
+            <p>Conceived as an installation for the Durham Storefront Project and in collaboration with The Carrack, digital product agency Smashing Boxes constructed Fraqture with a large monitor, Arduino board and 2 handmade panels containing over 500 LEDs.</p>
+            <p>The glitch code is open source and written in Clojure and C. The featured artwork is curated by 21c and The Carrack.</p>
+          </div>
+          <div class="photo-grid"><img class="photo-grid__featured" src="/img/photo-grid-featured.jpg">
+            <div class="photo-grid__blocks">
+              <div class="photo-grid__block"><img src="/img/photo-grid-block-1.jpg"></div>
+              <div class="photo-grid__block"><img src="/img/photo-grid-block-2.jpg"></div>
+              <div class="photo-grid__block"><img src="/img/photo-grid-block-3.jpg"></div>
+              <div class="photo-grid__block"><img src="/img/photo-grid-block-4.jpg"></div>
+              <div class="photo-grid__block"><img src="/img/photo-grid-block-5.jpg"></div>
+              <div class="photo-grid__block"><img src="/img/photo-grid-block-6.jpg"></div>
+            </div>
+          </div>
+          <blockquote class="blockquote">
+            <p class="blockquote__quote">"We wanted to create something for the artist and technology communities of Durham"</p>
+            <p class="blockquote__author">&lt; Brian Carrigan /&gt;</p>
+          </blockquote>
+        </section>
+        <section class="section section--center">
+          <h2 class="section__header">Top Contributors</h2>
+          <div class="contributors js-contributors"></div><a class="button" href="http://github.com/smashingboxes/fraqture">View On Github</a>
+        </section>
+        <section class="section">
+          <h2 class="section__header">Featured Artist</h2>
+          <div class="featured-artist">
+            <div class="featured-artist__description">
+              <p>May 6-9, 2016</p>
+              <h2 class="heading heading--lg">RUNAWAY</h2>
+              <p>Founded in 2011 by Gabe Eng-Goetz, we are inspired by those who run from convention in search of something greater than themselves. Through a combination of apparel, art exhibitions, concerts, documentary filmmaking, and more, the company is pioneering a new wave of creative entrepreneurship throughout the Triangle area.</p>
+              <p>Welcoming all vagrants and vagabonds</p>
+            </div>
+            <div class="featured-artist__image"><img src="/img/runaway.jpg"></div>
+          </div>
+        </section>
       </div>
-    </a>
-  </footer>
-</body>
+    </main>
+    <footer class="footer">
+      <div class="powered-by">Powered By</div><a class="logo" href="http://smashingboxes.com/?utm_source=fraqture-lp&amp;utm_medium=lp&amp;utm_campaign=sb-product"><?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 19.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="140.1px" height="82px" viewBox="0 0 140.1 82" style="enable-background:new 0 0 140.1 82;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;}
+</style>
+<path d="M0,80.6l0.7-0.8c1,0.9,2,1.4,3.4,1.4c1.3,0,2.2-0.7,2.2-1.7v0c0-0.9-0.5-1.4-2.5-1.9c-2.3-0.5-3.3-1.2-3.3-2.8v0
+	c0-1.5,1.4-2.7,3.2-2.7c1.4,0,2.5,0.4,3.4,1.2l-0.6,0.9C5.5,73.4,4.6,73,3.6,73c-1.3,0-2.1,0.7-2.1,1.6v0c0,0.9,0.5,1.4,2.7,1.9
+	c2.2,0.5,3.2,1.3,3.2,2.8v0C7.4,81,6,82.1,4,82.1C2.5,82.1,1.2,81.6,0,80.6z"/>
+<path d="M10.8,72.2h1.1l3.6,5.4l3.6-5.4h1.1V82H19v-7.9l-3.6,5.3h-0.1l-3.6-5.2V82h-1.1V72.2z"/>
+<path d="M27.7,72.1h1l4.5,9.9H32l-1.1-2.6h-5.3L24.4,82h-1.1L27.7,72.1z M30.4,78.4l-2.2-5l-2.2,5H30.4z"/>
+<path d="M35.5,80.6l0.7-0.8c1,0.9,2,1.4,3.4,1.4c1.3,0,2.2-0.7,2.2-1.7v0c0-0.9-0.5-1.4-2.5-1.9c-2.3-0.5-3.3-1.2-3.3-2.8v0
+	c0-1.5,1.4-2.7,3.2-2.7c1.4,0,2.5,0.4,3.4,1.2l-0.6,0.9C41,73.4,40.1,73,39,73c-1.3,0-2.1,0.7-2.1,1.6v0c0,0.9,0.5,1.4,2.7,1.9
+	c2.2,0.5,3.2,1.3,3.2,2.8v0c0,1.7-1.4,2.8-3.3,2.8C37.9,82.1,36.6,81.6,35.5,80.6z"/>
+<path d="M46.2,72.2h1.1v4.4H53v-4.4h1.1V82H53v-4.4h-5.7V82h-1.1V72.2z"/>
+<path d="M58.1,72.2h1.1V82h-1.1V72.2z"/>
+<path d="M63.3,72.2h1l6.2,7.9v-7.9h1.1V82h-0.9l-6.3-8v8h-1.1V72.2z"/>
+<path d="M75.1,77.1L75.1,77.1c0-2.7,2-5.1,4.9-5.1c1.7,0,2.7,0.5,3.7,1.3l-0.7,0.8c-0.8-0.7-1.6-1.1-3-1.1c-2.2,0-3.7,1.8-3.7,4v0
+	c0,2.3,1.5,4.1,3.9,4.1c1.1,0,2.2-0.4,2.8-1v-2.4h-3v-1h4v3.9c-0.9,0.8-2.3,1.5-3.9,1.5C77,82.2,75.1,79.9,75.1,77.1z"/>
+<path d="M87.5,72.2H92c1.1,0,2,0.3,2.6,0.9c0.4,0.4,0.7,1,0.7,1.7v0c0,1.1-0.6,1.7-1.3,2.1c1.1,0.4,1.8,1.1,1.8,2.4v0
+	c0,1.8-1.5,2.7-3.7,2.7h-4.7V72.2z M91.5,76.2c1,0,1.6-0.3,1.6-1v0c0-0.6-0.5-1-1.4-1h-2.1v2.1H91.5z M92.1,80.1
+	c1,0,1.5-0.3,1.5-1.1v0c0-0.7-0.5-1.1-1.6-1.1h-2.5v2.2H92.1z"/>
+<path d="M98.3,77.1L98.3,77.1c0-2.8,2.2-5.1,5.2-5.1c3,0,5.2,2.3,5.2,5v0c0,2.8-2.2,5.1-5.2,5.1S98.3,79.9,98.3,77.1z M106.5,77.1
+	L106.5,77.1c0-1.7-1.2-3.1-3-3.1c-1.7,0-2.9,1.4-2.9,3.1v0c0,1.7,1.2,3.1,3,3.1S106.5,78.8,106.5,77.1z"/>
+<path d="M113.8,77l-3.3-4.8h2.5l2,3.2l2.1-3.2h2.5l-3.3,4.8l3.4,5h-2.5l-2.2-3.4l-2.2,3.4h-2.5L113.8,77z"/>
+<path d="M122.5,72.2h7.4v1.9h-5.3v2h4.6V78h-4.6v2.1h5.3V82h-7.5V72.2z"/>
+<path d="M132.4,80.6l1.3-1.5c0.9,0.7,1.8,1.2,2.9,1.2c0.9,0,1.4-0.4,1.4-0.9v0c0-0.5-0.3-0.8-2-1.2c-2-0.5-3.2-1.1-3.2-3v0
+	c0-1.8,1.4-3,3.4-3c1.4,0,2.6,0.4,3.6,1.2l-1.1,1.6c-0.9-0.6-1.7-1-2.5-1c-0.8,0-1.3,0.4-1.3,0.9v0c0,0.6,0.4,0.9,2.1,1.3
+	c2,0.5,3.1,1.2,3.1,2.9v0c0,1.9-1.5,3-3.6,3C135,82.1,133.5,81.6,132.4,80.6z"/>
+<rect x="-639.7" y="-4048" class="st0" width="1420" height="4200"/>
+<rect x="-639.7" y="-4048" class="st0" width="1420" height="4200"/>
+<rect x="-639.7" y="-4048" class="st0" width="1420" height="4200"/>
+<g>
+	<defs>
+		<rect id="SVGID_1_" x="-612.2" y="-4046.2" width="1420" height="4200"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+	</clipPath>
+</g>
+<path class="st1" d="M79.9,30.3h-4.3v3.8H80c1.7,0,2.7-0.6,2.7-1.9v0C82.7,31,81.8,30.3,79.9,30.3z"/>
+<path class="st1" d="M70.7,0.1L46.3,14.4v28.7l24.5,14.3l24.5-14.3V14.4L70.7,0.1z M68.6,32.3c0,3.4-2.6,5.4-6.3,5.4
+	c-2.6,0-5.2-0.9-7.2-2.8l2.2-2.7c1.5,1.3,3.1,2.1,5.1,2.1c1.5,0,2.5-0.6,2.5-1.6v0c0-1-0.6-1.5-3.4-2.2c-3.4-0.9-5.7-1.9-5.7-5.3v0
+	c0-3.1,2.5-5.2,6-5.2c2.5,0,4.6,0.8,6.3,2.2l-2,2.9c-1.5-1.1-3-1.7-4.4-1.7c-1.4,0-2.2,0.7-2.2,1.5v0.1c0,1.1,0.7,1.5,3.7,2.3
+	C66.7,28,68.6,29.3,68.6,32.3L68.6,32.3z M86.4,32.7c0,3.2-2.5,4.8-6.4,4.8h-8.1V20.1h7.9c2,0,3.5,0.5,4.5,1.5
+	c0.8,0.8,1.2,1.8,1.2,2.9v0c0,2-1,3-2.2,3.7C85.2,29.2,86.4,30.3,86.4,32.7L86.4,32.7z"/>
+<path class="st1" d="M81.7,25.3L81.7,25.3c0-1.2-0.9-1.8-2.5-1.8h-3.7v3.7H79C80.7,27.1,81.7,26.6,81.7,25.3z"/>
+</svg>
+</a>
+    </footer>
+    <script src="scripts.js"></script>
+  </body>
 </html>
