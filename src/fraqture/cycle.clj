@@ -8,6 +8,7 @@
             [fraqture.shifting-grid :as shifting-grid]
             [fraqture.pixelate :as pixelate]
             [fraqture.tweetreader :as tweetreader]
+            [fraqture.textify :as textify]
             [fraqture.led-array :as led]
             [fraqture.snake :as snake]
             [fraqture.photo-countdown :as countdown]
@@ -24,7 +25,7 @@
    swap/drawing
    pixelate/drawing
    shifting-grid/drawing
-   tweetreader/drawing])
+   textify/drawing])
 
 (defn randomize-day-list
   "We always want to take a picture, then manipulate it using a raster manipulator,
@@ -32,7 +33,7 @@
   []
   (let [raster-manipulators (filter #(= (:acts-on %) :raster) day-list)
         first-drawing (rand-nth raster-manipulators)
-        others (shuffle (remove #{first-drawing} day-list))]
+        others (apply list (shuffle (remove #{first-drawing} day-list)))]
     (conj others first-drawing countdown/drawing)))
 
 (defn build-list [] (if (is-night?) night-list (randomize-day-list)))

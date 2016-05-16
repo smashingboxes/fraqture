@@ -3,7 +3,8 @@
             [fraqture.helpers :refer :all]
             [fraqture.led-array :as led]
             [quil.core :as q]
-            [clojure.core.matrix :as m])
+            [clojure.core.matrix :as m]
+            [fraqture.stream :as stream])
   (:import  [fraqture.drawing Drawing]))
 
 (def uppers (map char (range 66 92)))
@@ -22,9 +23,9 @@
     (q/text text-str x y)))
 
 (defn loader
-  ([path] (loader path false))
-  ([path fill?]
-    (let [image (q/load-image path)]
+  ([] (loader false))
+  ([fill?]
+    (let [image (-> (stream/get-logo!) (q/load-image))]
       (if fill? (q/background (average-color image)))
       (q/resize image (q/width) (q/height))
       image)))
@@ -50,11 +51,12 @@
 
 (defn setup [options]
     (q/frame-rate 30)
-    (let [image (loader (:image-path options) (not (:leave-background options)))]
+    (let [image (loader (not (:leave-background options)))]
       { :image image
         :options options
         :leds-left (shuffle (range 540))
-        :leds '() }))
+        :leds '()
+        :started-at (q/millis) }))
 
 (defn update-state [state]
   (let [[current rest] (split-at leds-each (:leds-left state))]
@@ -78,5 +80,8 @@
     (led/refresh serial)
     (doseq [zip zipped] (apply curried-text zip))))
 
+(defn exit? [state]
+  (> (q/millis) (+ (:started-at state) 30000)))
+
 (def drawing
-  (Drawing. "Textify" setup update-state draw-state cli-options nil :logo))
+  (Drawing. "Textify" setup update-state draw-state cli-options exit? :logo))
