@@ -95,6 +95,7 @@
 
 (defn setup [options]
   (q/frame-rate 3)
+  (q/no-stroke)
   (let [image-file (stream/get-raster!)
         image  (q/load-image image-file)
         _resized (q/resize image (q/width) (q/height))
