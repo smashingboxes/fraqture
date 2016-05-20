@@ -11,8 +11,10 @@ a Teensy 3.2.
 
 Come see fraqture live!
 
+You can find Fraqture today in the [21C storefront window](https://goo.gl/maps/rb3uesMPJB92) in downtown Durham, NC.
+
 - March 14-16th - [New Orleans Entrepreneurs Week](https://noew.org/)
-- April ? - A fraqture TBD in downtown Durham, NC.
+- Now - Downtown Durham
 
 ![textify](http://i.imgur.com/99fEYH9.gif)
 
