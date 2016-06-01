@@ -27,14 +27,8 @@
    shifting-grid/drawing
    textify/drawing])
 
-(defn randomize-day-list
-  "We always want to take a picture, then manipulate it using a raster manipulator,
-  then shuffle the rest"
-  []
-  (let [raster-manipulators (filter #(= (:acts-on %) :raster) day-list)
-        first-drawing (rand-nth raster-manipulators)
-        others (apply list (shuffle (remove #{first-drawing} day-list)))]
-    (conj others first-drawing countdown/drawing)))
+(defn randomize-day-list []
+  (shuffle day-list))
 
 (defn build-list [] (if (is-night?) night-list (randomize-day-list)))
 
