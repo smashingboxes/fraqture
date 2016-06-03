@@ -10,6 +10,7 @@
                  [net.mikera/core.matrix "0.47.0"]
                  [org.clojure/tools.cli "0.3.3"]
                  [vision "1.0.0-SNAPSHOT"]
+                 [org.clojure/data.xml "0.0.8"]
                  ]
 
   :jvm-opts ["-Xmx1G" "-Djna.library.path=/~/work/vision/resources/lib"]

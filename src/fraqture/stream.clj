@@ -5,6 +5,7 @@
             [fraqture.helpers :refer [image-extensions]]))
 
 (def tweet-extensions [".txt"])
+(def map-extensions [".osm"])
 
 ; Store the state in the form:
 ; "foldername" -> FolderState
@@ -61,4 +62,5 @@
 
 (defn get-tweet! [] (get-file! "tweets" tweet-extensions))
 (defn get-raster! [] (get-file! "rasters" image-extensions))
-(defn get-logo!  [] (get-file! "logos"  image-extensions))
+(defn get-logo! [] (get-file! "logos"  image-extensions))
+(defn get-map! [] (get-file! "maps" map-extensions))

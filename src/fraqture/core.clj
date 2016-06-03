@@ -6,17 +6,19 @@
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
             [fraqture.color-swap :as color-swap]
-            [fraqture.cycle :as cycle]
-            [fraqture.glitch-drag :as drag]
-            [fraqture.spirograph :as spirograph]
-            [fraqture.shifting-grid :as shifting-grid]
-            [fraqture.hexagons :as hexagons]
-            [fraqture.hex-spinner :as hex-spinner]
-            [fraqture.pixelate :as pixelate]
-            [fraqture.textify :as textify]
-            [fraqture.tweetreader :as tweetreader]
-            [fraqture.snake :as snake]
-            [fraqture.photo-countdown :as countdown]))
+            ; [fraqture.cycle :as cycle]
+            ; [fraqture.glitch-drag :as drag]
+            ; [fraqture.spirograph :as spirograph]
+            ; [fraqture.shifting-grid :as shifting-grid]
+            ; [fraqture.hexagons :as hexagons]
+            ; [fraqture.hex-spinner :as hex-spinner]
+            ; [fraqture.pixelate :as pixelate]
+            ; [fraqture.textify :as textify]
+            ; [fraqture.tweetreader :as tweetreader]
+            ; [fraqture.snake :as snake]
+            ; [fraqture.photo-countdown :as countdown]
+            [fraqture.openstreetmap :as openstreetmap]
+            ))
 
 (defn exit [status msg]
   (println msg)
@@ -30,18 +32,19 @@
       summary]))
 
 (def drawing-hash (hash-map
-    "swap"          color-swap/drawing
-    "spiro"         spirograph/drawing
-    "drag"          drag/drawing
-    "shifting-grid" shifting-grid/drawing
-    "hex"           hexagons/drawing
-    "hex-spinner"   hex-spinner/drawing
-    "cycle"         cycle/drawing
-    "pixelate"      pixelate/drawing
-    "textify"       textify/drawing
-    "tweetreader"   tweetreader/drawing
-    "countdown"     countdown/drawing
-    "snake"         snake/drawing
+    ; "swap"          color-swap/drawing
+    ; "spiro"         spirograph/drawing
+    ; "drag"          drag/drawing
+    ; "shifting-grid" shifting-grid/drawing
+    ; "hex"           hexagons/drawing
+    ; "hex-spinner"   hex-spinner/drawing
+    ; "cycle"         cycle/drawing
+    ; "pixelate"      pixelate/drawing
+    ; "textify"       textify/drawing
+    ; "tweetreader"   tweetreader/drawing
+    ; "countdown"     countdown/drawing
+    ; "snake"         snake/drawing
+    "openstreetmap" openstreetmap/drawing
   ))
 
 (defonce drawing-atom (atom nil))
