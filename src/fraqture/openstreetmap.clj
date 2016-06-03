@@ -10,6 +10,17 @@
 
 (def cli-options )
 
+(defn get-tags [osm-object]
+  (let [tag-elements (->> osm-object (:content) (filter #(= (:tag %) :tag)))
+        tag-pairs (map #(list (:k (:attrs %)) (:v (:attrs %))) tag-elements)
+        tags (apply hash-map (apply concat tag-pairs))]
+    tags))
+
+(defn get-nodes [way-xml nodes-by-id]
+  (let [nds (->> way-xml (:content) (filter #(= (:tag %) :nd)))
+        nodes (map #(get nodes-by-id (:ref (:attrs %))) nds)]
+      nodes))
+
 (defn parse-osm-data [osm]
   ;(-> osm (:content) (:bounds)
   (let [bounds    (->> osm 
@@ -17,13 +28,32 @@
                       (filter #(= (:tag %) :bounds))
                       (first)
                       (:attrs))
-        nodes     []
-        ways      []
-        relations []]
+                      
+        raw-nodes (->> osm
+                      (:content)
+                      (filter #(= (:tag %) :node)))
+        nodes (map #(hash-map 
+                      :id (:id (:attrs %))
+                      :lat (:lat (:attrs %))
+                      :lon (:lon (:attrs %))
+                      :tags (get-tags %)) 
+                   raw-nodes)
+        nodes-by-id (apply hash-map (apply concat (map #(list (:id %) %) nodes)))
+        
+        raw-ways  (->> osm
+                      (:content)
+                      (filter #(= (:tag %) :way)))     
+        ways (map #(hash-map 
+                      :id (:id (:attrs %))
+                      :tags (get-tags %)
+                      :nodes (get-nodes % nodes-by-id)) 
+                   raw-ways)
+        ways-by-id (apply hash-map (apply concat (map #(list (:id %) %) ways)))      
+        ]
   {
     :nodes nodes
     :ways ways
-    :relations relations
+    ; :relations nil
     :bound bounds
   }))
 
@@ -31,7 +61,8 @@
   (let [map-file (stream/get-map!)
         xml-input-stream (io/input-stream map-file)
         raw-data (xml/parse xml-input-stream)
-        osm-data (parse-osm-data raw-data)]
+        osm-data (parse-osm-data raw-data)
+        _ (println (:ways osm-data))]
         { :file map-file
           :osm-data osm-data }))
 
