@@ -40,7 +40,8 @@
         y-meters (meters-between north west lat west)
         bounds-width-meters (meters-between north west north east)
         screen-width (q/width)
-        meters-per-pixel (/ bounds-width-meters screen-width)
+        meters-per-pixel (/ screen-width bounds-width-meters)
+        ; x = x-meters
         x (* x-meters meters-per-pixel)
         y (* y-meters meters-per-pixel)]
     [x y]))
