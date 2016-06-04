@@ -8,9 +8,9 @@
             [clojure.java.io :as io])
   (:import  [fraqture.drawing Drawing]))
 
-(def cli-options )
-
-(defn meters-between [lat1 lon1 lat2 lon2]
+(defn meters-between
+  "Calculate the number of meters between two lat/lon coordinate pairs"
+  [lat1 lon1 lat2 lon2]
   (let [lat1 (read-string lat1)
         lon1 (read-string lon1)
         lat2 (read-string lat2)
@@ -29,7 +29,9 @@
 
 
 
-(defn lat-lon-to-screen [lat lon map-bounds]
+(defn lat-lon-to-screen
+  "Convert lat/lon coordinates to x/y coordinates"
+  [lat lon map-bounds]
   (let [north (:maxlat map-bounds)
         east  (:maxlon map-bounds)
         south (:minlat map-bounds)
@@ -43,19 +45,25 @@
         y (* y-meters meters-per-pixel)]
     [x y]))
 
-(defn get-tags [osm-object]
+(defn get-tags
+  "Given an xml OSM object, return the tags for the object"
+  [osm-object]
   (let [tag-elements (->> osm-object (:content) (filter #(= (:tag %) :tag)))
         tag-pairs (map #(list (:k (:attrs %)) (:v (:attrs %))) tag-elements)
         tags (apply hash-map (apply concat tag-pairs))]
     tags))
 
-(defn get-nodes [way-xml nodes-by-id]
+(defn get-nodes
+  "Given an xml OSM way and a lookup hash-map, return the nodes for the way"
+  [way-xml nodes-by-id]
   (let [nds (->> way-xml (:content) (filter #(= (:tag %) :nd)))
         nodes (map #(get nodes-by-id (:ref (:attrs %))) nds)]
       nodes))
 
 
-(defn create-node [raw-node map-bounds]
+(defn create-node
+  "Create a hash-map representing a node, complete with x/y coordinates"
+  [raw-node map-bounds]
   (let [lat  (:lat (:attrs raw-node))
         lon  (:lon (:attrs raw-node))
         [x y] (lat-lon-to-screen lat lon map-bounds)]
@@ -68,7 +76,9 @@
     :tags (get-tags raw-node)
   }))
 
-(defn parse-osm-data [osm]
+(defn parse-osm-data
+  "Parse the given osm XML data"
+  [osm]
   (let [bounds    (->> osm
                       (:content)
                       (filter #(= (:tag %) :bounds))
@@ -100,15 +110,19 @@
 
 
 ; OSM Helpers
-(defn road? [way]
+(defn road?
+  "Returns whether or not the given way is a road"
+  [way]
   (let [tags (:tags way)
         keys (keys tags)]
     (and
       (some #{"highway"} keys )
       (not= (get tags "highway") "no"))))
 
-(defn render-road [road]
-  (let [nodes (:nodes road)
+(defn render-way
+  "Renders a way as a polyline (no fill)"
+  [way]
+  (let [nodes (:nodes way)
         points (map #(list (:x %) (:y %)) nodes)
         lines (partition 2 1 points)]
     (dorun
@@ -125,13 +139,13 @@
 (defn update-state [state] state)
 
 (defn draw-screen [state]
-  (q/background 0 0 0)
-  (q/stroke-weight 4)
+  (q/background 50 50 50)
+  (q/stroke-weight 2)
   (q/stroke 255)
   (let [ways (:ways (:osm-data state))
         roads (filter road? ways)]
     (dorun
-      (map render-road roads))))
+      (map render-way roads))))
 
 (defn draw-leds [state] )
 
