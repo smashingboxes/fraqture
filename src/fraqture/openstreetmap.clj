@@ -8,7 +8,7 @@
             [clojure.java.io :as io])
   (:import  [fraqture.drawing Drawing]))
 
-(def lines-per-frame 3) ; this defines the speed of the animation
+(def lines-per-frame 20) ; this defines the speed of the animation
 
 
 (defn meters-between
@@ -123,12 +123,26 @@
       (some #{"highway"} keys )
       (not= (get tags "highway") "no"))))
 
-(defn render-way
-  "Renders a way as a polyline (no fill)"
+(defn road-attrs [way]
+  (let [highway-type (get (:tags way) "highway")]
+    (case highway-type
+      "motorway" {:weight 4 :color [255 116 23]}
+      "primary"  {:weight 2 :color [250 205 82]}
+                 {:weight 2 :color [200 200 200]}
+    )))
+
+
+(defn render-road
+  "Renders a road as a polyline"
   [way]
   (let [nodes (:nodes way)
         points (map #(list (:x %) (:y %)) nodes)
-        lines (partition 2 1 points)]
+        lines (partition 2 1 points)
+        attrs (road-attrs way)
+        weight (:weight attrs)
+        color (:color attrs)]    
+    (apply q/stroke color)
+    (q/stroke-weight weight)
     (dorun
       (map #(apply q/line %) lines))))
 
@@ -155,7 +169,7 @@
   (q/stroke-weight 2)
   (q/stroke 255)
   (let [drawn-roads (:drawn-roads state)]
-    (dorun (map render-way drawn-roads))))
+    (dorun (map render-road drawn-roads))))
 
 (defn draw-leds [state] )
 
