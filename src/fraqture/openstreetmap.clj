@@ -8,6 +8,9 @@
             [clojure.java.io :as io])
   (:import  [fraqture.drawing Drawing]))
 
+(def lines-per-frame 3) ; this defines the speed of the animation
+
+
 (defn meters-between
   "Calculate the number of meters between two lat/lon coordinate pairs"
   [lat1 lon1 lat2 lon2]
@@ -133,20 +136,26 @@
   (let [map-file (stream/get-map!)
         xml-input-stream (io/input-stream map-file)
         raw-data (xml/parse xml-input-stream)
-        osm-data (parse-osm-data raw-data)]
-        { :file map-file
-          :osm-data osm-data }))
+        osm-data (parse-osm-data raw-data)
+        ways (:ways osm-data)
+        roads (filter road? ways)]
+        { :undrawn-roads roads
+          :drawn-roads '()}))
 
-(defn update-state [state] state)
+(defn update-state [state]
+  (let [undrawn-roads (:undrawn-roads state)
+        new-roads (take lines-per-frame undrawn-roads)
+        undrawn-roads (drop lines-per-frame undrawn-roads)
+        drawn-roads (concat (:drawn-roads state) new-roads)]
+    { :undrawn-roads undrawn-roads
+      :drawn-roads drawn-roads}))
 
 (defn draw-screen [state]
   (q/background 50 50 50)
   (q/stroke-weight 2)
   (q/stroke 255)
-  (let [ways (:ways (:osm-data state))
-        roads (filter road? ways)]
-    (dorun
-      (map render-way roads))))
+  (let [drawn-roads (:drawn-roads state)]
+    (dorun (map render-way drawn-roads))))
 
 (defn draw-leds [state] )
 

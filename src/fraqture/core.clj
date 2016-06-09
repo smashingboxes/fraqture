@@ -74,7 +74,7 @@
       :update #((:update @drawing-atom) %)
       :draw   (curried-draw drawing-atom with-mock? serial)
       :size   :fullscreen
-      :features [:present :keep-on-top]
+      :features [:keep-on-top] ; [:present :keep-on-top]
       :middleware [m/fun-mode])))
 
 (defn parse-cli [drawing-name args]
