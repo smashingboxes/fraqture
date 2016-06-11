@@ -114,14 +114,25 @@
 
 
 ; OSM Helpers
+(defn osm-tag-match? 
+  "Returns whether or not the given osm object (node, way, etc) has the tag (k,v pair)"
+  ([osm-object k]
+    (let [tags (:tags osm-object)
+          keys (keys tags)]
+      (and
+        (some #{k} keys)
+        (not= (get tags k) "no"))))
+  ([osm-object k v]
+    (let [tags (:tags osm-object)
+          keys (keys tags)]
+      (and
+        (some #{k} keys)
+        (= (get tags k) v)))))
+
 (defn road?
   "Returns whether or not the given way is a road"
   [way]
-  (let [tags (:tags way)
-        keys (keys tags)]
-    (and
-      (some #{"highway"} keys )
-      (not= (get tags "highway") "no"))))
+  (osm-tag-match? way "highway"))
 
 (defn road-attrs [way]
   (let [highway-type (get (:tags way) "highway")]
@@ -131,7 +142,16 @@
                  {:weight 2 :color [200 200 200]}
     )))
 
+(defn get-city
+  "Given a set of OSM data, returns the best guess at the city"
+  [osm-data]
+  (let [nodes (:nodes osm-data)
+        city-nodes (filter #(osm-tag-match? % "place" "city") nodes)
+        city-node (first city-nodes)
+        city (get (:tags city-node) "name")]
+    city))
 
+; Render methods
 (defn render-road
   "Renders a road as a polyline"
   [way]
@@ -146,23 +166,28 @@
     (dorun
       (map #(apply q/line %) lines))))
 
+; Main
 (defn setup [options]
   (let [map-file (stream/get-map!)
         xml-input-stream (io/input-stream map-file)
         raw-data (xml/parse xml-input-stream)
         osm-data (parse-osm-data raw-data)
         ways (:ways osm-data)
-        roads (filter road? ways)]
-        { :undrawn-roads roads
-          :drawn-roads '()}))
+        roads (filter road? ways)
+        city (get-city osm-data)]
+        { :options options
+          :undrawn-roads roads
+          :drawn-roads '()
+          :city city}))
 
 (defn update-state [state]
   (let [undrawn-roads (:undrawn-roads state)
         new-roads (take lines-per-frame undrawn-roads)
         undrawn-roads (drop lines-per-frame undrawn-roads)
         drawn-roads (concat (:drawn-roads state) new-roads)]
-    { :undrawn-roads undrawn-roads
-      :drawn-roads drawn-roads}))
+    (-> state
+      (assoc-in [:undrawn-roads] undrawn-roads)
+      (assoc-in [:drawn-roads] drawn-roads))))
 
 (defn draw-screen [state]
   (q/background 50 50 50)
@@ -171,7 +196,12 @@
   (let [drawn-roads (:drawn-roads state)]
     (dorun (map render-road drawn-roads))))
 
-(defn draw-leds [state] )
+(defn draw-leds [state]
+  ; led array = 9x30
+  (let [options (:options state)
+        serial  (:serial options)]
+    (led/refresh serial)
+    (led/paint-window serial )))
 
 (defn draw-state [state]
   (draw-screen state)

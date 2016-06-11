@@ -10,7 +10,7 @@ pom.xml.asc
 /.nrepl-port
 .env
 tweets/*.txt
-maps/*.osm
+maps/osm/*.osm
 logs/*
 pids/*
 archived/*
