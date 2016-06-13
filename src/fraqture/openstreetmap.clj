@@ -5,10 +5,11 @@
             [fraqture.stream :as stream]
             [fraqture.led-array :as led]
             [clojure.data.xml :as xml]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [clojure.string :as str])
   (:import  [fraqture.drawing Drawing]))
 
-(def lines-per-frame 20) ; this defines the speed of the animation
+(def lines-per-frame 5) ; this defines the speed of the animation
 
 
 (defn meters-between
@@ -174,11 +175,13 @@
         osm-data (parse-osm-data raw-data)
         ways (:ways osm-data)
         roads (filter road? ways)
-        city (get-city osm-data)]
+        city (get-city osm-data)
+        file  (str "maps/names/" city ".txt")
+        city-text (slurp file)]
         { :options options
           :undrawn-roads roads
           :drawn-roads '()
-          :city city}))
+          :city-text city-text}))
 
 (defn update-state [state]
   (let [undrawn-roads (:undrawn-roads state)
@@ -199,9 +202,17 @@
 (defn draw-leds [state]
   ; led array = 9x30
   (let [options (:options state)
-        serial  (:serial options)]
-    (led/refresh serial)
-    (led/paint-window serial )))
+        serial  (:serial options)
+        city-text (:city-text state)
+        lines (str/split city-text #"\n")
+        lines (map #(str/split % #"") lines)]
+    (dorun (map-indexed
+      (fn [y line] 
+        (dorun (map-indexed (fn [x char]
+            (if (= char "X")
+              (led/paint-window serial y x (+ y 1) (+ x 1) [255 255 255])))
+            line)))
+      lines))))
 
 (defn draw-state [state]
   (draw-screen state)
