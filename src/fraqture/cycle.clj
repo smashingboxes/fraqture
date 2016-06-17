@@ -21,7 +21,6 @@
 
 (def day-list
   [drag/drawing
-   snake/drawing
    swap/drawing
    pixelate/drawing
    shifting-grid/drawing
