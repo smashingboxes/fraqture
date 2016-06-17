@@ -1,0 +1,9 @@
+ X  XXX X  X XX X X X X  X  XX
+X X X   X  X X  X X X X  X  X
+X X X   X  X X  X X X X  X  X
+X X X   X  X X  X X X X  X  X
+XXX XXX XXXX XX X X X X  X  XX
+X X   X X  X X  X X X X  X  X
+X X   X X  X X  X X X X  X  X
+X X   X X  X X   X  X X  X  X
+X X XXX X  X XX  X  X XX XX XX
