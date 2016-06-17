@@ -7,7 +7,8 @@
             [clojure.data.xml :as xml]
             [clojure.java.io :as io]
             [clojure.string :as str])
-  (:import  [fraqture.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]
+            [org.apache.commons.io FilenameUtils]))
 
 (def lines-per-frame 5) ; this defines the speed of the animation
 
@@ -143,15 +144,6 @@
                  {:weight 2 :color [200 200 200]}
     )))
 
-(defn get-city
-  "Given a set of OSM data, returns the best guess at the city"
-  [osm-data]
-  (let [nodes (:nodes osm-data)
-        city-nodes (filter #(osm-tag-match? % "place" "city") nodes)
-        city-node (first city-nodes)
-        city (get (:tags city-node) "name")]
-    city))
-
 ; Render methods
 (defn render-road
   "Renders a road as a polyline"
@@ -175,8 +167,8 @@
         osm-data (parse-osm-data raw-data)
         ways (:ways osm-data)
         roads (filter road? ways)
-        city (get-city osm-data)
-        file  (str "maps/names/" city ".txt")
+        city (FilenameUtils/getBaseName map-file)
+        file  (str "maps/leds/" city ".txt")
         city-text (slurp file)]
         { :options options
           :undrawn-roads roads

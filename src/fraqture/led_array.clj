@@ -61,7 +61,7 @@
 
 (defn- draw-led [row col color]
   (let [x-width (/ (q/width) col-count)
-        y-height 8
+        y-height 29
         y-adder (if (> row 8) (- (q/height) (* 18 y-height)) 0)
         x (* col x-width)
         y (+ y-adder (* row y-height))]
