@@ -127,7 +127,7 @@
         lowest-distance (nth (first ordered-by-distance) 2)
         only-fastest (filter #(= (nth % 2) lowest-distance) ordered-by-distance)
         same-direction (first (filter #(= (first %) (:direction state)) only-fastest))
-        random-fastest (rand-nth only-fastest)]
+        random-fastest (if (empty? only-fastest) [] (rand-nth only-fastest))]
     (first (or same-direction random-fastest))))
 
 (defn update-direction
