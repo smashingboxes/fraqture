@@ -3,11 +3,12 @@
             [quil.core :as q]
             [fraqture.led-array :as led]
             [clojure.java.shell :as shell])
-  (:import  [fraqture.drawing Drawing]))
+  (:import  [fraqture.drawing Drawing]
+            [com.smashingboxes.fraqture.detector Detector]))
 
 (defn setup [options]
   {:background-color [0 0 0]
-   :time-left 10
+   :time-left 3
    :options options})
 
 (defn update-state [state]
@@ -15,9 +16,8 @@
 
 (def vertical-line-offset 176)
 
-(defn take-picture [holdoff]
-  (let [now (System/currentTimeMillis)]
-    (shell/sh "imagesnap" "-w" (str holdoff) (str "rasters/once_" now ".jpg"))))
+(defn take-picture [holdoff filename]
+  (shell/sh "imagesnap" "-w" (str holdoff) filename))
 
 (defn draw-state [state]
   (let [options (:options state)
@@ -38,9 +38,15 @@
             (q/text-align :center :center)
             (q/text "Say Cheese" center-width center-height))
       (= (:time-left state) -1)
-        (do (take-picture 0.5)
+        (do (let [filename (str "rasters/once_" (System/currentTimeMillis) ".jpeg")]
+            (take-picture 0.5 filename)
+            (-> (doto (new Detector "resources/haarcascade_frontalface_default.xml")
+                    (.setIsAnnotate true)
+                    (.loadImgFromFileDetectAndWrite filename filename)
+                    )
+              .detect)
             (led/paint-window serial 0 0 led/row-count led/col-count [255 255 255])
-            (led/refresh serial))
+            (led/refresh serial)))
       (= (:time-left state) -2)
         (do (led/clear serial)
             (led/refresh serial)))))

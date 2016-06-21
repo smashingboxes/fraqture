@@ -16,7 +16,10 @@
             [fraqture.textify :as textify]
             [fraqture.tweetreader :as tweetreader]
             [fraqture.snake :as snake]
-            [fraqture.photo-countdown :as countdown]))
+            [fraqture.photo-countdown :as countdown])
+  (:import  [com.smashingboxes.fraqture.detector Detector]
+            [java.io File]
+            [org.opencv.core Core]))
 
 (defn exit [status msg]
   (println msg)
@@ -93,4 +96,8 @@
   (let [[drawing-name & drawing-args] args]
     (if (not (contains? (set (keys drawing-hash)) drawing-name))
       (println basic-usage)
-      (parse-cli drawing-name drawing-args))))
+      (parse-cli drawing-name drawing-args))
+    (Detector/loadNativeLibraries)
+      ;;(System/loadLibrary (Core/NATIVE_LIBRARY_NAME)
+  )
+)

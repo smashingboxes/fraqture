@@ -10,7 +10,8 @@
                  [net.mikera/core.matrix "0.47.0"]
                  [org.clojure/tools.cli "0.3.3"]
                  [vision "1.0.0-SNAPSHOT"]
+                 [self/face-recog "0.5.0"]
+                 [self/opencv "3.1.0"]
                  ]
-
-  :jvm-opts ["-Xmx1G" "-Djna.library.path=/~/work/vision/resources/lib"]
+  :jvm-opts ["-Xmx1G" "-Djna.library.path=/~/work/vision/resources/lib" "-Djava.library.path=/usr/local/Cellar/opencv3/3.1.0_3/share/OpenCV/java/"]
   :main fraqture.core)
