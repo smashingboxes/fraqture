@@ -16,7 +16,8 @@
             [fraqture.textify :as textify]
             [fraqture.tweetreader :as tweetreader]
             [fraqture.snake :as snake]
-            [fraqture.photo-countdown :as countdown]))
+            [fraqture.photo-countdown :as countdown]
+            [fraqture.exif :as exif]))
 
 (defn exit [status msg]
   (println msg)
