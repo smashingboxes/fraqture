@@ -9,9 +9,11 @@
                  [org.clojure/data.json "0.2.6"]
                  [net.mikera/core.matrix "0.47.0"]
                  [org.clojure/tools.cli "0.3.3"]
+                 [org.apache.commons/commons-imaging "1.0-SNAPSHOT"]
                  [vision "1.0.0-SNAPSHOT"]
-                 [clj-exif/clj-exif "0.1-LOCAL"]
                  [com.github.kyleburton/clj-xpath "1.4.5"]
                  ]
+   :repositories [
+                 ["apache.snapshots" "http://repository.apache.org/snapshots"]]
   :jvm-opts ["-Xmx1G" "-Djna.library.path=/~/work/vision/resources/lib"]
   :main fraqture.core)

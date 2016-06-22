@@ -3,9 +3,7 @@
             [clojure.set :refer :all]
             [clojure.string :refer [split]]
             [fraqture.stream :as stream]
-            [fraqture.helpers :refer [image-extensions]]
-            [clojure.xml :as xml]
-            [clj-exif.core :as exif])
+            [fraqture.helpers :refer [image-extensions]])
 	(:import [org.apache.commons.imaging Imaging])
 	(:use [clj-xpath.core]))
 
