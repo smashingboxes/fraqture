@@ -99,3 +99,43 @@ Payload (in order):
 - Install Java JRE or JDK from [Oracle's website](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 - `brew install leiningen` (or install it for your OS using [these instructions](http://leiningen.org/))
 - Imagesnap `brew install imagesnap` (or install it from [here](http://iharder.sourceforge.net/current/macosx/imagesnap/))
+
+## System Setup
+
+The overall diagram of how the LED controller, LED panels, power supply, and Mac Mini all interact can be seen below:
+
+![](assets/fraq_overall.png)
+
+Since LED data is a serial stream, it originates by the Mac Mini's program sending data to the LED controller, which then sends it out to the 540 LEDs using SPI. The individual wires that need to be connected can be found below.
+
+For the panel connections, the diagram shows a closeup of the screw terminals found on the backs of the panels. The panels should be positioned so that the screw terminals are in the lower-left of each panel. A legend for these connectors is below:
+
+```
+Line - Wire to another component.
+X - Internal panel connection; leave connected.
+N/C - No connection.
+```
+
+---
+
+### LED Controller
+
+![](assets/fraq_led.png)
+
+---
+
+### Panel 1 (Top)
+
+![](assets/fraq_panel1.png)
+
+---
+
+### Panel 2 (Bottom)
+
+![](assets/fraq_panel2.png)
+
+---
+
+### Power Supply Unit (PSU)
+
+![](assets/fraq_psu.png)
